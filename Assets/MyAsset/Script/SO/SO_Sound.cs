@@ -31,14 +31,19 @@ namespace SO
 
         [SerializeField] private AudioMixer _audioMixer;
         public AudioMixer AudioMixer => _audioMixer;
-
         [SerializeField] private AudioMixerGroup _AMGroupBGM;
         public AudioMixerGroup AMGroupBGM => _AMGroupBGM;
-
         [SerializeField] private AudioMixerGroup _AMGroupSE;
         public AudioMixerGroup AMGroupSE => _AMGroupSE;
-
         [SerializeField] private AudioMixerGroup _AMGroupMaster;
         public AudioMixerGroup AMGroupMaster => _AMGroupMaster;
+        [Space(25)]
+        [Header("BGM")]
+        [SerializeField] private AudioClip _tmp;
+        public AudioClip Tmp => _tmp;
+        [Space(25)]
+        [Header("SE")]
+        [SerializeField] private AudioClip _tmp2;
+        public AudioClip Tmp2 => _tmp2;
     }
 }
