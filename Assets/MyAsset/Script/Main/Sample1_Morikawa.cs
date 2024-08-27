@@ -17,7 +17,8 @@ namespace Main.Sample
         // コーディング規約に基づいて、アクセス修飾子は明示してほしいです。
         private void Start()
         {
-
+            Debug.Log(Ex.D2(2));
+            Debug.Log(Ex.D2(24));
         }
 
         private void Update()
@@ -68,6 +69,16 @@ namespace Main.Sample
 
             // 上2つの中間をとった、バランス型。ただ、整数値でそのまま計算することはできない。
             List<N> list3 = new() { N.N1, N.N2, N.OA, N.PL, N.N5 };
+        }
+    }
+
+    internal static class Ex
+    {
+        internal static string D2(int val)
+        {
+            val = Mathf.Clamp(val, 0, 99);
+
+            return $"{val:D2}";
         }
     }
 }
