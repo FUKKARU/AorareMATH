@@ -44,18 +44,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d6c4b04e94ecfa4d8c0dba6321ace90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whiteLine:
-    tf: {fileID: 0}
+  whiteLineReference:
+  - tf: {fileID: 0}
     sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  whiteLineProperty:
     sprite: {fileID: 0}
     dur: 0
     startPosition: {x: 0, y: 0}
     endPosition: {x: 0, y: 0}
     startLocalScale: 0
     endLocalScale: 0
-  building:
-    tf: {fileID: 0}
+  buildingReference:
+  - tf: {fileID: 0}
     sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  - tf: {fileID: 0}
+    sr: {fileID: 0}
+  buildingProperty:
     sprite: {fileID: 0}
     dur: 0
     startPosition: {x: 0, y: 0}

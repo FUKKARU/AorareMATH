@@ -1,13 +1,14 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine;
+using SO;
 
 namespace Main
 {
     internal sealed class SceneryMover : MonoBehaviour
     {
-        [SerializeField] private SceneryElementProperty whiteLine;
-        [SerializeField] private SceneryElementProperty building;
+        [SerializeField] private SceneryElementReference[] whiteLineReference;
+        [SerializeField] private SceneryElementReference[] buildingReference;
 
         private CancellationToken ct;
 
@@ -16,7 +17,8 @@ namespace Main
         private void OnEnable()
         {
             ct = this.GetCancellationTokenOnDestroy();
-            impl = new(whiteLine, building, ct);
+            impl = new(whiteLineReference, SO_Scenery.Entity.WhiteLineProperty,
+                buildingReference, SO_Scenery.Entity.BuildingProperty, ct);
         }
 
         private void OnDisable()
@@ -38,17 +40,30 @@ namespace Main
         private SceneryElement[] whiteLines;
         private SceneryElement[] buildings;
 
+        private float whiteLineInterval;
+        private float buildingInterval;
+
         private bool isFirstUpdate = true;
 
-        private static readonly float dur = 1f;
-
-        internal SceneryMoverBhv(SceneryElementProperty whiteLine, SceneryElementProperty building, CancellationToken ct)
+        internal SceneryMoverBhv(SceneryElementReference[] whiteLineReference, SceneryElementProperty whiteLineProperty,
+            SceneryElementReference[] buildingReference, SceneryElementProperty buildingProperty,
+            CancellationToken ct)
         {
             this.ct = ct;
-            this.whiteLines =
-                new SceneryElement[5] { new(whiteLine), new(whiteLine), new(whiteLine), new(whiteLine), new(whiteLine) };
-            this.buildings =
-                new SceneryElement[5] { new(building), new(building), new(building), new(building), new(building) };
+
+            int len = Mathf.Min(whiteLineReference.Length, buildingReference.Length);
+
+            whiteLines = new SceneryElement[len];
+            buildings = new SceneryElement[len];
+
+            for (int i = 0; i < len; i++)
+            {
+                whiteLines[i] = new(whiteLineReference[i], whiteLineProperty);
+                buildings[i] = new(buildingReference[i], buildingProperty);
+            }
+
+            whiteLineInterval = whiteLineProperty.Interval;
+            buildingInterval = buildingProperty.Interval;
         }
 
         public void Dispose()
@@ -78,7 +93,7 @@ namespace Main
             int i = 0;
             while (true)
             {
-                await UniTask.Delay(System.TimeSpan.FromSeconds(dur));
+                await UniTask.Delay(System.TimeSpan.FromSeconds(whiteLineInterval));
                 whiteLines[i].IsActive = true;
 
                 i++;
@@ -87,54 +102,43 @@ namespace Main
         }
     }
 
-    [System.Serializable]
-    internal struct SceneryElementProperty
-    {
-        public Transform tf;
-        public SpriteRenderer sr;
-        public Sprite sprite;
-
-        public float dur;
-        public Vector2 startPosition;
-        public Vector2 endPosition;
-        public float startLocalScale;
-        public float endLocalScale;
-    }
-
     internal sealed class SceneryElement : System.IDisposable
     {
-        private Transform tf;
-        private SpriteRenderer sr;
-        private Sprite sprite;
+        private Transform transform;
+        private SpriteRenderer spriteRenderer;
 
-        private float dur;
-        private Vector2 startPosition;
-        private Vector2 endPosition;
-        private float startLocalScale;
-        private float endLocalScale;
+        private readonly float duration;
+
+        private readonly Vector2 startVelocity;
+        private readonly Vector2 startPosition;
+        private readonly float startLocalScale;
+        private readonly float velocityCoefficient;
+        private readonly float scaleCoefficient;
 
         internal bool IsActive { get; set; } = false;
 
         private float t = 0;
 
-        internal SceneryElement(SceneryElementProperty property)
+        internal SceneryElement(SceneryElementReference reference, SceneryElementProperty property)
         {
-            this.tf = property.tf;
-            this.sr = property.sr;
-            this.sprite = property.sprite;
-            this.dur = property.dur;
-            this.startPosition = property.startPosition;
-            this.endPosition = property.endPosition;
-            this.startLocalScale = property.startLocalScale;
-            this.endLocalScale = property.endLocalScale;
-            this.IsActive = false;
+            transform = reference.Transform;
+            spriteRenderer = reference.SpriteRenderer;
+
+            duration = property.Duration;
+            startVelocity = property.StartVelocity;
+            startPosition = property.StartPosition;
+            startLocalScale = property.StartLocalScale;
+            velocityCoefficient = property.VelocityCoefficient;
+            scaleCoefficient = property.ScaleCoefficient;
+
+            spriteRenderer.sprite = property.Sprite;
+            Init();
         }
 
         public void Dispose()
         {
-            tf = null;
-            sr = null;
-            sprite = null;
+            transform = null;
+            spriteRenderer = null;
         }
 
         internal void Update()
@@ -143,43 +147,54 @@ namespace Main
 
             if (!IsActive)
             {
-                if (sr.enabled) sr.enabled = false;
+                if (spriteRenderer.enabled) spriteRenderer.enabled = false;
             }
             else
             {
-                if (!sr.enabled) sr.enabled = true;
+                if (!spriteRenderer.enabled) spriteRenderer.enabled = true;
 
-                tf.position = t.Remap(0, dur, startPosition, endPosition);
-                tf.localScale = Vector3.one * t.Remap(0, dur, startLocalScale, endLocalScale);
+                transform.position = transform.position + CalcVelocity(t) * Time.deltaTime;
+                transform.localScale = CalcLocalScale(t);
 
                 t += Time.deltaTime;
-                if (t >= dur)
+                if (t >= duration)
                 {
                     t = 0;
-                    IsActive = false;
+                    Init();
                 }
             }
         }
 
+        private void Init()
+        {
+            transform.position = startPosition;
+            transform.localScale = Vector3.one * startLocalScale;
+            IsActive = false;
+        }
+
+        private Vector3 CalcVelocity(float t)
+        {
+            return startVelocity.normalized * (t * t * velocityCoefficient) + startVelocity;
+        }
+
+        private Vector3 CalcLocalScale(float t)
+        {
+            float s = t * scaleCoefficient + startLocalScale;
+            return new(s, s, 1);
+        }
+
         internal bool IsNullExist()
         {
-            if (!tf) return true;
-            if (!sr) return true;
-            if (!sprite) return true;
+            if (!transform) return true;
+            if (!spriteRenderer) return true;
             return false;
         }
     }
 
-    internal static class Ex
+    [System.Serializable]
+    internal class SceneryElementReference
     {
-        internal static float Remap(this float x, float a, float b, float c, float d)
-        {
-            return (x - a) * (d - c) / (b - a) + c;
-        }
-
-        internal static Vector2 Remap(this float x, float a, float b, Vector2 c, Vector2 d)
-        {
-            return new((x - a) * (d.x - c.x) / (b - a) + c.x, (x - a) * (d.y - c.y) / (b - a) + c.y);
-        }
+        public Transform Transform;
+        public SpriteRenderer SpriteRenderer;
     }
 }
