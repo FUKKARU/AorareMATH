@@ -428,29 +428,5 @@ namespace Main.Data.Formula
             }
             return false;
         }
-
-#if UNITY_EDITOR && false
-        internal static T Show<T>(this T val)
-        {
-            UnityEngine.Debug.Log(val);
-            return val;
-        }
-
-        internal static void Look(this IEnumerable<object> itr)
-        {
-            foreach (object e in itr)
-            {
-                UnityEngine.Debug.Log(e);
-            }
-        }
-
-        internal static void Look<T1, T2>(this IEnumerable<T1> itr, System.Func<T1, T2> f)
-        {
-            foreach (T1 e in itr)
-            {
-                UnityEngine.Debug.Log(f(e));
-            }
-        }
-#endif
     }
 }

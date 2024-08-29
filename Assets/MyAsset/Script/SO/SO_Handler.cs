@@ -35,6 +35,9 @@ namespace SO
         internal float MinVolume => _soundVolumeRange.x;
         internal float MaxVolume => _soundVolumeRange.y;
 
+        [SerializeField, Header("メインシーンに行ってから、ゲーム開始までの待機秒数")] private float _waitDurOnGameStarted;
+        internal float WaitDurOnGameStarted => _waitDurOnGameStarted;
+
         [SerializeField, Header("ゲームの初期制限時間(秒)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
     }
