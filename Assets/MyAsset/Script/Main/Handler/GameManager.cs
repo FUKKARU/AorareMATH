@@ -40,6 +40,14 @@ namespace Main.Handler
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                State = GameState.OnGoing;
+            }
+        }
+
+        internal void Attack()
+        {
 
         }
     }
