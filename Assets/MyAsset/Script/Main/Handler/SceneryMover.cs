@@ -35,7 +35,7 @@ namespace Main.Handler
 
     internal sealed class SceneryMoverBhv : System.IDisposable
     {
-        private readonly CancellationTokenSource cts;
+        private readonly CancellationTokenSource cts = new();
         private readonly CancellationTokenSource linkedCts;
 
         private SceneryElement[] whiteLines;
