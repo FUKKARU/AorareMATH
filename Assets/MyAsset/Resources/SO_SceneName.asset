@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 740825f9a9ec00f489aad8598c63d8d3, type: 3}
-  m_Name: SO_Handler
+  m_Script: {fileID: 11500000, guid: ab6513dd31199ef44af0ace8fff9ea52, type: 3}
+  m_Name: SO_SceneName
   m_EditorClassIdentifier: 
-  _waitDurOnButtonPlaced: 0.5
-  _soundVolumeRange: {x: -20, y: 20}
-  _initTimeLimit: 60
+  _title: Title
+  _main: Main

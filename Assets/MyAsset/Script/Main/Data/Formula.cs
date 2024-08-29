@@ -154,6 +154,11 @@ namespace Main.Data.Formula
             Data = new(symbols);
         }
 
+        internal void Reset()
+        {
+            Data.Clear();
+        }
+
         internal float? Calcurate()
         {
             try

@@ -1,4 +1,8 @@
+using Cysharp.Threading.Tasks;
+using SO;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Title.Handler
 {
@@ -11,12 +15,16 @@ namespace Title.Handler
 
         private bool isActive = true;
 
+        private CancellationToken ct;
+
         private void OnEnable()
         {
             if (!sr) return;
             if (!normalSprite) return;
 
             sr.sprite = normalSprite;
+
+            ct = this.GetCancellationTokenOnDestroy();
         }
 
         private void OnDisable()
@@ -58,7 +66,17 @@ namespace Title.Handler
 
             isActive = false;
 
-            Debug.LogWarning("¡ƒV[ƒ“‘JˆÚI");
+            SO_Handler.Entity.WaitDurOnButtonPlaced.SecondsWaitAndDo
+                (() => SceneManager.LoadScene(SO_SceneName.Entity.Main), ct).Forget();
+        }
+    }
+
+    internal static class Ex
+    {
+        internal static async UniTask SecondsWaitAndDo(this float waitSeconds, System.Action act, CancellationToken ct)
+        {
+            await UniTask.Delay(System.TimeSpan.FromSeconds(waitSeconds));
+            act();
         }
     }
 }

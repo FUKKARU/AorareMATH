@@ -10,5 +10,10 @@ namespace Main.Data
             get { return _defeatedEnemyNum; }
             set { _defeatedEnemyNum = Mathf.Clamp(value, ushort.MinValue, ushort.MaxValue); }
         }
+
+        internal void Reset()
+        {
+            _defeatedEnemyNum = 0;
+        }
     }
 }

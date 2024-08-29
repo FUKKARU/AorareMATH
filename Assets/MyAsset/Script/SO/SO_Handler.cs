@@ -28,6 +28,13 @@ namespace SO
         }
         #endregion
 
+        [SerializeField, Header("ƒ{ƒ^ƒ“‚ð‰Ÿ‚µ‚½ŒãA‘Ò‚Â•b”(‘Î‰ž‚·‚é‚à‚Ì‚Ì‚Ý)")] private float _waitDurOnButtonPlaced;
+        internal float WaitDurOnButtonPlaced => _waitDurOnButtonPlaced;
+
+        [SerializeField, Header("‰¹—Ê‚ÌÅ¬’l/Å‘å’l(db)")] private Vector2 _soundVolumeRange;
+        internal float MinVolume => _soundVolumeRange.x;
+        internal float MaxVolume => _soundVolumeRange.y;
+
         [SerializeField, Header("ƒQ[ƒ€‚Ì‰Šú§ŒÀŽžŠÔ(•b)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
     }

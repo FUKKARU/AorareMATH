@@ -1,3 +1,5 @@
+using Main.Data;
+using Main.Data.Formula;
 using UnityEngine;
 
 namespace Main.Handler
@@ -13,5 +15,31 @@ namespace Main.Handler
             else Destroy(gameObject);
         }
         #endregion
+
+        internal enum GameState
+        {
+            OnGoing,
+            Over
+        }
+
+        internal GameState State { get; set; }
+        internal GameData GameData { get; set; }
+        internal Formula Formula { get; set; }
+
+        private void Start()
+        {
+            State = GameState.OnGoing;
+
+            GameData = new();
+            GameData.Reset();
+
+            Formula = new();
+            Formula.Reset();
+        }
+
+        private void Update()
+        {
+
+        }
     }
 }
