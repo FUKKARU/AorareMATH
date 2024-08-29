@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace Main.Handler
 {
+    internal enum GameState
+    {
+        Stay,
+        OnGoing,
+        Over
+    }
+
     internal sealed class GameManager : MonoBehaviour
     {
         #region
@@ -16,19 +23,13 @@ namespace Main.Handler
         }
         #endregion
 
-        internal enum GameState
-        {
-            OnGoing,
-            Over
-        }
-
         internal GameState State { get; set; }
         internal GameData GameData { get; set; }
         internal Formula Formula { get; set; }
 
         private void Start()
         {
-            State = GameState.OnGoing;
+            State = GameState.Stay;
 
             GameData = new();
             GameData.Reset();

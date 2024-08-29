@@ -35,7 +35,8 @@ namespace Main.Handler
 
     internal sealed class SceneryMoverBhv : System.IDisposable
     {
-        private readonly CancellationToken ct;
+        private readonly CancellationTokenSource cts;
+        private readonly CancellationTokenSource linkedCts;
 
         private SceneryElement[] whiteLines;
         private SceneryElement[] buildings;
@@ -49,7 +50,7 @@ namespace Main.Handler
             SceneryElementReference[] buildingReference, SceneryElementProperty buildingProperty,
             CancellationToken ct)
         {
-            this.ct = ct;
+            this.linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, this.cts.Token);
 
             int len = Mathf.Min(whiteLineReference.Length, buildingReference.Length);
 
@@ -81,8 +82,13 @@ namespace Main.Handler
 
             if (isFirstUpdate)
             {
-                CreateWhiteLine(ct).Forget();
+                CreateWhiteLine(linkedCts.Token).Forget();
                 isFirstUpdate = false;
+            }
+
+            if (GameManager.Instance.State != GameState.OnGoing)
+            {
+                linkedCts.Cancel();
             }
 
             foreach (var e in whiteLines) e.Update();
@@ -90,6 +96,8 @@ namespace Main.Handler
 
         private async UniTask CreateWhiteLine(CancellationToken ct)
         {
+            await UniTask.WaitUntil(() => GameManager.Instance.State == GameState.OnGoing);
+
             int i = 0;
             while (true)
             {

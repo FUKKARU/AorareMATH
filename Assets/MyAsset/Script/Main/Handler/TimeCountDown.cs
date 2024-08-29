@@ -15,8 +15,11 @@ namespace Main.Handler
 
         private void Update()
         {
-            if (t > 0) t -= Time.deltaTime;
-            t = Mathf.Max(0, t);
+            if (GameManager.Instance.State == GameState.Stay)
+            {
+                if (t > 0) t -= Time.deltaTime;
+                t = Mathf.Max(0, t);
+            }
 
             if (text) text.text = $"{(int)t:D2}";
         }
