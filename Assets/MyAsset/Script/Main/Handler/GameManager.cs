@@ -91,15 +91,6 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Attack(new(Symbol.N1, Symbol.OA, Symbol.N3));
-            }
-            else if (Input.GetKeyDown(KeyCode.Return))
-            {
-                Attack(new(Symbol.N1, Symbol.OA));
-            }
-
             if (Time > 0)
             {
                 Time -= UnityEngine.Time.deltaTime;
@@ -141,8 +132,11 @@ namespace Main.Handler
             };
         }
 
-        internal void Attack(Formula formula)
+        internal void Attack()
         {
+            // óvèCê≥
+            Formula formula = new();
+
             float? r = formula.Calcurate();
 
             if (!r.HasValue)

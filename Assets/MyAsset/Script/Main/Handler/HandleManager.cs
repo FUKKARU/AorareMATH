@@ -115,7 +115,7 @@ namespace Main.Handler
             if (GameManager.Instance.State != GameState.OnGoing) return;
             if (!GameManager.Instance.IsAttackable) return;
 
-            GameManager.Instance.Attack(new(Symbol.N5, Symbol.OA, Symbol.N5));
+            GameManager.Instance.Attack();
         }
     }
 }
