@@ -28,13 +28,19 @@ namespace Main.Handler
         }
         #endregion
 
-        [SerializeField, Header("N0-N9 の順番")] private NumberSpriteFollow[] symbolSprites;
+        [SerializeField, Header("N0 - N9 の順番")] private NumberSpriteFollow[] symbolSprites;
+        [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
+        private Vector2[] _symbolPositions;
+        internal Vector2[] SymbolPositions => _symbolPositions;
 
         private NumberSpriteFollow[] questionInstances;
+        private NumberSpriteFollow[] _formulaInstances;
+        internal NumberSpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; set; }
         internal GameData GameData { get; set; }
         internal Question Question { get; set; }
+        internal Formula Formula { get; set; }
 
         private float _time = 0;
         internal float Time
@@ -60,6 +66,14 @@ namespace Main.Handler
             GameData.Reset();
 
             Question = new();
+
+            Formula = new
+                (Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
+                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE);
+
+            _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
+
+            _formulaInstances = new NumberSpriteFollow[12];
 
             Time = SO_Handler.Entity.InitTimeLimt;
         }
@@ -115,29 +129,37 @@ namespace Main.Handler
             // 前の問題のインスタンスを消す
             if (questionInstances != null)
             {
-                foreach (var e in questionInstances)
-                {
-                    Destroy(e.gameObject);
-                }
+                foreach (var e in questionInstances) Destroy(e.gameObject);
                 questionInstances = null;
+                _formulaInstances = new NumberSpriteFollow[12];
             }
 
             // 新しくインスタンスを作る
             questionInstances = new NumberSpriteFollow[4]
             {
-                Instantiate(ToInstance(Question.N.N1.ToIntStr()), new(-5, 0), Quaternion.identity, transform),
-                Instantiate(ToInstance(Question.N.N2.ToIntStr()), new(-2.5f, 0), Quaternion.identity, transform),
-                Instantiate(ToInstance(Question.N.N3.ToIntStr()), new(2.5f, 0), Quaternion.identity, transform),
-                Instantiate(ToInstance(Question.N.N4.ToIntStr()), new(5, 0), Quaternion.identity, transform)
+                InstantiateNumber(Question.N.N1, 2),
+                InstantiateNumber(Question.N.N2, 4),
+                InstantiateNumber(Question.N.N3, 7),
+                InstantiateNumber(Question.N.N4, 9),
             };
+        }
+
+        private NumberSpriteFollow InstantiateNumber(int n, int i)
+        {
+
+            Formula.Data[i] = n.ToIntStr();
+
+            Vector2 pos = SymbolPositions[i];
+            var prefabInstance = ToInstance(n.ToIntStr());
+            var instance =
+                Instantiate(prefabInstance, new(pos.x, pos.y, prefabInstance.Z), Quaternion.identity, transform);
+            _formulaInstances[i] = instance;
+            return instance;
         }
 
         internal void Attack()
         {
-            // 要修正
-            Formula formula = new(Symbol.N9);
-
-            float? r = formula.Calcurate();
+            float? r = Formula.Calcurate();
 
             if (!r.HasValue)
             {
@@ -179,6 +201,14 @@ namespace Main.Handler
             }
 
             throw new System.Exception("インスタンスが見つかりませんでした");
+        }
+
+        internal int GetIndexFromSymbolPosition(Vector2 pos)
+        {
+            (_, int i, bool isFound) = SymbolPositions.Find(e => e == pos);
+
+            if (isFound) return i;
+            else throw new System.Exception("見つかりませんでした");
         }
     }
 

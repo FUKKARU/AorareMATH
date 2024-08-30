@@ -160,4 +160,4 @@ MonoBehaviour:
   _type: 7
   spriteRenderer: {fileID: 1249274517624401723}
   eventTrigger: {fileID: -932200228881034993}
-  z: 55
+  _z: 55

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using General.Extension;
 
 namespace Main.Data.Formula
 {
@@ -226,7 +227,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// 演算子が端になく、(数字の数) - (演算子の数) = 1 であるか
+        /// 演算子が端になく、(数字の数) - (演算子の数) >= 1 であるか
         /// かっこを無視する時、演算子が2個連続していないか
         /// </summary>
         private bool IsOperatorOK(List<IntStr> list)
@@ -240,7 +241,7 @@ namespace Main.Data.Formula
                 if (Symbol.IsNumber(e) == true) n++;
                 else if (Symbol.IsOperator(e) == true) n--;
             }
-            if (n != 1) return false;
+            if (n < 1) return false;
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -453,48 +454,6 @@ namespace Main.Data.Formula
         {
             bool? isNum = Symbol.IsNumber(var);
             return isNum.HasValue && isNum.Value;
-        }
-
-        /// <summary>
-        /// 範囲内に含まれているか？
-        /// </summary>
-        internal static bool IsIn(this int val, int min, int max)
-        {
-            return min <= val && val <= max;
-        }
-    }
-
-    internal static class Iterator
-    {
-        internal static IEnumerable<T2> Map<T1, T2>(this IEnumerable<T1> itr, System.Func<T1, T2> f)
-        {
-            foreach (T1 e in itr)
-            {
-                yield return f(e);
-            }
-        }
-
-        internal static List<T> ToList<T>(this IEnumerable<T> itr)
-        {
-            return new(itr);
-        }
-
-        internal static bool All<T>(this IEnumerable<T> itr, System.Func<T, bool> f)
-        {
-            foreach (T e in itr)
-            {
-                if (!f(e)) return false;
-            }
-            return true;
-        }
-
-        internal static bool Any<T>(this IEnumerable<T> itr, System.Func<T, bool> f)
-        {
-            foreach (T e in itr)
-            {
-                if (f(e)) return true;
-            }
-            return false;
         }
     }
 }
