@@ -109,8 +109,8 @@ namespace Main.Handler
 
         private readonly float duration;
 
-        private readonly Vector2 startVelocity;
-        private readonly Vector2 startPosition;
+        private readonly Vector3 startVelocity;
+        private readonly Vector3 startPosition;
         private readonly float startLocalScale;
         private readonly float velocityCoefficient;
         private readonly float scaleCoefficient;

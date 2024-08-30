@@ -70,6 +70,7 @@ namespace Main.Data.Formula
         internal static readonly IntStr OD = new("/");
         internal static readonly IntStr PL = new("(");
         internal static readonly IntStr PR = new(")");
+        internal static readonly IntStr NONE = new("_");
 
         internal static bool? IsNumber(IntStr symbol)
         {
@@ -83,6 +84,10 @@ namespace Main.Data.Formula
                 return false;
             }
             else if (symbol == PL || symbol == PR)
+            {
+                return false;
+            }
+            else if (symbol == NONE)
             {
                 return false;
             }
@@ -107,6 +112,10 @@ namespace Main.Data.Formula
             {
                 return false;
             }
+            else if (symbol == NONE)
+            {
+                return false;
+            }
             else
             {
                 return null;
@@ -125,6 +134,35 @@ namespace Main.Data.Formula
                 return false;
             }
             else if (symbol == PL || symbol == PR)
+            {
+                return true;
+            }
+            else if (symbol == NONE)
+            {
+                return false;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        internal static bool? IsNone(IntStr symbol)
+        {
+            if (symbol == N0 || symbol == N1 || symbol == N2 || symbol == N3 || symbol == N4 ||
+                symbol == N5 || symbol == N6 || symbol == N7 || symbol == N8 || symbol == N9)
+            {
+                return false;
+            }
+            else if (symbol == OA || symbol == OS || symbol == OM || symbol == OD)
+            {
+                return false;
+            }
+            else if (symbol == PL || symbol == PR)
+            {
+                return false;
+            }
+            else if (symbol == NONE)
             {
                 return true;
             }
@@ -163,10 +201,13 @@ namespace Main.Data.Formula
         {
             try
             {
-                if (!IsListOK() || !IsParagraphOK() || !IsOperatorOK()) throw new System.Exception("不正な形式です");
+                var data = Data.RemoveNone();
+
+                if (!IsListOK(data) || !IsParagraphOK(data) || !IsOperatorOK(data))
+                    throw new System.Exception("不正な形式です");
 
                 return
-                    UnityEngine.Mathf.Clamp(Data.ConnectNumbers().Convert().Calcurate(), short.MinValue, short.MaxValue);
+                    UnityEngine.Mathf.Clamp(data.ConnectNumbers().Convert().Calcurate(), short.MinValue, short.MaxValue);
             }
             catch (System.Exception)
             {
@@ -177,10 +218,10 @@ namespace Main.Data.Formula
         /// <summary>
         /// リストがnullでないか、リストの要素数が0でないか
         /// </summary>
-        private bool IsListOK()
+        private bool IsListOK(List<IntStr> list)
         {
-            if (Data == null) return false;
-            if (Data.Count == 0) return false;
+            if (list == null) return false;
+            if (list.Count == 0) return false;
             return true;
         }
 
@@ -188,28 +229,28 @@ namespace Main.Data.Formula
         /// 演算子が端になく、(数字の数) - (演算子の数) = 1 であるか
         /// かっこを無視する時、演算子が2個連続していないか
         /// </summary>
-        private bool IsOperatorOK()
+        private bool IsOperatorOK(List<IntStr> list)
         {
-            if (Symbol.IsOperator(Data[0]) == true) return false;
-            if (Symbol.IsOperator(Data[^1]) == true) return false;
+            if (Symbol.IsOperator(list[0]) == true) return false;
+            if (Symbol.IsOperator(list[^1]) == true) return false;
 
             int n = 0;
-            foreach (var e in Data)
+            foreach (var e in list)
             {
                 if (Symbol.IsNumber(e) == true) n++;
                 else if (Symbol.IsOperator(e) == true) n--;
             }
             if (n != 1) return false;
 
-            for (int i = 0; i < Data.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (Symbol.IsOperator(Data[i]) == true)
+                if (Symbol.IsOperator(list[i]) == true)
                 {
-                    for (int j = i + 1; j < Data.Count; j++)
+                    for (int j = i + 1; j < list.Count; j++)
                     {
-                        if (Symbol.IsNumber(Data[j]) == true) break;
-                        else if (Symbol.IsParagraph(Data[j]) == true) continue;
-                        else if (Symbol.IsOperator(Data[j]) == true) return false;
+                        if (Symbol.IsNumber(list[j]) == true) break;
+                        else if (Symbol.IsParagraph(list[j]) == true) continue;
+                        else if (Symbol.IsOperator(list[j]) == true) return false;
                         else return false;
                     }
                 }
@@ -222,10 +263,10 @@ namespace Main.Data.Formula
         /// ()が全て対応しているか、またこの順番であるか
         /// ()の中に1つ以上の数字が入っているか
         /// </summary>
-        private bool IsParagraphOK()
+        private bool IsParagraphOK(List<IntStr> list)
         {
             int n = 0;
-            foreach (var e in Data)
+            foreach (var e in list)
             {
                 if (e.Str == Symbol.PL.Str) n++;
                 else if (e.Str == Symbol.PR.Str) n--;
@@ -234,18 +275,18 @@ namespace Main.Data.Formula
             }
             if (n != 0) return false;
 
-            for (int i = 0; i < Data.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (Data[i].Str == Symbol.PL.Str)
+                if (list[i].Str == Symbol.PL.Str)
                 {
                     int j = i + 1;
-                    while (j < Data.Count)
+                    while (j < list.Count)
                     {
-                        if (Data[j].Str == Symbol.PR.Str) break;
+                        if (list[j].Str == Symbol.PR.Str) break;
                         j++;
                     }
 
-                    if (Data.GetRange(i, j - i + 1).All(e => Symbol.IsNumber(e) != true)) return false;
+                    if (list.GetRange(i, j - i + 1).All(e => Symbol.IsNumber(e) != true)) return false;
                 }
             }
 
@@ -255,6 +296,33 @@ namespace Main.Data.Formula
 
     internal static class Ex
     {
+        /// <summary>
+        /// Noneを消して詰める
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        internal static List<IntStr> RemoveNone(this List<IntStr> list)
+        {
+            List<IntStr> ret = new(list);
+
+            List<int> removeIndexList = new();
+
+            for (int i = 0; i < ret.Count; i++)
+            {
+                if (ret[i].Str == Symbol.NONE.Str)
+                {
+                    removeIndexList.Add(i);
+                }
+            }
+
+            for (int i = removeIndexList.Count - 1; 0 <= i; i--)
+            {
+                ret.RemoveAt(removeIndexList[i]);
+            }
+
+            return ret;
+        }
+
         /// <summary>
         /// 数字を結合して、新しいリストとして返す
         /// </summary>

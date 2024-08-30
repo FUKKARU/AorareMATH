@@ -43,8 +43,8 @@ namespace SO
 
         public Sprite Sprite;
 
-        public Vector2 StartVelocity;
-        public Vector2 StartPosition;
+        public Vector3 StartVelocity;
+        public Vector3 StartPosition;
         public float StartLocalScale;
         public float VelocityCoefficient;
         public float ScaleCoefficient;

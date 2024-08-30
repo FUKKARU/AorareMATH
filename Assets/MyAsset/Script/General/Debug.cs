@@ -11,6 +11,12 @@ namespace General.Debug
             return val;
         }
 
+        internal static T1 Show<T1, T2>(this T1 val, System.Func<T1, T2> f)
+        {
+            UnityEngine.Debug.Log(f(val));
+            return val;
+        }
+
         internal static IEnumerable<T> Look<T>(this IEnumerable<T> itr)
         {
             foreach (T e in itr)

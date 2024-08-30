@@ -28,9 +28,9 @@ namespace Main.Handler
         }
         #endregion
 
-        [SerializeField, Header("N0-N9,OA-OD,PL-PR の順番")] private SymbolSprite[] symbolSprites;
+        [SerializeField, Header("N0-N9 の順番")] private NumberSpriteFollow[] symbolSprites;
 
-        private SymbolSprite[] questionInstances;
+        private NumberSpriteFollow[] questionInstances;
 
         internal GameState State { get; set; }
         internal GameData GameData { get; set; }
@@ -123,7 +123,7 @@ namespace Main.Handler
             }
 
             // 新しくインスタンスを作る
-            questionInstances = new SymbolSprite[4]
+            questionInstances = new NumberSpriteFollow[4]
             {
                 Instantiate(ToInstance(Question.N.N1.ToIntStr()), new(-5, 0), Quaternion.identity, transform),
                 Instantiate(ToInstance(Question.N.N2.ToIntStr()), new(-2.5f, 0), Quaternion.identity, transform),
@@ -135,7 +135,7 @@ namespace Main.Handler
         internal void Attack()
         {
             // 要修正
-            Formula formula = new();
+            Formula formula = new(Symbol.N9);
 
             float? r = formula.Calcurate();
 
@@ -168,11 +168,11 @@ namespace Main.Handler
             action();
         }
 
-        private SymbolSprite ToInstance(IntStr symbol)
+        private NumberSpriteFollow ToInstance(IntStr symbol)
         {
             foreach (var e in symbolSprites)
             {
-                if (e.GetSymbol() == symbol)
+                if (e.Type.GetSymbol() == symbol)
                 {
                     return e;
                 }

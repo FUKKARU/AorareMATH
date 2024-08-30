@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b49d0bd870d3e84ab1852fbc7425517, type: 3}
   m_Name: SO_Sprite
   m_EditorClassIdentifier: 
-  _n0: {fileID: 0}
-  _n1: {fileID: 0}
-  _n2: {fileID: 0}
-  _n3: {fileID: 0}
-  _n4: {fileID: 0}
-  _n5: {fileID: 0}
-  _n6: {fileID: 0}
-  _n7: {fileID: 0}
-  _n8: {fileID: 0}
-  _n9: {fileID: 0}
-  _oa: {fileID: 0}
-  _os: {fileID: 0}
-  _om: {fileID: 0}
-  _od: {fileID: 0}
-  _pl: {fileID: 0}
-  _pr: {fileID: 0}
+  _n0: {fileID: 21300000, guid: f33db136e16e8ba4bac3c24e852ed870, type: 3}
+  _n1: {fileID: 21300000, guid: 792db1bf96a093e40be593c92f4b0544, type: 3}
+  _n2: {fileID: 21300000, guid: 9d15518d2733c7b438dd542d6d668714, type: 3}
+  _n3: {fileID: 21300000, guid: f5a65021a59848c4984e32e75b530178, type: 3}
+  _n4: {fileID: 21300000, guid: 793d9a80eb3f0ce4c841e526c6c89f87, type: 3}
+  _n5: {fileID: 21300000, guid: ed4e68b0391082f4dae53e32031beaac, type: 3}
+  _n6: {fileID: 21300000, guid: c2fba2106f001be45b5d349b8364f2e3, type: 3}
+  _n7: {fileID: 21300000, guid: 3db544f0f7354614c8253168d266c0a9, type: 3}
+  _n8: {fileID: 21300000, guid: f972390b71c06e84caf432d3fce762cf, type: 3}
+  _n9: {fileID: 21300000, guid: 76021db6f36b1e54d8e0697ae03ed07d, type: 3}
+  _oa: {fileID: 21300000, guid: 3a755345dc16c1649a088acf268b2150, type: 3}
+  _os: {fileID: 21300000, guid: c5b98ca4bde1c6d46b96b9e00129d5f8, type: 3}
+  _om: {fileID: 21300000, guid: 1d9308fc9b58d2645ae1f6eb545f59a4, type: 3}
+  _od: {fileID: 21300000, guid: 90250f2b1862c0144be04fb04860c482, type: 3}
+  _pl: {fileID: 21300000, guid: 3958cecf800884e4482956d26f795fdf, type: 3}
+  _pr: {fileID: 21300000, guid: a8fa36f0b75608d4e80c831c22d80c07, type: 3}
