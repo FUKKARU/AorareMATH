@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using General.Extension;
 using SO;
 using System.Threading;
 using UnityEngine;
@@ -68,15 +69,6 @@ namespace Title.Handler
 
             SO_Handler.Entity.WaitDurOnButtonPlaced.SecondsWaitAndDo
                 (() => SceneManager.LoadScene(SO_SceneName.Entity.Main), ct).Forget();
-        }
-    }
-
-    internal static class Ex
-    {
-        internal static async UniTask SecondsWaitAndDo(this float waitSeconds, System.Action act, CancellationToken ct)
-        {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(waitSeconds));
-            act();
         }
     }
 }

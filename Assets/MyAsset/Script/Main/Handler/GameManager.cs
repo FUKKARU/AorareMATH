@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using General.Debug;
+using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
 using SO;
@@ -27,6 +28,10 @@ namespace Main.Handler
         }
         #endregion
 
+        [SerializeField, Header("N0-N9,OA-OD,PL-PR の順番")] private SymbolSprite[] symbolSprites;
+
+        private SymbolSprite[] questionInstances;
+
         internal GameState State { get; set; }
         internal GameData GameData { get; set; }
         internal Question Question { get; set; }
@@ -41,6 +46,9 @@ namespace Main.Handler
         private CancellationToken ct;
 
         private bool isFirstOnStay = true;
+
+        private bool _isAttackable = false;
+        internal bool IsAttackable => _isAttackable;
 
         private void Start()
         {
@@ -74,6 +82,7 @@ namespace Main.Handler
 
             SO_Handler.Entity.WaitDurOnGameStarted.SecondsWaitAndDo(() =>
             {
+                _isAttackable = true;
                 CreateQuestion();
                 State = GameState.OnGoing;
             },
@@ -111,6 +120,25 @@ namespace Main.Handler
         private void CreateQuestion()
         {
             (Question.N, Question.Target) = RandomGeneration.RandomGenerate();
+
+            // 前の問題のインスタンスを消す
+            if (questionInstances != null)
+            {
+                foreach (var e in questionInstances)
+                {
+                    Destroy(e.gameObject);
+                }
+                questionInstances = null;
+            }
+
+            // 新しくインスタンスを作る
+            questionInstances = new SymbolSprite[4]
+            {
+                Instantiate(ToInstance(Question.N.N1.ToIntStr()), new(-5, 0), Quaternion.identity, transform),
+                Instantiate(ToInstance(Question.N.N2.ToIntStr()), new(-2.5f, 0), Quaternion.identity, transform),
+                Instantiate(ToInstance(Question.N.N3.ToIntStr()), new(2.5f, 0), Quaternion.identity, transform),
+                Instantiate(ToInstance(Question.N.N4.ToIntStr()), new(5, 0), Quaternion.identity, transform)
+            };
         }
 
         internal void Attack(Formula formula)
@@ -127,6 +155,8 @@ namespace Main.Handler
             {
                 // 攻撃成功
 
+                _isAttackable = false;
+
                 float diff = Mathf.Abs(Question.Target - r.Value);
                 if (diff != 0) Time -= 2 * diff;
                 else Time += 2f;
@@ -134,6 +164,8 @@ namespace Main.Handler
                 GameData.DefeatedEnemyNum++;
 
                 CreateQuestion();
+
+                _isAttackable = true;
             }
         }
 
@@ -141,14 +173,39 @@ namespace Main.Handler
         {
             action();
         }
+
+        private SymbolSprite ToInstance(IntStr symbol)
+        {
+            foreach (var e in symbolSprites)
+            {
+                if (e.GetSymbol() == symbol)
+                {
+                    return e;
+                }
+            }
+
+            throw new System.Exception("インスタンスが見つかりませんでした");
+        }
     }
 
-    internal static class Ex
+    internal static class GameManagerEx
     {
-        internal static async UniTask SecondsWaitAndDo(this float waitSeconds, System.Action act, CancellationToken ct)
+        internal static IntStr ToIntStr(this int val)
         {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(waitSeconds));
-            act();
+            return val switch
+            {
+                0 => Symbol.N0,
+                1 => Symbol.N1,
+                2 => Symbol.N2,
+                3 => Symbol.N3,
+                4 => Symbol.N4,
+                5 => Symbol.N5,
+                6 => Symbol.N6,
+                7 => Symbol.N7,
+                8 => Symbol.N8,
+                9 => Symbol.N9,
+                _ => throw new System.Exception("不正な種類です")
+            };
         }
     }
 }
