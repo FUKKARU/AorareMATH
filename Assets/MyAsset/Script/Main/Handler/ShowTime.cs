@@ -9,7 +9,7 @@ namespace Main.Handler
         private void Update()
         {
             if (!text) return;
-            text.text = $"{(int)GameManager.Instance.Time:D2}";
+            text.text = ((int)GameManager.Instance.Time).ToString();
         }
     }
 }
