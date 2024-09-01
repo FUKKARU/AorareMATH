@@ -83,7 +83,19 @@ namespace Main.Handler
                 }),
                 (p =>
                 {
-                    transform.position = InitPosition;
+                    if (Symbol.IsNumber(Type.GetSymbol()) == true)
+                    {
+                        // å≥ÇÃà íuÇ…ñﬂÇ∑
+                        transform.position = InitPosition;
+                    }
+                    else
+                    {
+                        // è¡Ç∑
+                        int index = GameManager.Instance.GetIndexFromSymbolPosition(InitPosition);
+                        GameManager.Instance.Formula.Data[index] = Symbol.NONE;
+                        GameManager.Instance.FormulaInstances[index] = null;
+                        Destroy(gameObject);
+                    }
                 }));
         }
 
