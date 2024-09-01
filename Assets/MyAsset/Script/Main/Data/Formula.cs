@@ -204,7 +204,7 @@ namespace Main.Data.Formula
             {
                 var data = Data.RemoveNone();
 
-                if (!IsListOK(data) || !IsParagraphOK(data) || !IsOperatorOK(data))
+                if (!IsListOK(data) || !IsNumberOK(data) || !IsOperatorOK(data) || !IsParagraphOK(data))
                     throw new System.Exception("•s³‚ÈŒ`®‚Å‚·");
 
                 return
@@ -223,6 +223,21 @@ namespace Main.Data.Formula
         {
             if (list == null) return false;
             if (list.Count == 0) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// ‚©‚Á‚±‚Ì‚·‚®ŠO‘¤‚É”š‚ª—ˆ‚Ä‚¢‚È‚¢‚©
+        /// </summary>
+        private bool IsNumberOK(List<IntStr> list)
+        {
+            for (int i = 0; i < list.Count - 1; i++)
+            {
+                IntStr e = list[i], f = list[i + 1];
+                if (Symbol.IsNumber(e) == true && f.Str == Symbol.PL.Str) return false;
+                else if (e.Str == Symbol.PR.Str && Symbol.IsNumber(f) == true) return false;
+            }
+
             return true;
         }
 

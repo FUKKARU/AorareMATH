@@ -29,14 +29,13 @@ namespace Main.Handler
         }
         #endregion
 
-        [SerializeField, Header("N0 - N9 の順番")] private NumberSpriteFollow[] symbolSprites;
+        [SerializeField, Header("N0 - N9 の順番")] private SpriteFollow[] symbolSprites;
         [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
         private Vector2[] _symbolPositions;
         internal Vector2[] SymbolPositions => _symbolPositions;
 
-        private NumberSpriteFollow[] questionInstances;
-        private NumberSpriteFollow[] _formulaInstances;
-        internal NumberSpriteFollow[] FormulaInstances => _formulaInstances;
+        private SpriteFollow[] _formulaInstances = new SpriteFollow[12];
+        internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; set; }
         internal GameData GameData { get; set; }
@@ -69,13 +68,9 @@ namespace Main.Handler
 
             Question = new();
 
-            Formula = new
-                (Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
-                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE);
+            InitFormula();
 
             _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
-
-            _formulaInstances = new NumberSpriteFollow[12];
 
             Time = SO_Handler.Entity.InitTimeLimt;
         }
@@ -136,26 +131,19 @@ namespace Main.Handler
             (Question.N, Question.Target) = RandomGeneration.RandomGenerate();
 
             // 前の問題のインスタンスを消す
-            if (questionInstances != null)
-            {
-                foreach (var e in questionInstances) Destroy(e.gameObject);
-                questionInstances = null;
-                _formulaInstances = new NumberSpriteFollow[12];
-            }
+            InitFormula();
+            foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
+            System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
             // 新しくインスタンスを作る
-            questionInstances = new NumberSpriteFollow[4]
-            {
-                InstantiateNumber(Question.N.N1, 2),
-                InstantiateNumber(Question.N.N2, 4),
-                InstantiateNumber(Question.N.N3, 7),
-                InstantiateNumber(Question.N.N4, 9),
-            };
+            InstantiateNumber(Question.N.N1, 2);
+            InstantiateNumber(Question.N.N2, 4);
+            InstantiateNumber(Question.N.N3, 7);
+            InstantiateNumber(Question.N.N4, 9);
         }
 
-        private NumberSpriteFollow InstantiateNumber(int n, int i)
+        private void InstantiateNumber(int n, int i)
         {
-
             Formula.Data[i] = n.ToIntStr();
 
             Vector2 pos = SymbolPositions[i];
@@ -163,7 +151,6 @@ namespace Main.Handler
             var instance =
                 Instantiate(prefabInstance, new(pos.x, pos.y, prefabInstance.Z), Quaternion.identity, transform);
             _formulaInstances[i] = instance;
-            return instance;
         }
 
         internal void Attack()
@@ -180,6 +167,8 @@ namespace Main.Handler
             {
                 // 攻撃成功
 
+                r.Show();
+
                 _isAttackable = false;
 
                 float diff = Mathf.Abs(Question.Target - r.Value);
@@ -194,6 +183,13 @@ namespace Main.Handler
             }
         }
 
+        private void InitFormula()
+        {
+            Formula = new
+                (Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
+                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE);
+        }
+
         private void SendScore(int score)
         {
             UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
@@ -204,7 +200,7 @@ namespace Main.Handler
             action();
         }
 
-        private NumberSpriteFollow ToInstance(IntStr symbol)
+        private SpriteFollow ToInstance(IntStr symbol)
         {
             foreach (var e in symbolSprites)
             {

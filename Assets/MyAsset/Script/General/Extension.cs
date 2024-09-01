@@ -54,6 +54,11 @@ namespace General.Extension
         {
             return new(v.x, v.y, z);
         }
+
+        internal static void Pass()
+        {
+            return;
+        }
     }
 
     internal static class Iterator
