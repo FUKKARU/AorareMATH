@@ -53,6 +53,7 @@ namespace Main.Handler
         private CancellationToken ct;
 
         private bool isFirstOnStay = true;
+        private bool isFirstOnOver = true;
 
         private bool _isAttackable = false;
         internal bool IsAttackable => _isAttackable;
@@ -77,8 +78,6 @@ namespace Main.Handler
             _formulaInstances = new NumberSpriteFollow[12];
 
             Time = SO_Handler.Entity.InitTimeLimt;
-
-            SendScore(10);
         }
 
         private void Update()
@@ -96,6 +95,8 @@ namespace Main.Handler
         {
             if (!isFirstOnStay) return;
             else isFirstOnStay = false;
+
+            // ˆÈ~‚Í1‰ñ‚¾‚¯Às‚³‚ê‚é
 
             SO_Handler.Entity.WaitDurOnGameStarted.SecondsWaitAndDo(() =>
             {
@@ -122,7 +123,12 @@ namespace Main.Handler
 
         private void OnOver()
         {
-            "Over".Show();
+            if (!isFirstOnOver) return;
+            else isFirstOnOver = false;
+
+            // ˆÈ~‚Í1‰ñ‚¾‚¯Às‚³‚ê‚é
+
+            SendScore(GameData.DefeatedEnemyNum);
         }
 
         private void CreateQuestion()
