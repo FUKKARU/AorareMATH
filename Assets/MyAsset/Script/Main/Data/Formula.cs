@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using General.Debug;
 using General.Extension;
 
 namespace Main.Data.Formula
@@ -277,6 +278,7 @@ namespace Main.Data.Formula
         /// <summary>
         /// ()が全て対応しているか、またこの順番であるか
         /// ()の中に1つ以上の数字が入っているか
+        /// )(の配置が存在しないか
         /// </summary>
         private bool IsParagraphOK(List<IntStr> list)
         {
@@ -303,6 +305,12 @@ namespace Main.Data.Formula
 
                     if (list.GetRange(i, j - i + 1).All(e => Symbol.IsNumber(e) != true)) return false;
                 }
+            }
+
+            for (int i = 0; i < list.Count - 1; i++)
+            {
+                IntStr e = list[i], f = list[i + 1];
+                if (e.Str == Symbol.PR.Str && f.Str == Symbol.PL.Str) return false;
             }
 
             return true;
@@ -381,16 +389,20 @@ namespace Main.Data.Formula
             List<FltStr> _list = new(list);
 
             // かっこを無くす
-            int i = 0, n = 0;
+
             // 左から見て"("を探す
+            int i = 0, cnt = 0;
             while (i < _list.Count)
             {
                 if (_list[i].Str != Symbol.PL.Str) { i++; continue; }
 
-                // 右から見て")"を探す
-                for (int j = _list.Count - 1; i < j; j--)
+                // その右を順に探索し、対応する")"を探す
+                int n = 0;
+                for (int j = i + 1; j < _list.Count; j++)
                 {
-                    if (_list[j].Str != Symbol.PR.Str) continue;
+                    string str = _list[j].Str;
+                    if (str != Symbol.PR.Str) { if (str == Symbol.PL.Str) n++; continue; }
+                    if (n >= 1) { n--; continue; }
 
                     // "()"の間を再帰的に計算し、_listを更新する
                     float val = _list.GetRange(i + 1, (j - 1) - (i + 1) + 1).Calcurate();
@@ -399,7 +411,7 @@ namespace Main.Data.Formula
                     break;
                 }
 
-                if (++n >= byte.MaxValue) throw new System.Exception("無限ループの可能性があります");
+                if (++cnt >= byte.MaxValue) throw new System.Exception("無限ループの可能性があります");
             }
 
             // かっこが無くなった(あるいはそもそも、かっこが無かった)ので、四則演算を行う

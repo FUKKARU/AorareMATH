@@ -67,15 +67,19 @@ namespace Main.Handler
                 {
                     Vector3 toPos = p.ToVector3(z);
                     int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
+                    IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
 
-                    if (GameManager.Instance.Formula.Data[toIndex] != Symbol.NONE) return;
+                    bool? isNumber = Symbol.IsNumber(toSymbol);
+                    if (!isNumber.HasValue || isNumber.Value) return;
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
                     // ‰‰ŽZŽqor‚©‚Á‚±‚Ì‘O’ñ
                     instance.transform.localScale =
-                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.5f, 0.5f, 1) : Vector3.one;
+                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
 
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+
+                    if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
                     GameManager.Instance.FormulaInstances[toIndex] = instance;
                 },
                 p =>
