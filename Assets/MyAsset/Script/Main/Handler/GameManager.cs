@@ -6,6 +6,7 @@ using Main.Data.Formula;
 using SO;
 using System.Threading;
 using UnityEngine;
+using unityroom.Api;
 
 namespace Main.Handler
 {
@@ -76,6 +77,8 @@ namespace Main.Handler
             _formulaInstances = new NumberSpriteFollow[12];
 
             Time = SO_Handler.Entity.InitTimeLimt;
+
+            SendScore(10);
         }
 
         private void Update()
@@ -183,6 +186,11 @@ namespace Main.Handler
 
                 _isAttackable = true;
             }
+        }
+
+        private void SendScore(int score)
+        {
+            UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
         }
 
         private void Do(System.Action action)
