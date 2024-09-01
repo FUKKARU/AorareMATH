@@ -1,3 +1,4 @@
+using General.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 using SO;
@@ -28,11 +29,6 @@ namespace General
         {
             if (slider == null) return;
             SoundManager.SetVolume(type, slider.value.ConvertToVolume().ToClampedVolume());
-        }
-
-        private static float Remap(this float x, float a, float b, float c, float d)
-        {
-            return (x - a) * (d - c) / (b - a) + c;
         }
 
         /// <summary>

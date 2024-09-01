@@ -25,6 +25,11 @@ namespace General.Extension
             eventTrigger.triggers.Add(entry);
         }
 
+        internal static float Remap(this float x, float a, float b, float c, float d)
+        {
+            return (x - a) * (d - c) / (b - a) + c;
+        }
+
         internal static bool IsClose(this float a, float b, float ofst = float.Epsilon)
         {
             return MathF.Abs(a - b) < ofst;
