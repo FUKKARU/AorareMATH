@@ -1,47 +1,35 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using SO;
 
 namespace General
 {
-    internal sealed class Sound : MonoBehaviour, IPointerUpHandler
+    internal sealed class SoundVolumeChanger : MonoBehaviour
     {
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;
-        [SerializeField] private bool isBGM;
 
-        private void Start()
+        private void OnDisable()
         {
-            if (isBGM)
-            {
-                float value = SoundManager.GetVolume(SoundType.BGM).ConvertToSliderValue();
-                bgmSlider.value = value;
-            }
-            else
-            {
-                float value = SoundManager.GetVolume(SoundType.SE).ConvertToSliderValue();
-                seSlider.value = value;
-            }
+            bgmSlider = null;
+            seSlider = null;
         }
 
-        public void OnPointerUp(PointerEventData eventData)
+        private void Update()
         {
-            if (isBGM)
-            {
-                float volume = bgmSlider.value.ConvertToVolume().ClampedVolume();
-                SoundManager.SetVolume(SoundType.BGM, volume);
-            }
-            else
-            {
-                float volume = seSlider.value.ConvertToVolume().ClampedVolume();
-                SoundManager.SetVolume(SoundType.SE, volume);
-            }
+            bgmSlider.UpdateVolume(SoundType.BGM);
+            seSlider.UpdateVolume(SoundType.SE);
         }
     }
 
-    internal static class Ex
+    internal static class SoundVolumeChangerEx
     {
+        internal static void UpdateVolume(this Slider slider, SoundType type)
+        {
+            if (slider == null) return;
+            SoundManager.SetVolume(type, slider.value.ConvertToVolume().ToClampedVolume());
+        }
+
         private static float Remap(this float x, float a, float b, float c, float d)
         {
             return (x - a) * (d - c) / (b - a) + c;
@@ -63,10 +51,9 @@ namespace General
             return volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
         }
 
-        internal static float ClampedVolume(this float volume)
+        internal static float ToClampedVolume(this float volume)
         {
             return Mathf.Clamp(volume, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
         }
     }
 }
-

@@ -183,14 +183,13 @@ namespace Main.Data.Formula
             Data = new();
         }
 
-        internal Formula(IEnumerable<IntStr> symbols)
+        internal void Init()
         {
-            Data = symbols.ToList();
-        }
-
-        internal Formula(params IntStr[] symbols)
-        {
-            Data = new(symbols);
+            Data = new()
+            {
+                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
+                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
+            };
         }
 
         internal void Reset()

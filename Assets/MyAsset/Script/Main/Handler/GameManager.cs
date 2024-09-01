@@ -4,6 +4,7 @@ using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
 using SO;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using unityroom.Api;
@@ -38,9 +39,9 @@ namespace Main.Handler
         internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; set; }
-        internal GameData GameData { get; set; }
-        internal Question Question { get; set; }
-        internal Formula Formula { get; set; }
+        internal GameData GameData { get; set; } = new();
+        internal Question Question { get; set; } = new();
+        internal Formula Formula { get; set; } = new();
 
         private float _time = 0;
         internal float Time
@@ -57,22 +58,37 @@ namespace Main.Handler
         private bool _isAttackable = false;
         internal bool IsAttackable => _isAttackable;
 
-        private void Start()
+        private void OnEnable()
         {
             ct = this.GetCancellationTokenOnDestroy();
 
             State = GameState.Stay;
 
-            GameData = new();
-            GameData.Reset();
-
-            Question = new();
-
-            InitFormula();
+            Formula.Init();
 
             _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
 
             Time = SO_Handler.Entity.InitTimeLimt;
+        }
+
+        private void OnDisable()
+        {
+            System.Array.Clear(symbolSprites, 0, symbolSprites.Length);
+            symbolSprites = null;
+
+            System.Array.Clear(symbolFrames, 0, symbolFrames.Length);
+            symbolFrames = null;
+
+            System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
+            _formulaInstances = null;
+
+            GameData.Reset();
+            GameData = null;
+
+            Question = null;
+
+            Formula.Reset();
+            Formula = null;
         }
 
         private void Update()
@@ -128,10 +144,10 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-            (Question.N, Question.Target) = RandomGeneration.RandomGenerate();
+            (Question.N, Question.Target) = QuestionGenerater.GetRandom();
 
             // 前の問題のインスタンスを消す
-            InitFormula();
+            Formula.Init();
             foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
             System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
@@ -172,8 +188,8 @@ namespace Main.Handler
                 _isAttackable = false;
 
                 float diff = Mathf.Abs(Question.Target - r.Value);
-                if (diff != 0) Time -= 2 * diff;
-                else Time += 2f;
+                if (diff != 0) Time -= SO_Handler.Entity.TimeDecreaseCoef * diff;
+                else Time += SO_Handler.Entity.TimeIncreaseAmount;
 
                 GameData.DefeatedEnemyNum++;
 
@@ -181,13 +197,6 @@ namespace Main.Handler
 
                 _isAttackable = true;
             }
-        }
-
-        private void InitFormula()
-        {
-            Formula = new
-                (Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
-                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE);
         }
 
         private void SendScore(int score)
@@ -240,6 +249,117 @@ namespace Main.Handler
                 9 => Symbol.N9,
                 _ => throw new System.Exception("不正な種類です")
             };
+        }
+    }
+
+    internal static class QuestionGenerater
+    {
+        internal static ((int N1, int N2, int N3, int N4) N, int Target) GetRandom()
+        {
+            return (CreateLicensePlateNumbers(), CreateTargetNumber());
+        }
+
+        private static (int N1, int N2, int N3, int N4) CreateLicensePlateNumbers()
+        {
+            return CreateRandomNumbers
+                    (
+                    e => e.Count(0) <= 1,  // 0の数が1個以下
+                    e => e.Count().Max() <= 2,  // 重複している数が2個以下
+                    e => e.Count(0, 1, 7).Sum() <= 2  // 使いにくい数の合計が2個以下
+                    );
+        }
+
+        private static int CreateTargetNumber()
+        {
+            return Random.Range(5, 16);
+        }
+
+        /// <summary>
+        /// 条件を全て満たす組を生成
+        /// </summary>
+        private static (int N1, int N2, int N3, int N4) CreateRandomNumbers
+            (params System.Func<(int N1, int N2, int N3, int N4), bool>[] functions)
+        {
+            int cnt = 0;
+            while (true)
+            {
+                var n = CreateRandomNumbers();
+                if (n.All(functions)) return n;
+                if (++cnt > byte.MaxValue) return (0, 0, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// ランダムに組を生成
+        /// </summary>
+        private static (int N1, int N2, int N3, int N4) CreateRandomNumbers()
+        {
+            return (Random.Range(0, 10), Random.Range(0, 10), Random.Range(0, 10), Random.Range(0, 10));
+        }
+
+        /// <summary>
+        /// 組の中で、targetの個数を数える
+        /// </summary>
+        private static int Count(this (int N1, int N2, int N3, int N4) n, int target)
+        {
+            int ret = 0;
+            if (n.N1 == target) ret++;
+            if (n.N2 == target) ret++;
+            if (n.N3 == target) ret++;
+            if (n.N4 == target) ret++;
+            return ret;
+        }
+
+        /// <summary>
+        /// 組の中で、targetsの個数を順に数える
+        /// </summary>
+        private static IEnumerable<int> Count(this (int N1, int N2, int N3, int N4) n, params int[] targets)
+        {
+            foreach (int e in targets)
+            {
+                yield return n.Count(e);
+            }
+        }
+
+        /// <summary>
+        /// 組の中で、0~9の個数を順に数える
+        /// </summary>
+        private static IEnumerable<int> Count(this (int N1, int N2, int N3, int N4) n)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                yield return n.Count(i);
+            }
+        }
+
+        /// <summary>
+        /// 最小を求める
+        /// </summary>
+        private static int Min(this IEnumerable<int> itr)
+        {
+            int ret = int.MaxValue;
+            foreach (int e in itr) ret = Mathf.Min(ret, e);
+            return ret;
+        }
+
+        /// <summary>
+        /// 最大を求める
+        /// </summary>
+        private static int Max(this IEnumerable<int> itr)
+        {
+            int ret = int.MinValue;
+            foreach (int e in itr) ret = Mathf.Max(ret, e);
+            return ret;
+        }
+
+        /// <summary>
+        /// 合計を求める
+        /// </summary>
+        private static int Sum(this IEnumerable<int> itr)
+        {
+            int ret = 0;
+            foreach (int e in itr) ret += e;
+            return ret;
         }
     }
 }

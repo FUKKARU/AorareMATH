@@ -11,7 +11,7 @@ namespace General.Extension
     {
         internal static async UniTask SecondsWaitAndDo(this float waitSeconds, Action act, CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds));
+            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: ct);
             act();
         }
 
@@ -61,7 +61,7 @@ namespace General.Extension
         }
     }
 
-    internal static class Iterator
+    internal static class IteratorExtension
     {
         internal static List<T> ToList<T>(this IEnumerable<T> itr)
         {
@@ -95,6 +95,24 @@ namespace General.Extension
             foreach (T e in itr)
             {
                 if (f(e)) return true;
+            }
+            return false;
+        }
+
+        internal static bool All<T>(this T val, params Func<T, bool>[] functions)
+        {
+            foreach (var f in functions)
+            {
+                if (!f(val)) return false;
+            }
+            return true;
+        }
+
+        internal static bool Any<T>(this T val, params Func<T, bool>[] functions)
+        {
+            foreach (var f in functions)
+            {
+                if (f(val)) return true;
             }
             return false;
         }

@@ -39,11 +39,21 @@ namespace SO
         public AudioMixerGroup AMGroupMaster => _AMGroupMaster;
         [Space(25)]
         [Header("BGM")]
-        [SerializeField] private AudioClip _tmp;
-        public AudioClip Tmp => _tmp;
+        [SerializeField] private AudioClip _titleBGM;
+        public AudioClip TitleBGM => _titleBGM;
+        [SerializeField] private AudioClip _mainBGM;
+        public AudioClip MainBGM => _mainBGM;
         [Space(25)]
         [Header("SE")]
-        [SerializeField] private AudioClip _tmp2;
-        public AudioClip Tmp2 => _tmp2;
+        [SerializeField] private AudioClip _attackSE;
+        public AudioClip AttackSE => _attackSE;
+        [SerializeField] private AudioClip _enemyCarSE;
+        public AudioClip EnemyCarSE => _enemyCarSE;
+        [SerializeField] private AudioClip _enemyMotorbikeSE1;
+        public AudioClip EnemyMotorbikeSE1 => _enemyMotorbikeSE1;
+        [SerializeField] private AudioClip _enemyMotorbikeSE2;
+        public AudioClip EnemyMotorbikeSE2 => _enemyMotorbikeSE2;
+        [SerializeField] private AudioClip _resultSE;
+        public AudioClip ResultSE => _resultSE;
     }
 }

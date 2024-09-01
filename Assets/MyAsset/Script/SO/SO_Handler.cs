@@ -40,5 +40,11 @@ namespace SO
 
         [SerializeField, Header("ƒQ[ƒ€‚Ì‰Šú§ŒÀŽžŠÔ(•b)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
+
+        [SerializeField, Header("ƒsƒbƒ^ƒŠ‚Å‚È‚¢Žž‚ÉA·•ª‚Ì‰½”{•b”‚ðŒ¸‚ç‚·‚©")] private float _timeDecreaseCoef;
+        internal float TimeDecreaseCoef => _timeDecreaseCoef;
+
+        [SerializeField, Header("ƒsƒbƒ^ƒŠ‚ÈŽž‚ÉA‰½•b‘‚â‚·‚©")] private float _timeIncreaseAmount;
+        internal float TimeIncreaseAmount => _timeIncreaseAmount;
     }
 }

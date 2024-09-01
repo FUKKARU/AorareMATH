@@ -11,9 +11,6 @@ namespace Main.Data
             set { _defeatedEnemyNum = Mathf.Clamp(value, ushort.MinValue, ushort.MaxValue); }
         }
 
-        internal void Reset()
-        {
-            _defeatedEnemyNum = 0;
-        }
+        internal void Reset() => _defeatedEnemyNum = 0;
     }
 }

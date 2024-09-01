@@ -93,7 +93,7 @@ namespace Main.Handler
             int i = 0;
             while (true)
             {
-                await UniTask.Delay(System.TimeSpan.FromSeconds(whiteLineInterval));
+                await UniTask.Delay(System.TimeSpan.FromSeconds(whiteLineInterval), cancellationToken: ct);
                 whiteLines[i].IsActive = true;
 
                 i++;
