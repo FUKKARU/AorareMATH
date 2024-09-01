@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using General;
 using General.Debug;
 using General.Extension;
 using Main.Data;
@@ -32,6 +33,11 @@ namespace Main.Handler
 
         [SerializeField, Header("N0 - N9 ‚Ì‡”Ô")] private SpriteFollow[] symbolSprites;
         [SerializeField, Header("E_1 - E_12 ‚Ì‡”Ô")] private Transform[] symbolFrames;
+
+        [SerializeField] private AudioSource attackSEAudioSource;
+        [SerializeField] private AudioSource attackFailedSEAudioSource;
+        [SerializeField] private AudioSource resultSEAudioSource;
+
         private Vector2[] _symbolPositions;
         internal Vector2[] SymbolPositions => _symbolPositions;
 
@@ -139,6 +145,9 @@ namespace Main.Handler
 
             // ˆÈ~‚Í1‰ñ‚¾‚¯Às‚³‚ê‚é
 
+            if (resultSEAudioSource != null)
+                resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
+
             SendScore(GameData.DefeatedEnemyNum);
         }
 
@@ -173,17 +182,14 @@ namespace Main.Handler
         {
             float? r = Formula.Calcurate();
 
-            if (!r.HasValue)
-            {
-                // UŒ‚¸”s
-
-                return;
-            }
-            else
+            if (r.HasValue)
             {
                 // UŒ‚¬Œ÷
 
                 r.Show(e => $"‚ ‚È‚½‚ªì‚Á‚½”®‚Ì’lF{e}");
+
+                if (attackSEAudioSource != null)
+                    attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
 
                 _isAttackable = false;
 
@@ -196,6 +202,13 @@ namespace Main.Handler
                 CreateQuestion();
 
                 _isAttackable = true;
+            }
+            else
+            {
+                // UŒ‚¸”s
+
+                if (attackFailedSEAudioSource != null)
+                    attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
             }
         }
 
