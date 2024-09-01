@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Sound", fileName = "SO_Sound")]
-    public class SO_Sound : ScriptableObject
+    internal sealed class SO_Sound : ScriptableObject
     {
         #region
         public const string PATH = "SO_Sound";
@@ -30,30 +30,32 @@ namespace SO
         #endregion
 
         [SerializeField] private AudioMixer _audioMixer;
-        public AudioMixer AudioMixer => _audioMixer;
+        internal AudioMixer AudioMixer => _audioMixer;
         [SerializeField] private AudioMixerGroup _AMGroupBGM;
-        public AudioMixerGroup AMGroupBGM => _AMGroupBGM;
+        internal AudioMixerGroup AMGroupBGM => _AMGroupBGM;
         [SerializeField] private AudioMixerGroup _AMGroupSE;
-        public AudioMixerGroup AMGroupSE => _AMGroupSE;
+        internal AudioMixerGroup AMGroupSE => _AMGroupSE;
         [SerializeField] private AudioMixerGroup _AMGroupMaster;
-        public AudioMixerGroup AMGroupMaster => _AMGroupMaster;
+        internal AudioMixerGroup AMGroupMaster => _AMGroupMaster;
         [Space(25)]
         [Header("BGM")]
         [SerializeField] private AudioClip _titleBGM;
-        public AudioClip TitleBGM => _titleBGM;
+        internal AudioClip TitleBGM => _titleBGM;
         [SerializeField] private AudioClip _mainBGM;
-        public AudioClip MainBGM => _mainBGM;
+        internal AudioClip MainBGM => _mainBGM;
         [Space(25)]
         [Header("SE")]
         [SerializeField] private AudioClip _attackSE;
-        public AudioClip AttackSE => _attackSE;
+        internal AudioClip AttackSE => _attackSE;
+        [SerializeField] private AudioClip _attackFailedSE;
+        internal AudioClip AttackFailedSE => _attackFailedSE;
         [SerializeField] private AudioClip _enemyCarSE;
-        public AudioClip EnemyCarSE => _enemyCarSE;
+        internal AudioClip EnemyCarSE => _enemyCarSE;
         [SerializeField] private AudioClip _enemyMotorbikeSE1;
-        public AudioClip EnemyMotorbikeSE1 => _enemyMotorbikeSE1;
+        internal AudioClip EnemyMotorbikeSE1 => _enemyMotorbikeSE1;
         [SerializeField] private AudioClip _enemyMotorbikeSE2;
-        public AudioClip EnemyMotorbikeSE2 => _enemyMotorbikeSE2;
+        internal AudioClip EnemyMotorbikeSE2 => _enemyMotorbikeSE2;
         [SerializeField] private AudioClip _resultSE;
-        public AudioClip ResultSE => _resultSE;
+        internal AudioClip ResultSE => _resultSE;
     }
 }

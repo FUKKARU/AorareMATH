@@ -8,7 +8,7 @@ namespace Main.Data
         internal int DefeatedEnemyNum
         {
             get { return _defeatedEnemyNum; }
-            set { _defeatedEnemyNum = Mathf.Clamp(value, ushort.MinValue, ushort.MaxValue); }
+            set { _defeatedEnemyNum = Mathf.Clamp(value, 0, 999); }
         }
 
         internal void Reset() => _defeatedEnemyNum = 0;
