@@ -48,7 +48,7 @@ namespace Main.Handler
             isFollowingMouse = false;
 
             transform.position.ToVector2().JudgeAttachable
-                ((p =>
+                (p =>
                 {
                     Vector3 fromPos = InitPosition;
                     Vector3 toPos = p.ToVector3(Z);
@@ -80,8 +80,8 @@ namespace Main.Handler
 
                         transform.position = toPos; InitPosition = toPos;
                     }
-                }),
-                (p =>
+                },
+                p =>
                 {
                     if (Symbol.IsNumber(Type.GetSymbol()) == true)
                     {
@@ -96,7 +96,7 @@ namespace Main.Handler
                         GameManager.Instance.FormulaInstances[index] = null;
                         Destroy(gameObject);
                     }
-                }));
+                });
         }
 
         private Vector3 MouseToWorld(float z)

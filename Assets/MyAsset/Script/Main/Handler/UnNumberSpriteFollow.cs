@@ -63,7 +63,7 @@ namespace Main.Handler
             isFollowingMouse = false;
 
             thisInstance.transform.position.ToVector2().JudgeAttachable
-                ((p =>
+                (p =>
                 {
                     Vector3 toPos = p.ToVector3(z);
                     int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
@@ -77,11 +77,11 @@ namespace Main.Handler
 
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
                     GameManager.Instance.FormulaInstances[toIndex] = instance;
-                }),
-                (p =>
+                },
+                p =>
                 {
                     Extension.Pass();
-                }));
+                });
 
             Destroy(thisInstance.gameObject);
             thisInstance = null;

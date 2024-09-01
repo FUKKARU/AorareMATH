@@ -149,7 +149,7 @@ namespace Main.Handler
             Vector2 pos = SymbolPositions[i];
             var prefabInstance = ToInstance(n.ToIntStr());
             var instance =
-                Instantiate(prefabInstance, new(pos.x, pos.y, prefabInstance.Z), Quaternion.identity, transform);
+                Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
             _formulaInstances[i] = instance;
         }
 
