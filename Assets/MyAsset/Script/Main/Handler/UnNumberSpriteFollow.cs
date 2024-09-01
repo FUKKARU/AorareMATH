@@ -39,7 +39,7 @@ namespace Main.Handler
             {
                 if (thisInstance == null) return;
 
-                thisInstance.transform.position = MouseToWorld(z);
+                thisInstance.transform.position = MouseToWorld(thisZ);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Main.Handler
             if (thisInstance != null) return;
 
             isFollowingMouse = true;
-            thisInstance = Instantiate(this, MouseToWorld(z), Quaternion.identity, transform);
+            thisInstance = Instantiate(this, MouseToWorld(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
 

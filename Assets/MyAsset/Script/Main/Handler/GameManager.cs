@@ -183,7 +183,7 @@ namespace Main.Handler
             {
                 // UŒ‚¬Œ÷
 
-                r.Show();
+                r.Show(e => $"‚ ‚È‚½‚ªì‚Á‚½”®‚Ì’lF{e}");
 
                 _isAttackable = false;
 
