@@ -8,9 +8,20 @@ namespace Main.Handler
     {
         [SerializeField] private AudioSource audioSource;
 
-        private void OnEnable()
+        private bool isDone = false;
+
+        private void Update()
         {
-            if (audioSource != null) audioSource.Raise(SO_Sound.Entity.MainBGM, SoundType.BGM);
+            if (isDone) return;
+
+            if (GameManager.Instance.State == GameState.OnGoing)
+            {
+                isDone = true;
+
+                if (audioSource == null) return;
+
+                audioSource.Raise(SO_Sound.Entity.MainBGM, SoundType.BGM);
+            }
         }
 
         private void OnDisable()

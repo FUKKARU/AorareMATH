@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740825f9a9ec00f489aad8598c63d8d3, type: 3}
   m_Name: SO_Handler
   m_EditorClassIdentifier: 
-  _waitDurOnButtonPlaced: 0.5
   _soundVolumeRange: {x: -20, y: 20}
-  _waitDurOnGameStarted: 3
-  _initTimeLimit: 180
+  _initTimeLimit: 60
   _timeIncreaseAmountList:
   - 10
   - 5
@@ -23,3 +21,4 @@ MonoBehaviour:
   - 3
   - 2
   - 1
+  _diffLimit: 10

@@ -41,40 +41,19 @@ namespace General.Extension
             eventTrigger.triggers.Add(entry);
         }
 
-        internal static float Remap(this float x, float a, float b, float c, float d)
-        {
-            return (x - a) * (d - c) / (b - a) + c;
-        }
+        internal static float Remap(this float x, float a, float b, float c, float d) => (x - a) * (d - c) / (b - a) + c;
 
-        internal static bool IsClose(this float a, float b, float ofst = float.Epsilon)
-        {
-            return MathF.Abs(a - b) < ofst;
-        }
+        internal static bool IsClose(this float a, float b, float ofst = float.Epsilon) => MathF.Abs(a - b) < ofst;
 
         internal static bool IsIn(this int val, int min, int max, int ofst = default)
-        {
-            return min + ofst <= val && val <= max + ofst;
-        }
-
+            => min + ofst <= val && val <= max + ofst;
         internal static bool IsIn(this float val, float min, float max, float ofst = default)
-        {
-            return min + ofst <= val && val <= max + ofst;
-        }
-
+            => min + ofst <= val && val <= max + ofst;
         internal static bool IsIn(this Vector2 v, float sx, float ex, float sy, float ey, Vector2 ofst = default)
-        {
-            return v.x.IsIn(sx, ex, ofst.x) && v.y.IsIn(sy, ey, ofst.y);
-        }
+            => v.x.IsIn(sx, ex, ofst.x) && v.y.IsIn(sy, ey, ofst.y);
 
-        internal static Vector2 ToVector2(this Vector3 v)
-        {
-            return new(v.x, v.y);
-        }
-
-        internal static Vector3 ToVector3(this Vector2 v, float z)
-        {
-            return new(v.x, v.y, z);
-        }
+        internal static Vector2 ToVector2(this Vector3 v) => new(v.x, v.y);
+        internal static Vector3 ToVector3(this Vector2 v, float z) => new(v.x, v.y, z);
 
         internal static void Pass()
         {
@@ -84,15 +63,9 @@ namespace General.Extension
 
     internal static class IteratorExtension
     {
-        internal static List<T> ToList<T>(this IEnumerable<T> itr)
-        {
-            return new(itr);
-        }
+        internal static List<T> ToList<T>(this IEnumerable<T> itr) => new(itr);
 
-        internal static T[] ToArray<T>(this IEnumerable<T> itr)
-        {
-            return itr.ToList().ToArray();
-        }
+        internal static T[] ToArray<T>(this IEnumerable<T> itr) => itr.ToList().ToArray();
 
         internal static IEnumerable<T2> Map<T1, T2>(this IEnumerable<T1> itr, Func<T1, T2> f)
         {

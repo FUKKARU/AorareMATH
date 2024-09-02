@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using General;
 using SO;
 using System;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace Title.Handler
         [SerializeField] private Sprite hoverSprite;
         [SerializeField] private Transform carTf;
         [SerializeField] private Transform loadImageTf;
+        [SerializeField] private AudioSource onStartCarSEAudioSource;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
@@ -38,6 +40,10 @@ namespace Title.Handler
             sr = null;
             normalSprite = null;
             hoverSprite = null;
+            carTf = null;
+            loadImageTf = null;
+            onStartCarSEAudioSource = null;
+            bgmPlayer = null;
         }
 
         public void OnEnter()
@@ -67,6 +73,8 @@ namespace Title.Handler
             Load(ct).Forget();
         }
 
+        private void PlayOnStartCarSE() => onStartCarSEAudioSource.Raise(SO_Sound.Entity.EnemyCarSE, SoundType.SE);
+
         private async UniTask Load(CancellationToken ct)
         {
             await Direction(endValue, duration, ct);
@@ -76,6 +84,7 @@ namespace Title.Handler
         private async UniTask Direction
             (EndValue endValue, Duration duration, CancellationToken ct)
         {
+            PlayOnStartCarSE();
             bgmPlayer.AudioSource.DOFade(endValue.BGMVolume, duration.BGMFade).ToUniTask(cancellationToken: ct).Forget();
             carTf.DOLocalMoveX(endValue.CarX, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
             await UniTask.Delay(TimeSpan.FromSeconds(duration.UntilLoadImageMove), cancellationToken: ct);

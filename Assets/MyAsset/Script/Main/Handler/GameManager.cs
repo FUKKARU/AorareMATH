@@ -1,14 +1,16 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using General;
-using General.Debug;
 using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
 using SO;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using unityroom.Api;
+using Random = UnityEngine.Random;
 
 namespace Main.Handler
 {
@@ -34,6 +36,10 @@ namespace Main.Handler
         [SerializeField, Header("N0 - N9 の順番")] private SpriteFollow[] symbolSprites;
         [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
 
+        [SerializeField] private EndValue endValue;
+        [SerializeField] private Duration duration;
+
+        [SerializeField] private Transform loadImageTf;
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
 
         [SerializeField] private AudioSource selectSEAudioSource;
@@ -77,24 +83,27 @@ namespace Main.Handler
 
             _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
 
-            previewText.text = "";
+            SetPositionX(loadImageTf, 0);
+
+            SetPreviewText();
 
             Time = SO_Handler.Entity.InitTimeLimt;
         }
 
         private void OnDisable()
         {
-            System.Array.Clear(symbolSprites, 0, symbolSprites.Length);
-            System.Array.Clear(symbolFrames, 0, symbolFrames.Length);
+            Array.Clear(symbolSprites, 0, symbolSprites.Length);
+            Array.Clear(symbolFrames, 0, symbolFrames.Length);
             symbolSprites = null;
             symbolFrames = null;
+            loadImageTf = null;
             previewText = null;
             selectSEAudioSource = null;
             attackSEAudioSource = null;
             attackFailedSEAudioSource = null;
             resultSEAudioSource = null;
 
-            System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
+            Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
             _formulaInstances = null;
 
             GameData.Reset();
@@ -113,7 +122,7 @@ namespace Main.Handler
                 GameState.Stay => OnStay,
                 GameState.OnGoing => OnOnGoing,
                 GameState.Over => OnOver,
-                _ => throw new System.Exception("不正な種類です")
+                _ => throw new Exception("不正な種類です")
             });
         }
 
@@ -124,13 +133,7 @@ namespace Main.Handler
 
             // 以降は1回だけ実行される
 
-            SO_Handler.Entity.WaitDurOnGameStarted.SecondsWaitAndDo(() =>
-            {
-                _isAttackable = true;
-                CreateQuestion();
-                State = GameState.OnGoing;
-            },
-            ct).Forget();
+            OnLoadFinished(ct).Forget();
         }
 
         private void OnOnGoing()
@@ -156,10 +159,9 @@ namespace Main.Handler
 
             // 以降は1回だけ実行される
 
-            if (resultSEAudioSource != null)
-                resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
+            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
 
-            SendScore(GameData.DefeatedEnemyNum);
+            SendScore();
         }
 
         private void CreateQuestion()
@@ -169,7 +171,7 @@ namespace Main.Handler
             // 前の問題のインスタンスを消す
             Formula.Init();
             foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
-            System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
+            Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
             // 新しくインスタンスを作る
             InstantiateNumber(Question.N.N1, 2);
@@ -191,55 +193,89 @@ namespace Main.Handler
 
         private void ShowPreview()
         {
-            if (previewText == null) return;
-
             float? r = Formula.Calcurate();
             if (r.HasValue)
             {
-                previewText.text = $"= {(int)r.Value}";
-                previewText.color = (r.Value == Question.Target) ?
-                    new Color32(225, 225, 0, 255) : new Color32(225, 0, 225, 255);
+                SetPreviewText($"= {(int)r.Value}");
+
+                float diff = Mathf.Abs(Question.Target - r.Value);
+                Color32 color;
+                if (SO_Handler.Entity.DiffLimit < diff) color = Colors.ValueFar;
+                else if (diff != 0) color = Colors.ValueClose;
+                else color = Colors.ValueJust;
+                SetPreviewColor(color);
             }
             else
             {
-                previewText.text = "";
+                SetPreviewText();
             }
+        }
+
+        private void SetPreviewText(string text = "")
+        {
+            if (previewText == null) return;
+            if (text == null) text = "";
+
+            previewText.text = text;
+        }
+
+        private void SetPreviewColor(Color32 color)
+        {
+            if (previewText == null) return;
+
+            previewText.color = color;
         }
 
         internal void Attack()
         {
             float? r = Formula.Calcurate();
 
-            if (r.HasValue)  // 攻撃成功
+            if (r.HasValue)
             {
-                attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
-
                 float diff = Mathf.Abs(Question.Target - r.Value);
-                var list = System.Array.AsReadOnly(SO_Handler.Entity.TimeIncreaseAmountList);
-                float errorOfst = 0.01f;
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (i + errorOfst < diff) continue;
-                    Time += list[i];
-                    break;
-                }
-
-                GameData.DefeatedEnemyNum++;
-
-                CreateQuestion();
+                Do((diff <= SO_Handler.Entity.DiffLimit) ? () => OnAttackSucceeded(diff) : OnAttackFailed);
             }
-            else  // 攻撃失敗
+            else
             {
-                attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
+                OnAttackFailed();
             }
+        }
+
+        private void OnAttackSucceeded(float diff)
+        {
+            attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
+
+            var list = Array.AsReadOnly(SO_Handler.Entity.TimeIncreaseAmountList);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i < diff) continue;
+                Time += list[i];
+                break;
+            }
+
+            GameData.DefeatedEnemyNum++;
+            if (diff == 0) GameData.PerfectlyDefeatedEnemyNum++;
+
+            CreateQuestion();
+        }
+
+        private void OnAttackFailed()
+        {
+            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
         }
 
         internal void PlaySelectSE() => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
 
-        private void SendScore(int score)
-            => UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
+        private void SendScore()
+        {
+            SendScoreImpl(1, GameData.DefeatedEnemyNum);
+            SendScoreImpl(2, GameData.PerfectlyDefeatedEnemyNum);
+        }
 
-        private void Do(System.Action action) => action();
+        private void SendScoreImpl(int boardNo, int score)
+           => UnityroomApiClient.Instance.SendScore(boardNo, score, ScoreboardWriteMode.HighScoreDesc);
+
+        private void Do(Action action) => action();
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
@@ -251,7 +287,7 @@ namespace Main.Handler
                 }
             }
 
-            throw new System.Exception("インスタンスが見つかりませんでした");
+            throw new Exception("インスタンスが見つかりませんでした");
         }
 
         internal int GetIndexFromSymbolPosition(Vector2 pos)
@@ -259,7 +295,39 @@ namespace Main.Handler
             (_, int i, bool isFound) = SymbolPositions.Find(e => e == pos);
 
             if (isFound) return i;
-            else throw new System.Exception("見つかりませんでした");
+            else throw new Exception("見つかりませんでした");
+        }
+
+        private void SetPositionX(Transform tf, float x)
+        {
+            Vector3 pos = tf.position;
+            pos.x = x;
+            tf.position = pos;
+        }
+
+        private async UniTask OnLoadFinished(CancellationToken ct)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(duration.BeforeLoadImage), cancellationToken: ct);
+            await loadImageTf.DOLocalMoveX(endValue.LoadImage, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(duration.LoadImageToCountDown), cancellationToken: ct);
+
+            _isAttackable = true;
+            CreateQuestion();
+            State = GameState.OnGoing;
+        }
+
+        [Serializable]
+        internal struct EndValue
+        {
+            [SerializeField] internal float LoadImage;
+        }
+
+        [Serializable]
+        internal struct Duration
+        {
+            [SerializeField] internal float BeforeLoadImage;
+            [SerializeField] internal float LoadImageMove;
+            [SerializeField] internal float LoadImageToCountDown;
         }
     }
 
@@ -279,7 +347,7 @@ namespace Main.Handler
                 7 => Symbol.N7,
                 8 => Symbol.N8,
                 9 => Symbol.N9,
-                _ => throw new System.Exception("不正な種類です")
+                _ => throw new Exception("不正な種類です")
             };
         }
     }
@@ -310,7 +378,7 @@ namespace Main.Handler
         /// 条件を全て満たす組を生成
         /// </summary>
         private static (int N1, int N2, int N3, int N4) CreateRandomNumbers
-            (params System.Func<(int N1, int N2, int N3, int N4), bool>[] functions)
+            (params Func<(int N1, int N2, int N3, int N4), bool>[] functions)
         {
             int cnt = 0;
             while (true)
@@ -393,5 +461,12 @@ namespace Main.Handler
             foreach (int e in itr) ret += e;
             return ret;
         }
+    }
+
+    internal static class Colors
+    {
+        internal static readonly Color32 ValueJust = new(225, 225, 0, 255);
+        internal static readonly Color32 ValueClose = new(225, 0, 225, 255);
+        internal static readonly Color32 ValueFar = new(225, 0, 0, 255);
     }
 }

@@ -8,9 +8,20 @@ namespace Main.Data
         internal int DefeatedEnemyNum
         {
             get { return _defeatedEnemyNum; }
-            set { _defeatedEnemyNum = Mathf.Clamp(value, 0, 999); }
+            set { _defeatedEnemyNum = Mathf.Clamp(value, 0, 99999); }
         }
 
-        internal void Reset() => _defeatedEnemyNum = 0;
+        private int _perfectlyDefeatedEnemyNum = 0;
+        internal int PerfectlyDefeatedEnemyNum
+        {
+            get { return _perfectlyDefeatedEnemyNum; }
+            set { _perfectlyDefeatedEnemyNum = Mathf.Clamp(value, 0, 99999); }
+        }
+
+        internal void Reset()
+        {
+            _defeatedEnemyNum = 0;
+            _perfectlyDefeatedEnemyNum = 0;
+        }
     }
 }

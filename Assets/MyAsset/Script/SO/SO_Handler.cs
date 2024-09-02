@@ -28,15 +28,9 @@ namespace SO
         }
         #endregion
 
-        [SerializeField, Header("ボタンを押した後、待つ秒数(対応するもののみ)")] private float _waitDurOnButtonPlaced;
-        internal float WaitDurOnButtonPlaced => _waitDurOnButtonPlaced;
-
         [SerializeField, Header("音量の最小値/最大値(db)")] private Vector2 _soundVolumeRange;
         internal float MinVolume => _soundVolumeRange.x;
         internal float MaxVolume => _soundVolumeRange.y;
-
-        [SerializeField, Header("メインシーンに行ってから、ゲーム開始までの待機秒数")] private float _waitDurOnGameStarted;
-        internal float WaitDurOnGameStarted => _waitDurOnGameStarted;
 
         [SerializeField, Header("ゲームの初期制限時間(秒)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
@@ -44,5 +38,8 @@ namespace SO
         [SerializeField, Header("式の値の差分と、時間増加量の、対応関係\n(差分：0,1,2,3,4,...)")]
         private float[] _timeIncreaseAmountList;
         internal float[] TimeIncreaseAmountList => _timeIncreaseAmountList;
+
+        [SerializeField, Header("攻撃成功になる、差分の境界値")] private float _diffLimit;
+        internal float DiffLimit => _diffLimit;
     }
 }
