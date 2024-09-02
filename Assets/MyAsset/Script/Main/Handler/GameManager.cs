@@ -34,6 +34,8 @@ namespace Main.Handler
         [SerializeField, Header("N0 - N9 ÇÃèáî‘")] private SpriteFollow[] symbolSprites;
         [SerializeField, Header("E_1 - E_12 ÇÃèáî‘")] private Transform[] symbolFrames;
 
+        [SerializeField] private TMPro.TextMeshProUGUI previewText;
+
         [SerializeField] private AudioSource attackSEAudioSource;
         [SerializeField] private AudioSource attackFailedSEAudioSource;
         [SerializeField] private AudioSource resultSEAudioSource;
@@ -74,16 +76,21 @@ namespace Main.Handler
 
             _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
 
+            previewText.text = "";
+
             Time = SO_Handler.Entity.InitTimeLimt;
         }
 
         private void OnDisable()
         {
             System.Array.Clear(symbolSprites, 0, symbolSprites.Length);
-            symbolSprites = null;
-
             System.Array.Clear(symbolFrames, 0, symbolFrames.Length);
+            symbolSprites = null;
             symbolFrames = null;
+            previewText = null;
+            attackSEAudioSource = null;
+            attackFailedSEAudioSource = null;
+            resultSEAudioSource = null;
 
             System.Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
             _formulaInstances = null;
@@ -130,6 +137,8 @@ namespace Main.Handler
             {
                 Time -= UnityEngine.Time.deltaTime;
                 Time = Mathf.Max(0, Time);
+
+                ShowPreview();
             }
 
             if (Time <= 0)
@@ -178,37 +187,48 @@ namespace Main.Handler
             _formulaInstances[i] = instance;
         }
 
+        private void ShowPreview()
+        {
+            if (previewText == null) return;
+
+            float? r = Formula.Calcurate();
+            if (r.HasValue)
+            {
+                previewText.text = $"= {(int)r.Value}";
+                previewText.color = (r.Value == Question.Target) ?
+                    new Color32(225, 225, 0, 255) : new Color32(225, 0, 225, 255);
+            }
+            else
+            {
+                previewText.text = "";
+            }
+        }
+
         internal void Attack()
         {
             float? r = Formula.Calcurate();
 
-            if (r.HasValue)
+            if (r.HasValue)  // çUåÇê¨å˜
             {
-                // çUåÇê¨å˜
-
-                r.Show(e => $"Ç†Ç»ÇΩÇ™çÏÇ¡ÇΩêîéÆÇÃílÅF{e}");
-
-                if (attackSEAudioSource != null)
-                    attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
-
-                _isAttackable = false;
+                attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
 
                 float diff = Mathf.Abs(Question.Target - r.Value);
-                if (diff != 0) Time -= SO_Handler.Entity.TimeDecreaseCoef * diff;
-                else Time += SO_Handler.Entity.TimeIncreaseAmount;
+                var list = System.Array.AsReadOnly(SO_Handler.Entity.TimeIncreaseAmountList);
+                float errorOfst = 0.01f;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (i + errorOfst < diff) continue;
+                    Time += list[i];
+                    break;
+                }
 
                 GameData.DefeatedEnemyNum++;
 
                 CreateQuestion();
-
-                _isAttackable = true;
             }
-            else
+            else  // çUåÇé∏îs
             {
-                // çUåÇé∏îs
-
-                if (attackFailedSEAudioSource != null)
-                    attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
+                attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
             }
         }
 

@@ -16,5 +16,10 @@ MonoBehaviour:
   _soundVolumeRange: {x: -20, y: 20}
   _waitDurOnGameStarted: 3
   _initTimeLimit: 180
-  _timeDecreaseCoef: 2
-  _timeIncreaseAmount: 10
+  _timeIncreaseAmountList:
+  - 10
+  - 5
+  - 4
+  - 3
+  - 2
+  - 1

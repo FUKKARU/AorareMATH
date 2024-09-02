@@ -37,6 +37,9 @@ namespace General
         internal static void Raise
             (this AudioSource source, AudioClip clip, SoundType type, float volume = 1, float pitch = 1)
         {
+            if (source == null) return;
+            if (clip == null) return;
+
             source.volume = volume;
             source.pitch = pitch;
 
