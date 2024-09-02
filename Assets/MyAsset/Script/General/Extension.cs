@@ -7,8 +7,24 @@ using UnityEngine.EventSystems;
 
 namespace General.Extension
 {
+    internal enum ClientMode
+    {
+        Editor_Editing,
+        Editor_Playing,
+        Build
+    }
+
     internal static class Extension
     {
+        internal static ClientMode GetClientMode()
+        {
+#if UNITY_EDITOR
+            return UnityEditor.EditorApplication.isPlaying ? ClientMode.Editor_Playing : ClientMode.Editor_Editing;
+#else
+            return ClientMode.Build;
+#endif
+        }
+
         internal static async UniTask SecondsWaitAndDo(this float waitSeconds, Action act, CancellationToken ct)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: ct);

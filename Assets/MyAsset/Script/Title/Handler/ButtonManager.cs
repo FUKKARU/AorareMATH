@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
-using General.Extension;
+using DG.Tweening;
 using SO;
+using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,11 @@ namespace Title.Handler
         [SerializeField] private SpriteRenderer sr;
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite hoverSprite;
-        [SerializeField] private Sprite clickSprite;
+        [SerializeField] private Transform carTf;
+        [SerializeField] private Transform loadImageTf;
+        [SerializeField] private BGMPlayer bgmPlayer;
+        [SerializeField] private EndValue endValue;
+        [SerializeField] private Duration duration;
 
         private bool isActive = true;
 
@@ -33,10 +38,8 @@ namespace Title.Handler
             sr = null;
             normalSprite = null;
             hoverSprite = null;
-            clickSprite = null;
         }
 
-        // マウスのポインターが乗っかった
         public void OnEnter()
         {
             if (!isActive) return;
@@ -46,7 +49,6 @@ namespace Title.Handler
             sr.sprite = hoverSprite;
         }
 
-        // マウスのポインターが離れた
         public void OnExit()
         {
             if (!isActive) return;
@@ -56,19 +58,47 @@ namespace Title.Handler
             sr.sprite = normalSprite;
         }
 
-        // マウスのポインターがオブジェクトの上でクリックされた
         public void OnClick()
         {
             if (!isActive) return;
-            if (!sr) return;
-            if (!clickSprite) return;
-
-            sr.sprite = clickSprite;
 
             isActive = false;
 
-            SO_Handler.Entity.WaitDurOnButtonPlaced.SecondsWaitAndDo
-                (() => SceneManager.LoadScene(SO_SceneName.Entity.Main), ct).Forget();
+            Load(ct).Forget();
+        }
+
+        private async UniTask Load(CancellationToken ct)
+        {
+            await Direction(endValue, duration, ct);
+            await SceneManager.LoadSceneAsync(SO_SceneName.Entity.Main).ToUniTask(cancellationToken: ct);
+        }
+
+        private async UniTask Direction
+            (EndValue endValue, Duration duration, CancellationToken ct)
+        {
+            bgmPlayer.AudioSource.DOFade(endValue.BGMVolume, duration.BGMFade).ToUniTask(cancellationToken: ct).Forget();
+            carTf.DOLocalMoveX(endValue.CarX, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
+            await UniTask.Delay(TimeSpan.FromSeconds(duration.UntilLoadImageMove), cancellationToken: ct);
+            await loadImageTf.DOLocalMoveX(endValue.LoadImageX, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(duration.AfterLoadImageMoved), cancellationToken: ct);
+        }
+
+        [Serializable]
+        internal struct EndValue
+        {
+            [SerializeField] internal float CarX;
+            [SerializeField] internal float LoadImageX;
+            [SerializeField] internal float BGMVolume;
+        }
+
+        [Serializable]
+        internal struct Duration
+        {
+            [SerializeField] internal float BGMFade;
+            [SerializeField] internal float CarMove;
+            [SerializeField] internal float LoadImageMove;
+            [SerializeField] internal float UntilLoadImageMove;
+            [SerializeField] internal float AfterLoadImageMoved;
         }
     }
 }
