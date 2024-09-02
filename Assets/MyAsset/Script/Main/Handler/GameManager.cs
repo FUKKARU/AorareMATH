@@ -36,6 +36,7 @@ namespace Main.Handler
 
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
 
+        [SerializeField] private AudioSource selectSEAudioSource;
         [SerializeField] private AudioSource attackSEAudioSource;
         [SerializeField] private AudioSource attackFailedSEAudioSource;
         [SerializeField] private AudioSource resultSEAudioSource;
@@ -88,6 +89,7 @@ namespace Main.Handler
             symbolSprites = null;
             symbolFrames = null;
             previewText = null;
+            selectSEAudioSource = null;
             attackSEAudioSource = null;
             attackFailedSEAudioSource = null;
             resultSEAudioSource = null;
@@ -232,15 +234,12 @@ namespace Main.Handler
             }
         }
 
-        private void SendScore(int score)
-        {
-            UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
-        }
+        internal void PlaySelectSE() => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
 
-        private void Do(System.Action action)
-        {
-            action();
-        }
+        private void SendScore(int score)
+            => UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
+
+        private void Do(System.Action action) => action();
 
         private SpriteFollow ToInstance(IntStr symbol)
         {

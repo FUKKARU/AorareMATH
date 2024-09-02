@@ -65,6 +65,8 @@ namespace Main.Handler
             thisInstance.transform.position.ToVector2().JudgeAttachable
                 (p =>
                 {
+                    GameManager.Instance.PlaySelectSE();
+
                     Vector3 toPos = p.ToVector3(z);
                     int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
                     IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
