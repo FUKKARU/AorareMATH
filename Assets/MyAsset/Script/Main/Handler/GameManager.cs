@@ -38,9 +38,11 @@ namespace Main.Handler
 
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
+        [SerializeField] private CountDownSprite countDownSprite;
 
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
+        [SerializeField] private SpriteRenderer countDownSr;
 
         [SerializeField] private AudioSource selectSEAudioSource;
         [SerializeField] private AudioSource attackSEAudioSource;
@@ -86,6 +88,7 @@ namespace Main.Handler
             SetPositionX(loadImageTf, 0);
 
             SetPreviewText();
+            SetCountDownSprite();
 
             Time = SO_Handler.Entity.InitTimeLimt;
         }
@@ -226,6 +229,14 @@ namespace Main.Handler
             previewText.color = color;
         }
 
+        private void SetCountDownSprite(Sprite sprite = null)
+        {
+            if (countDownSr == null) return;
+            if (countDownSr.sprite == sprite) return;
+
+            countDownSr.sprite = sprite;
+        }
+
         internal void Attack()
         {
             float? r = Formula.Calcurate();
@@ -311,6 +322,14 @@ namespace Main.Handler
             await loadImageTf.DOLocalMoveX(endValue.LoadImage, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.LoadImageToCountDown), cancellationToken: ct);
 
+            SetCountDownSprite(countDownSprite.N3);
+            // 1ïbë“Ç¬
+            // 2Ç∆ï\é¶
+            // 1ïbë“Ç¬
+            // 1Ç∆ï\é¶
+            // 1ïbë“Ç¬
+            // è¡Ç∑
+
             _isAttackable = true;
             CreateQuestion();
             State = GameState.OnGoing;
@@ -328,6 +347,14 @@ namespace Main.Handler
             [SerializeField] internal float BeforeLoadImage;
             [SerializeField] internal float LoadImageMove;
             [SerializeField] internal float LoadImageToCountDown;
+        }
+
+        [Serializable]
+        internal struct CountDownSprite
+        {
+            [SerializeField] internal Sprite N3;
+            [SerializeField] internal Sprite N2;
+            [SerializeField] internal Sprite N1;
         }
     }
 
