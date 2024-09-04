@@ -15,6 +15,7 @@ namespace Main.Handler
 
         [SerializeField, Header("インスタンスのz座標")] private float _z;
         internal float Z => _z;
+        [SerializeField, Header("持ち上げた際のインスタンスのz座標")] private float followZ;
 
         internal Vector3 InitPosition { get; set; }
 
@@ -35,16 +36,30 @@ namespace Main.Handler
 
         private void Update()
         {
-            if (isFollowingMouse) transform.position = MouseToWorld(Z);
+            if (isFollowingMouse)
+            {
+                if (GameManager.Instance.State == GameState.Over)
+                {
+                    isFollowingMouse = false;
+                    transform.position = InitPosition;
+                    return;
+                }
+
+                transform.position = MouseToWorld(followZ);
+            }
         }
 
         private void OnPointerDown()
         {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+
             isFollowingMouse = true;
         }
 
         private void OnPointerUp()
         {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+
             isFollowingMouse = false;
 
             transform.position.ToVector2().JudgeAttachable

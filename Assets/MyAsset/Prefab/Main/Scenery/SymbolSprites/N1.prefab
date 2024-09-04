@@ -159,4 +159,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _type: 1
   eventTrigger: {fileID: -3850790326471621042}
-  _z: 55
+  _z: 19
+  followZ: 18

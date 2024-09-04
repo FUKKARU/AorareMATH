@@ -13,10 +13,11 @@ namespace Main.Handler
 
         [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private SpriteFollow prefab;
-        private UnNumberSpriteFollow thisInstance = null;
+        [SerializeField] private SpriteRenderer thisSpriteRenderer;
+        private SpriteRenderer thisInstance = null;
 
-        [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
         [SerializeField, Header("インスタンスのz座標")] private float z;
+        [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
 
         private bool isFollowingMouse = false;
 
@@ -30,6 +31,7 @@ namespace Main.Handler
         {
             eventTrigger = null;
             prefab = null;
+            thisSpriteRenderer = null;
             thisInstance = null;
         }
 
@@ -38,6 +40,14 @@ namespace Main.Handler
             if (isFollowingMouse)
             {
                 if (thisInstance == null) return;
+
+                if (GameManager.Instance.State == GameState.Over)
+                {
+                    isFollowingMouse = false;
+                    Destroy(thisInstance.gameObject);
+                    thisInstance = null;
+                    return;
+                }
 
                 thisInstance.transform.position = MouseToWorld(thisZ);
             }
@@ -50,7 +60,7 @@ namespace Main.Handler
             if (thisInstance != null) return;
 
             isFollowingMouse = true;
-            thisInstance = Instantiate(this, MouseToWorld(thisZ), Quaternion.identity, transform);
+            thisInstance = Instantiate(thisSpriteRenderer, MouseToWorld(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
 

@@ -546,8 +546,9 @@ MonoBehaviour:
   _type: 15
   eventTrigger: {fileID: 225457590}
   prefab: {fileID: 3530431967749959098, guid: e9b9168210dae0843a38c633e4876494, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 225457588}
+  thisZ: 18
+  z: 19
 --- !u!114 &225457590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1753,8 +1754,9 @@ MonoBehaviour:
   _type: 14
   eventTrigger: {fileID: 631247521}
   prefab: {fileID: 4893868020701821218, guid: b8adab628744dc844b20db56ee24c368, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 631247519}
+  thisZ: 18
+  z: 19
 --- !u!114 &631247521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3852,8 +3854,9 @@ MonoBehaviour:
   _type: 10
   eventTrigger: {fileID: 1282482856}
   prefab: {fileID: 5034330207521456404, guid: c6ccdea92d5992d43ab6957e9e30e535, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 1282482854}
+  thisZ: 18
+  z: 19
 --- !u!114 &1282482856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4876,8 +4879,9 @@ MonoBehaviour:
   _type: 12
   eventTrigger: {fileID: 1633680611}
   prefab: {fileID: 5372854587950173361, guid: 9ca6559ab474afd499b6007811e36eb4, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 1633680609}
+  thisZ: 18
+  z: 19
 --- !u!114 &1633680611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5287,8 +5291,9 @@ MonoBehaviour:
   _type: 13
   eventTrigger: {fileID: 1776106835}
   prefab: {fileID: 1782050406156989699, guid: a321907f0c4cb15478ad7432c0802123, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 1776106833}
+  thisZ: 18
+  z: 19
 --- !u!114 &1776106835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5527,8 +5532,9 @@ MonoBehaviour:
   _type: 11
   eventTrigger: {fileID: 1829669095}
   prefab: {fileID: -5437154216486144552, guid: f43c0dfb420ef984cb9ee6da529a8fca, type: 3}
-  thisZ: 19
-  z: 55
+  thisSpriteRenderer: {fileID: 1829669093}
+  thisZ: 18
+  z: 19
 --- !u!114 &1829669095
 MonoBehaviour:
   m_ObjectHideFlags: 0
