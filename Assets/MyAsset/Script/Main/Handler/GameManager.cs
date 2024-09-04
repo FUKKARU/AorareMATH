@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using unityroom.Api;
 using Random = UnityEngine.Random;
 
@@ -40,9 +41,11 @@ namespace Main.Handler
         [SerializeField] private Duration duration;
 
         [SerializeField] private Transform loadImageTf;
+        [SerializeField] private GameObject sceneReloader;
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
         [SerializeField] private CountDown countDown;
         [SerializeField] private ShowTimerDiff showTimerDiff;
+        [SerializeField] private ResultShower resultShower;
 
         [SerializeField] private AudioSource selectSEAudioSource;
         [SerializeField] private AudioSource attackSEAudioSource;
@@ -88,7 +91,7 @@ namespace Main.Handler
             _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
 
             SetPositionX(loadImageTf, 0);
-
+            sceneReloader.SetActive(false);
             SetText(previewText);
 
             Time = SO_Handler.Entity.InitTimeLimt;
@@ -99,9 +102,11 @@ namespace Main.Handler
             symbolSprites = null;
             symbolFrames = null;
             loadImageTf = null;
+            sceneReloader = null;
             previewText = null;
             countDown = null;
             showTimerDiff = null;
+            resultShower = null;
             selectSEAudioSource = null;
             attackSEAudioSource = null;
             attackFailedSEAudioSource = null;
@@ -156,9 +161,7 @@ namespace Main.Handler
 
             // à»ç~ÇÕ1âÒÇæÇØé¿çsÇ≥ÇÍÇÈ
 
-            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
-
-            SendScore();
+            OnResult(ct).Forget();
         }
 
         private void CreateQuestion()
@@ -221,13 +224,6 @@ namespace Main.Handler
             if (tmpro == null) return;
 
             tmpro.color = color;
-        }
-
-        private void SetPosition(TMPro.TextMeshProUGUI tmpro, Vector3 position)
-        {
-            if (tmpro == null) return;
-
-            tmpro.rectTransform.localPosition = position;
         }
 
         internal void Attack()
@@ -320,12 +316,34 @@ namespace Main.Handler
             await UniTask.Delay(TimeSpan.FromSeconds(duration.BeforeLoadImage), cancellationToken: ct);
             await loadImageTf.DOLocalMoveX(endValue.LoadImage, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.LoadImageToCountDown), cancellationToken: ct);
+            sceneReloader.SetActive(true);
             await countDown.Play(ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.CountDownToGameStart), cancellationToken: ct);
 
             _isAttackable = true;
             CreateQuestion();
             State = GameState.OnGoing;
+        }
+
+        private async UniTask OnResult(CancellationToken ct)
+        {
+            sceneReloader.SetActive(false);
+
+            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
+
+            SendScore();
+
+            await resultShower.Play(GameData.DefeatedEnemyNum, GameData.PerfectlyDefeatedEnemyNum, ct);
+
+            string sceneName;
+            while (true)
+            {
+                if (Input.GetKeyDown(KeyCode.R)) { sceneName = SO_SceneName.Entity.Main; break; }
+                else if (Input.GetKeyDown(KeyCode.Space)) { sceneName = SO_SceneName.Entity.Title; break; }
+
+                await UniTask.Yield(ct);
+            }
+            SceneManager.LoadScene(sceneName);
         }
 
         [Serializable]

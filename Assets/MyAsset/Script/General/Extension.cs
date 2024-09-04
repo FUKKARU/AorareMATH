@@ -31,6 +31,11 @@ namespace General.Extension
             act();
         }
 
+        internal static async UniTask SecondsWait(this float waitSeconds, CancellationToken ct)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: ct);
+        }
+
         /// <summary>
         /// EventTrigger‚ÉƒCƒxƒ“ƒg‚ð“o˜^‚·‚é
         /// </summary>
