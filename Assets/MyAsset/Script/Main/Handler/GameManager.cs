@@ -324,11 +324,17 @@ namespace Main.Handler
 
             SetCountDownSprite(countDownSprite.N3);
             // 1ïbë“Ç¬
+            await UniTask.Delay(TimeSpan.FromSeconds(1));
             // 2Ç∆ï\é¶
+            countDownSr.enabled = true;
             // 1ïbë“Ç¬
+            await UniTask.Delay(TimeSpan.FromSeconds(1));
             // 1Ç∆ï\é¶
+            countDownSr.enabled = true;
             // 1ïbë“Ç¬
+            await UniTask.Delay(TimeSpan.FromSeconds(1));
             // è¡Ç∑
+            countDownSr.enabled = false;
 
             _isAttackable = true;
             CreateQuestion();

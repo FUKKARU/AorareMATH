@@ -198,9 +198,9 @@ MonoBehaviour:
     LoadImageMove: 2
     LoadImageToCountDown: 1
   countDownSprite:
-    N3: 0
-    N2: 0
-    N1: 0
+    N3: {fileID: 0}
+    N2: {fileID: 0}
+    N1: {fileID: 0}
   loadImageTf: {fileID: 232617390}
   previewText: {fileID: 1109169591}
   countDownSr: {fileID: 211957666}
