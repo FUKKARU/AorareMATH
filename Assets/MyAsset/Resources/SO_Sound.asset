@@ -18,10 +18,9 @@ MonoBehaviour:
   _AMGroupMaster: {fileID: 24300002, guid: c072a7dfc4de9e64bb122c6ba2f4a4ef, type: 2}
   _titleBGM: {fileID: 8300000, guid: 5c112ac5e1a8b65419f7ea63fe253fa5, type: 3}
   _mainBGM: {fileID: 8300000, guid: 3fda69928ca70e44ba5303a9ae8b47e8, type: 3}
+  _countDownSE: {fileID: 8300000, guid: dceb4d925be343e49b6d1a405b40e5e6, type: 3}
   _symbolSE: {fileID: 8300000, guid: ee08f35184dfe9b4580c765f1ac1e09d, type: 3}
   _attackSE: {fileID: 8300000, guid: 58b1a3f37c668c5468d8cb3db452647e, type: 3}
   _attackFailedSE: {fileID: 8300000, guid: 4986c71221a6e0c42b9b9a788acd27e2, type: 3}
   _enemyCarSE: {fileID: 8300000, guid: 8751bfd79ecae3747abf67bb05903bb7, type: 3}
-  _enemyMotorbikeSE1: {fileID: 8300000, guid: 43c9a2379d8d2d94bb11e3d1b795ef68, type: 3}
-  _enemyMotorbikeSE2: {fileID: 8300000, guid: 3f817233213e82f4cbe32881e33ef024, type: 3}
   _resultSE: {fileID: 8300000, guid: a303dae9f9807b846a53a3ef98fe5c1f, type: 3}

@@ -38,11 +38,11 @@ namespace Main.Handler
 
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
-        [SerializeField] private CountDownSprite countDownSprite;
 
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
-        [SerializeField] private SpriteRenderer countDownSr;
+        [SerializeField] private CountDown countDown;
+        [SerializeField] private ShowTimerDiff showTimerDiff;
 
         [SerializeField] private AudioSource selectSEAudioSource;
         [SerializeField] private AudioSource attackSEAudioSource;
@@ -69,6 +69,8 @@ namespace Main.Handler
 
         private CancellationToken ct;
 
+        private Vector3 timerDiffTextInitPosition;
+
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
 
@@ -87,34 +89,26 @@ namespace Main.Handler
 
             SetPositionX(loadImageTf, 0);
 
-            SetPreviewText();
-            SetCountDownSprite();
+            SetText(previewText);
 
             Time = SO_Handler.Entity.InitTimeLimt;
         }
 
         private void OnDisable()
         {
-            Array.Clear(symbolSprites, 0, symbolSprites.Length);
-            Array.Clear(symbolFrames, 0, symbolFrames.Length);
             symbolSprites = null;
             symbolFrames = null;
             loadImageTf = null;
             previewText = null;
+            countDown = null;
+            showTimerDiff = null;
             selectSEAudioSource = null;
             attackSEAudioSource = null;
             attackFailedSEAudioSource = null;
             resultSEAudioSource = null;
-
-            Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
             _formulaInstances = null;
-
-            GameData.Reset();
             GameData = null;
-
             Question = null;
-
-            Formula.Reset();
             Formula = null;
         }
 
@@ -199,42 +193,41 @@ namespace Main.Handler
             float? r = Formula.Calcurate();
             if (r.HasValue)
             {
-                SetPreviewText($"= {(int)r.Value}");
+                SetText(previewText, $"= {(int)r.Value}");
 
                 float diff = Mathf.Abs(Question.Target - r.Value);
                 Color32 color;
                 if (SO_Handler.Entity.DiffLimit < diff) color = Colors.ValueFar;
                 else if (diff != 0) color = Colors.ValueClose;
                 else color = Colors.ValueJust;
-                SetPreviewColor(color);
+                SetColor(previewText, color);
             }
             else
             {
-                SetPreviewText();
+                SetText(previewText);
             }
         }
 
-        private void SetPreviewText(string text = "")
+        private void SetText(TMPro.TextMeshProUGUI tmpro, string text = "")
         {
-            if (previewText == null) return;
+            if (tmpro == null) return;
             if (text == null) text = "";
 
-            previewText.text = text;
+            tmpro.text = text;
         }
 
-        private void SetPreviewColor(Color32 color)
+        private void SetColor(TMPro.TextMeshProUGUI tmpro, Color32 color)
         {
-            if (previewText == null) return;
+            if (tmpro == null) return;
 
-            previewText.color = color;
+            tmpro.color = color;
         }
 
-        private void SetCountDownSprite(Sprite sprite = null)
+        private void SetPosition(TMPro.TextMeshProUGUI tmpro, Vector3 position)
         {
-            if (countDownSr == null) return;
-            if (countDownSr.sprite == sprite) return;
+            if (tmpro == null) return;
 
-            countDownSr.sprite = sprite;
+            tmpro.rectTransform.localPosition = position;
         }
 
         internal void Attack()
@@ -260,7 +253,13 @@ namespace Main.Handler
             for (int i = 0; i < list.Count; i++)
             {
                 if (i < diff) continue;
-                Time += list[i];
+
+                float timeDiff = list[i];
+                Time += timeDiff;
+                showTimerDiff.PlayAnimation
+                    (duration.TimerDiffText, endValue.TimerDiffText,
+                    $"+ {(int)timeDiff}",
+                    diff == 0 ? Colors.ValueJust : Colors.ValueFar);
                 break;
             }
 
@@ -321,14 +320,8 @@ namespace Main.Handler
             await UniTask.Delay(TimeSpan.FromSeconds(duration.BeforeLoadImage), cancellationToken: ct);
             await loadImageTf.DOLocalMoveX(endValue.LoadImage, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.LoadImageToCountDown), cancellationToken: ct);
-
-            SetCountDownSprite(countDownSprite.N3);
-            // 1•b‘Ò‚Â
-            // 2‚Æ•\Ž¦
-            // 1•b‘Ò‚Â
-            // 1‚Æ•\Ž¦
-            // 1•b‘Ò‚Â
-            // Á‚·
+            await countDown.Play(ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(duration.CountDownToGameStart), cancellationToken: ct);
 
             _isAttackable = true;
             CreateQuestion();
@@ -339,6 +332,7 @@ namespace Main.Handler
         internal struct EndValue
         {
             [SerializeField] internal float LoadImage;
+            [SerializeField] internal float TimerDiffText;
         }
 
         [Serializable]
@@ -347,14 +341,8 @@ namespace Main.Handler
             [SerializeField] internal float BeforeLoadImage;
             [SerializeField] internal float LoadImageMove;
             [SerializeField] internal float LoadImageToCountDown;
-        }
-
-        [Serializable]
-        internal struct CountDownSprite
-        {
-            [SerializeField] internal Sprite N3;
-            [SerializeField] internal Sprite N2;
-            [SerializeField] internal Sprite N1;
+            [SerializeField] internal float CountDownToGameStart;
+            [SerializeField] internal float TimerDiffText;
         }
     }
 
