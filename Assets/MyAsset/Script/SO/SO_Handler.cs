@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace SO
 {
@@ -28,18 +28,18 @@ namespace SO
         }
         #endregion
 
-        [SerializeField, Header("‰¹—Ê‚ÌÅ¬’l/Å‘å’l(db)")] private Vector2 _soundVolumeRange;
+        [SerializeField, Header("éŸ³é‡ã®æœ€å°å€¤/æœ€å¤§å€¤(db)")] private Vector2 _soundVolumeRange;
         internal float MinVolume => _soundVolumeRange.x;
         internal float MaxVolume => _soundVolumeRange.y;
 
-        [SerializeField, Header("ƒQ[ƒ€‚Ì‰Šú§ŒÀŽžŠÔ(•b)")] private float _initTimeLimit;
+        [SerializeField, Header("ã‚²ãƒ¼ãƒ ã®åˆæœŸåˆ¶é™æ™‚é–“(ç§’)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
 
-        [SerializeField, Header("Ž®‚Ì’l‚Ì·•ª‚ÆAŽžŠÔ‘‰Á—Ê‚ÌA‘Î‰žŠÖŒW\n(·•ªF0,1,2,3,4,...)")]
+        [SerializeField, Header("å¼ã®å€¤ã®å·®åˆ†ã¨ã€æ™‚é–“å¢—åŠ é‡ã®ã€å¯¾å¿œé–¢ä¿‚\n(å·®åˆ†ï¼š0,1,2,3,4,...)")]
         private float[] _timeIncreaseAmountList;
         internal float[] TimeIncreaseAmountList => _timeIncreaseAmountList;
 
-        [SerializeField, Header("UŒ‚¬Œ÷‚É‚È‚éA·•ª‚Ì‹«ŠE’l")] private float _diffLimit;
+        [SerializeField, Header("æ”»æ’ƒæˆåŠŸã«ãªã‚‹ã€å·®åˆ†ã®å¢ƒç•Œå€¤")] private float _diffLimit;
         internal float DiffLimit => _diffLimit;
     }
 }

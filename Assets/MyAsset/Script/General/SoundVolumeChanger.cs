@@ -1,4 +1,4 @@
-using General.Extension;
+ï»¿using General.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 using SO;
@@ -44,13 +44,13 @@ namespace General
     internal static class SoundVolumeChangerEx
     {
         /// <summary>
-        /// ƒXƒ‰ƒCƒ_[‚Ì’l[0, 1]‚ğA‰¹—Ê‚Ì’l[minVolume, maxVolume]‚ÉAüŒ`ƒ}ƒbƒsƒ“ƒO‚·‚é
+        /// ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ã®å€¤[0, 1]ã‚’ã€éŸ³é‡ã®å€¤[minVolume, maxVolume]ã«ã€ç·šå½¢ãƒãƒƒãƒ”ãƒ³ã‚°ã™ã‚‹
         /// </summary>
         internal static float ConvertToVolume(this float sliderValue)
             => sliderValue.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
 
         /// <summary>
-        /// ‰¹—Ê‚Ì’l[minVolume, maxVolume]‚ğAƒXƒ‰ƒCƒ_[‚Ì’l[0, 1]‚ÉAüŒ`ƒ}ƒbƒsƒ“ƒO‚·‚é
+        /// éŸ³é‡ã®å€¤[minVolume, maxVolume]ã‚’ã€ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ã®å€¤[0, 1]ã«ã€ç·šå½¢ãƒãƒƒãƒ”ãƒ³ã‚°ã™ã‚‹
         /// </summary>
         internal static float ConvertToSliderValue(this float volume)
             => volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);

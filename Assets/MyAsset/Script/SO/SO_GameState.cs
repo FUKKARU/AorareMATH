@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 namespace SO
 {
@@ -28,9 +28,9 @@ namespace SO
         }
         #endregion
 
-        [Header("‰ğ‘œ“x(‰¡~c)")] public Vector2Int Resolution;
-        [Header("ƒtƒ‹ƒXƒNƒŠ[ƒ“‚É‚·‚é‚©")] public bool IsFullScreen;
-        [Header("Vsync‚ğƒIƒ“‚É‚·‚é‚©")] public bool IsVsyncOn;
-        [Header("Vsync‚ªƒIƒt‚Ìê‡Aƒ^[ƒQƒbƒgƒtƒŒ[ƒ€ƒŒ[ƒg")] public byte TargetFrameRate;
+        [Header("è§£åƒåº¦(æ¨ªÃ—ç¸¦)")] public Vector2Int Resolution;
+        [Header("ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã«ã™ã‚‹ã‹")] public bool IsFullScreen;
+        [Header("Vsyncã‚’ã‚ªãƒ³ã«ã™ã‚‹ã‹")] public bool IsVsyncOn;
+        [Header("VsyncãŒã‚ªãƒ•ã®å ´åˆã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆ")] public byte TargetFrameRate;
     }
 }

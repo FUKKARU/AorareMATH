@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
 using General.Extension;
@@ -34,8 +34,8 @@ namespace Main.Handler
         }
         #endregion
 
-        [SerializeField, Header("N0 - N9 ‚Ì‡”Ô")] private SpriteFollow[] symbolSprites;
-        [SerializeField, Header("E_1 - E_12 ‚Ì‡”Ô")] private Transform[] symbolFrames;
+        [SerializeField, Header("N0 - N9 ã®é †ç•ª")] private SpriteFollow[] symbolSprites;
+        [SerializeField, Header("E_1 - E_12 ã®é †ç•ª")] private Transform[] symbolFrames;
 
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
@@ -124,7 +124,7 @@ namespace Main.Handler
                 GameState.Stay => OnStay,
                 GameState.OnGoing => OnOnGoing,
                 GameState.Over => OnOver,
-                _ => throw new Exception("•s³‚Èí—Ş‚Å‚·")
+                _ => throw new Exception("ä¸æ­£ãªç¨®é¡ã§ã™")
             });
         }
 
@@ -133,7 +133,7 @@ namespace Main.Handler
             if (!isFirstOnStay) return;
             else isFirstOnStay = false;
 
-            // ˆÈ~‚Í1‰ñ‚¾‚¯Às‚³‚ê‚é
+            // ä»¥é™ã¯1å›ã ã‘å®Ÿè¡Œã•ã‚Œã‚‹
 
             OnLoadFinished(ct).Forget();
         }
@@ -159,7 +159,7 @@ namespace Main.Handler
             if (!isFirstOnOver) return;
             else isFirstOnOver = false;
 
-            // ˆÈ~‚Í1‰ñ‚¾‚¯Às‚³‚ê‚é
+            // ä»¥é™ã¯1å›ã ã‘å®Ÿè¡Œã•ã‚Œã‚‹
 
             OnResult(ct).Forget();
         }
@@ -168,12 +168,12 @@ namespace Main.Handler
         {
             (Question.N, Question.Target) = QuestionGenerater.GetRandom();
 
-            // ‘O‚Ì–â‘è‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğÁ‚·
+            // å‰ã®å•é¡Œã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’æ¶ˆã™
             Formula.Init();
             foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
             Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
-            // V‚µ‚­ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì‚é
+            // æ–°ã—ãã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œã‚‹
             InstantiateNumber(Question.N.N1, 2);
             InstantiateNumber(Question.N.N2, 4);
             InstantiateNumber(Question.N.N3, 7);
@@ -293,7 +293,7 @@ namespace Main.Handler
                 }
             }
 
-            throw new Exception("ƒCƒ“ƒXƒ^ƒ“ƒX‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½");
+            throw new Exception("ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ");
         }
 
         internal int GetIndexFromSymbolPosition(Vector2 pos)
@@ -301,7 +301,7 @@ namespace Main.Handler
             (_, int i, bool isFound) = SymbolPositions.Find(e => e == pos);
 
             if (isFound) return i;
-            else throw new Exception("Œ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½");
+            else throw new Exception("è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ");
         }
 
         private void SetPositionX(Transform tf, float x)
@@ -380,7 +380,7 @@ namespace Main.Handler
                 7 => Symbol.N7,
                 8 => Symbol.N8,
                 9 => Symbol.N9,
-                _ => throw new Exception("•s³‚Èí—Ş‚Å‚·")
+                _ => throw new Exception("ä¸æ­£ãªç¨®é¡ã§ã™")
             };
         }
     }
@@ -396,9 +396,9 @@ namespace Main.Handler
         {
             return CreateRandomNumbers
                     (
-                    e => e.Count(0) <= 1,  // 0‚Ì”‚ª1ŒÂˆÈ‰º
-                    e => e.Count().Max() <= 2,  // d•¡‚µ‚Ä‚¢‚é”‚ª2ŒÂˆÈ‰º
-                    e => e.Count(0, 1, 7).Sum() <= 2  // g‚¢‚É‚­‚¢”‚Ì‡Œv‚ª2ŒÂˆÈ‰º
+                    e => e.Count(0) <= 1,  // 0ã®æ•°ãŒ1å€‹ä»¥ä¸‹
+                    e => e.Count().Max() <= 2,  // é‡è¤‡ã—ã¦ã„ã‚‹æ•°ãŒ2å€‹ä»¥ä¸‹
+                    e => e.Count(0, 1, 7).Sum() <= 2  // ä½¿ã„ã«ãã„æ•°ã®åˆè¨ˆãŒ2å€‹ä»¥ä¸‹
                     );
         }
 
@@ -408,7 +408,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ğŒ‚ğ‘S‚Ä–‚½‚·‘g‚ğ¶¬
+        /// æ¡ä»¶ã‚’å…¨ã¦æº€ãŸã™çµ„ã‚’ç”Ÿæˆ
         /// </summary>
         private static (int N1, int N2, int N3, int N4) CreateRandomNumbers
             (params Func<(int N1, int N2, int N3, int N4), bool>[] functions)
@@ -423,7 +423,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ƒ‰ƒ“ƒ_ƒ€‚É‘g‚ğ¶¬
+        /// ãƒ©ãƒ³ãƒ€ãƒ ã«çµ„ã‚’ç”Ÿæˆ
         /// </summary>
         private static (int N1, int N2, int N3, int N4) CreateRandomNumbers()
         {
@@ -431,7 +431,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ‘g‚Ì’†‚ÅAtarget‚ÌŒÂ”‚ğ”‚¦‚é
+        /// çµ„ã®ä¸­ã§ã€targetã®å€‹æ•°ã‚’æ•°ãˆã‚‹
         /// </summary>
         private static int Count(this (int N1, int N2, int N3, int N4) n, int target)
         {
@@ -444,7 +444,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ‘g‚Ì’†‚ÅAtargets‚ÌŒÂ”‚ğ‡‚É”‚¦‚é
+        /// çµ„ã®ä¸­ã§ã€targetsã®å€‹æ•°ã‚’é †ã«æ•°ãˆã‚‹
         /// </summary>
         private static IEnumerable<int> Count(this (int N1, int N2, int N3, int N4) n, params int[] targets)
         {
@@ -455,7 +455,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ‘g‚Ì’†‚ÅA0~9‚ÌŒÂ”‚ğ‡‚É”‚¦‚é
+        /// çµ„ã®ä¸­ã§ã€0~9ã®å€‹æ•°ã‚’é †ã«æ•°ãˆã‚‹
         /// </summary>
         private static IEnumerable<int> Count(this (int N1, int N2, int N3, int N4) n)
         {
@@ -466,7 +466,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// Å¬‚ğ‹‚ß‚é
+        /// æœ€å°ã‚’æ±‚ã‚ã‚‹
         /// </summary>
         private static int Min(this IEnumerable<int> itr)
         {
@@ -476,7 +476,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// Å‘å‚ğ‹‚ß‚é
+        /// æœ€å¤§ã‚’æ±‚ã‚ã‚‹
         /// </summary>
         private static int Max(this IEnumerable<int> itr)
         {
@@ -486,7 +486,7 @@ namespace Main.Handler
         }
 
         /// <summary>
-        /// ‡Œv‚ğ‹‚ß‚é
+        /// åˆè¨ˆã‚’æ±‚ã‚ã‚‹
         /// </summary>
         private static int Sum(this IEnumerable<int> itr)
         {

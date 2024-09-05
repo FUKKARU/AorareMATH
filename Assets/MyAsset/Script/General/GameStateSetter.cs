@@ -1,4 +1,4 @@
-using SO;
+ï»¿using SO;
 using UnityEngine;
 
 namespace General
@@ -8,18 +8,18 @@ namespace General
         [RuntimeInitializeOnLoadMethod]
         static void RuntimeInitializeOnLoadMethods()
         {
-            // ‰ğ‘œ“x‚Æƒtƒ‹ƒXƒNƒŠ[ƒ“‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è
+            // è§£åƒåº¦ã¨ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã«ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®š
             Screen.SetResolution(SO_GameState.Entity.Resolution.x, SO_GameState.Entity.Resolution.y, SO_GameState.Entity.IsFullScreen);
 
-            // Vsynci‚Æƒ^[ƒQƒbƒgƒtƒŒ[ƒ€ƒŒ[ƒgj‚Ìİ’è
+            // Vsyncï¼ˆã¨ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆï¼‰ã®è¨­å®š
             if (SO_GameState.Entity.IsVsyncOn)
             {
-                QualitySettings.vSyncCount = 1; // VSync‚ğON‚É‚·‚é
+                QualitySettings.vSyncCount = 1; // VSyncã‚’ONã«ã™ã‚‹
             }
             else
             {
-                QualitySettings.vSyncCount = 0; // VSync‚ğOFF‚É‚·‚é
-                Application.targetFrameRate = SO_GameState.Entity.TargetFrameRate; // ƒ^[ƒQƒbƒgƒtƒŒ[ƒ€ƒŒ[ƒg‚Ìİ’è
+                QualitySettings.vSyncCount = 0; // VSyncã‚’OFFã«ã™ã‚‹
+                Application.targetFrameRate = SO_GameState.Entity.TargetFrameRate; // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®è¨­å®š
             }
         }
     }

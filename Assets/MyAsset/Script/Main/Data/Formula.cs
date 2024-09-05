@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using General.Debug;
 using General.Extension;
 
@@ -205,7 +205,7 @@ namespace Main.Data.Formula
                 var data = Data.RemoveNone();
 
                 if (!IsListOK(data) || !IsNumberOK(data) || !IsOperatorOK(data) || !IsParagraphOK(data))
-                    throw new System.Exception("•s³‚ÈŒ`®‚Å‚·");
+                    throw new System.Exception("ä¸æ­£ãªå½¢å¼ã§ã™");
 
                 return
                     UnityEngine.Mathf.Clamp(data.ConnectNumbers().Convert().Calcurate(), short.MinValue, short.MaxValue);
@@ -217,7 +217,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ƒŠƒXƒg‚ªnull‚Å‚È‚¢‚©AƒŠƒXƒg‚Ì—v‘f”‚ª0‚Å‚È‚¢‚©
+        /// ãƒªã‚¹ãƒˆãŒnullã§ãªã„ã‹ã€ãƒªã‚¹ãƒˆã®è¦ç´ æ•°ãŒ0ã§ãªã„ã‹
         /// </summary>
         private bool IsListOK(List<IntStr> list)
         {
@@ -227,7 +227,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ‚©‚Á‚±‚Ì‚·‚®ŠO‘¤‚É”š‚ª—ˆ‚Ä‚¢‚È‚¢‚©
+        /// ã‹ã£ã“ã®ã™ãå¤–å´ã«æ•°å­—ãŒæ¥ã¦ã„ãªã„ã‹
         /// </summary>
         private bool IsNumberOK(List<IntStr> list)
         {
@@ -242,8 +242,8 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ‰‰Zq‚ª’[‚É‚È‚­A(”š‚Ì”) - (‰‰Zq‚Ì”) >= 1 ‚Å‚ ‚é‚©
-        /// ‚©‚Á‚±‚ğ–³‹‚·‚éA‰‰Zq‚ª2ŒÂ˜A‘±‚µ‚Ä‚¢‚È‚¢‚©
+        /// æ¼”ç®—å­ãŒç«¯ã«ãªãã€(æ•°å­—ã®æ•°) - (æ¼”ç®—å­ã®æ•°) >= 1 ã§ã‚ã‚‹ã‹
+        /// ã‹ã£ã“ã‚’ç„¡è¦–ã™ã‚‹æ™‚ã€æ¼”ç®—å­ãŒ2å€‹é€£ç¶šã—ã¦ã„ãªã„ã‹
         /// </summary>
         private bool IsOperatorOK(List<IntStr> list)
         {
@@ -276,9 +276,9 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ()‚ª‘S‚Ä‘Î‰‚µ‚Ä‚¢‚é‚©A‚Ü‚½‚±‚Ì‡”Ô‚Å‚ ‚é‚©
-        /// ()‚Ì’†‚É1‚ÂˆÈã‚Ì”š‚ª“ü‚Á‚Ä‚¢‚é‚©
-        /// )(‚Ì”z’u‚ª‘¶İ‚µ‚È‚¢‚©
+        /// ()ãŒå…¨ã¦å¯¾å¿œã—ã¦ã„ã‚‹ã‹ã€ã¾ãŸã“ã®é †ç•ªã§ã‚ã‚‹ã‹
+        /// ()ã®ä¸­ã«1ã¤ä»¥ä¸Šã®æ•°å­—ãŒå…¥ã£ã¦ã„ã‚‹ã‹
+        /// )(ã®é…ç½®ãŒå­˜åœ¨ã—ãªã„ã‹
         /// </summary>
         private bool IsParagraphOK(List<IntStr> list)
         {
@@ -320,7 +320,7 @@ namespace Main.Data.Formula
     internal static class Ex
     {
         /// <summary>
-        /// None‚ğÁ‚µ‚Ä‹l‚ß‚é
+        /// Noneã‚’æ¶ˆã—ã¦è©°ã‚ã‚‹
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -347,7 +347,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ”š‚ğŒ‹‡‚µ‚ÄAV‚µ‚¢ƒŠƒXƒg‚Æ‚µ‚Ä•Ô‚·
+        /// æ•°å­—ã‚’çµåˆã—ã¦ã€æ–°ã—ã„ãƒªã‚¹ãƒˆã¨ã—ã¦è¿”ã™
         /// </summary>
         internal static List<IntStr> ConnectNumbers(this List<IntStr> list)
         {
@@ -355,11 +355,11 @@ namespace Main.Data.Formula
 
             for (int i = 0; i < list.Count; i++)
             {
-                // ¡’²‚×‚Ä‚¢‚é—v‘f‚ª”š‚Å‚È‚¢‚È‚çAŒ‹‡‚µ‚È‚¢
+                // ä»Šèª¿ã¹ã¦ã„ã‚‹è¦ç´ ãŒæ•°å­—ã§ãªã„ãªã‚‰ã€çµåˆã—ãªã„
                 IntStr s = list[i];
                 if (!s.IsNumber()) { ret.Add(s); continue; }
 
-                // æ‚Ì—v‘f‚ğ‡‚ÉŒ©‚Ä‚¢‚«A”š‚ğŒ‹‡‚µ‚Ä‚¢‚­
+                // å…ˆã®è¦ç´ ã‚’é †ã«è¦‹ã¦ã„ãã€æ•°å­—ã‚’çµåˆã—ã¦ã„ã
                 int n = s.Int;
                 for (int j = i + 1; j < list.Count; i++, j++)
                 {
@@ -374,7 +374,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// IntStr‚ğFltStr‚É•ÏŠ·‚·‚é(ƒŠƒXƒg)
+        /// IntStrã‚’FltStrã«å¤‰æ›ã™ã‚‹(ãƒªã‚¹ãƒˆ)
         /// </summary>
         internal static List<FltStr> Convert(this List<IntStr> intStr)
         {
@@ -382,21 +382,21 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ®‚ğŒvZ‚·‚é
+        /// å¼ã‚’è¨ˆç®—ã™ã‚‹
         /// </summary>
         internal static float Calcurate(this List<FltStr> list)
         {
             List<FltStr> _list = new(list);
 
-            // ‚©‚Á‚±‚ğ–³‚­‚·
+            // ã‹ã£ã“ã‚’ç„¡ãã™
 
-            // ¶‚©‚çŒ©‚Ä"("‚ğ’T‚·
+            // å·¦ã‹ã‚‰è¦‹ã¦"("ã‚’æ¢ã™
             int i = 0, cnt = 0;
             while (i < _list.Count)
             {
                 if (_list[i].Str != Symbol.PL.Str) { i++; continue; }
 
-                // ‚»‚Ì‰E‚ğ‡‚É’Tõ‚µA‘Î‰‚·‚é")"‚ğ’T‚·
+                // ãã®å³ã‚’é †ã«æ¢ç´¢ã—ã€å¯¾å¿œã™ã‚‹")"ã‚’æ¢ã™
                 int n = 0;
                 for (int j = i + 1; j < _list.Count; j++)
                 {
@@ -404,28 +404,28 @@ namespace Main.Data.Formula
                     if (str != Symbol.PR.Str) { if (str == Symbol.PL.Str) n++; continue; }
                     if (n >= 1) { n--; continue; }
 
-                    // "()"‚ÌŠÔ‚ğÄ‹A“I‚ÉŒvZ‚µA_list‚ğXV‚·‚é
+                    // "()"ã®é–“ã‚’å†å¸°çš„ã«è¨ˆç®—ã—ã€_listã‚’æ›´æ–°ã™ã‚‹
                     float val = _list.GetRange(i + 1, (j - 1) - (i + 1) + 1).Calcurate();
                     _list.RemoveRange(i, j - i + 1);
                     _list.Insert(i, new(val));
                     break;
                 }
 
-                if (++cnt >= byte.MaxValue) throw new System.Exception("–³ŒÀƒ‹[ƒv‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚·");
+                if (++cnt >= byte.MaxValue) throw new System.Exception("ç„¡é™ãƒ«ãƒ¼ãƒ—ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™");
             }
 
-            // ‚©‚Á‚±‚ª–³‚­‚È‚Á‚½(‚ ‚é‚¢‚Í‚»‚à‚»‚àA‚©‚Á‚±‚ª–³‚©‚Á‚½)‚Ì‚ÅAl‘¥‰‰Z‚ğs‚¤
+            // ã‹ã£ã“ãŒç„¡ããªã£ãŸ(ã‚ã‚‹ã„ã¯ãã‚‚ãã‚‚ã€ã‹ã£ã“ãŒç„¡ã‹ã£ãŸ)ã®ã§ã€å››å‰‡æ¼”ç®—ã‚’è¡Œã†
             return _list.CalcurateRaw();
         }
 
         /// <summary>
-        /// ‚©‚Á‚±‚ª–³‚¢‘O’ñ‚ÅA®‚ğŒvZ‚·‚é
+        /// ã‹ã£ã“ãŒç„¡ã„å‰æã§ã€å¼ã‚’è¨ˆç®—ã™ã‚‹
         /// </summary>
         private static float CalcurateRaw(this List<FltStr> list)
         {
             List<FltStr> _list = new(list);
 
-            // æœ
+            // ä¹—é™¤
             for (int i = 0; i < _list.Count; i++)
             {
                 if (_list[i].Str == Symbol.OM.Str)
@@ -434,12 +434,12 @@ namespace Main.Data.Formula
                 }
                 else if (_list[i].Str == Symbol.OD.Str)
                 {
-                    if (_list[i + 1].Flt == 0) throw new System.Exception("0œZ");
+                    if (_list[i + 1].Flt == 0) throw new System.Exception("0é™¤ç®—");
                     (_list[i - 1].Flt / _list[i + 1].Flt).ReplaceAroundOperator(ref _list, ref i);
                 }
             }
 
-            // ‰ÁŒ¸
+            // åŠ æ¸›
             for (int i = 0; i < _list.Count; i++)
             {
                 if (_list[i].Str == Symbol.OA.Str)
@@ -456,7 +456,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ƒŠƒXƒg‚ÌƒCƒ“ƒfƒbƒNƒX”Ô–Ú‚Ì—v‘f‚É‚Â‚¢‚ÄA‘OŒã‚ğŠÜ‚ß‚½3‚Â‚ğÁ‚µA—^‚¦‚ç‚ê‚½’l‚É’u‚«Š·‚¦‚éBƒCƒ“ƒfƒbƒNƒX”Ô†‚à•â³‚·‚éB
+        /// ãƒªã‚¹ãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªç›®ã®è¦ç´ ã«ã¤ã„ã¦ã€å‰å¾Œã‚’å«ã‚ãŸ3ã¤ã‚’æ¶ˆã—ã€ä¸ãˆã‚‰ã‚ŒãŸå€¤ã«ç½®ãæ›ãˆã‚‹ã€‚ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·ã‚‚è£œæ­£ã™ã‚‹ã€‚
         /// </summary>
         private static void ReplaceAroundOperator(this float val, ref List<FltStr> list, ref int operatorIndex)
         {
@@ -466,7 +466,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// IntStr‚ğFltStr‚É•ÏŠ·‚·‚é
+        /// IntStrã‚’FltStrã«å¤‰æ›ã™ã‚‹
         /// </summary>
         private static FltStr Convert(this IntStr intStr)
         {
@@ -474,7 +474,7 @@ namespace Main.Data.Formula
         }
 
         /// <summary>
-        /// ”š‚©‚Ç‚¤‚©”»’è‚·‚é
+        /// æ•°å­—ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹
         /// </summary>
         private static bool IsNumber(this IntStr var)
         {

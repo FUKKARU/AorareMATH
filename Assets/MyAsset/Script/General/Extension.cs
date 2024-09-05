@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -37,7 +37,7 @@ namespace General.Extension
         }
 
         /// <summary>
-        /// EventTrigger‚ÉƒCƒxƒ“ƒg‚ğ“o˜^‚·‚é
+        /// EventTriggerã«ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™»éŒ²ã™ã‚‹
         /// </summary>
         internal static void AddListener(this EventTrigger eventTrigger, EventTriggerType type, Action action)
         {

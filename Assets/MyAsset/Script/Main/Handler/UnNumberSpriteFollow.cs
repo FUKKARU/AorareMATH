@@ -1,4 +1,4 @@
-using General.Extension;
+ï»¿using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
 using UnityEngine;
@@ -16,8 +16,8 @@ namespace Main.Handler
         [SerializeField] private SpriteRenderer thisSpriteRenderer;
         private SpriteRenderer thisInstance = null;
 
-        [SerializeField, Header("ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌzÀ•W")] private float z;
-        [SerializeField, Header("ƒRƒs[ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌzÀ•W")] private float thisZ;
+        [SerializeField, Header("ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®zåº§æ¨™")] private float z;
+        [SerializeField, Header("ã‚³ãƒ”ãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®zåº§æ¨™")] private float thisZ;
 
         private bool isFollowingMouse = false;
 
@@ -85,7 +85,7 @@ namespace Main.Handler
                     if (!isNumber.HasValue || isNumber.Value) return;
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    // ‰‰Zqor‚©‚Á‚±‚Ì‘O’ñ
+                    // æ¼”ç®—å­orã‹ã£ã“ã®å‰æ
                     instance.transform.localScale =
                     Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
 

@@ -1,4 +1,4 @@
-using General.Extension;
+ï»¿using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
 using UnityEngine;
@@ -13,9 +13,9 @@ namespace Main.Handler
 
         [SerializeField] private EventTrigger eventTrigger;
 
-        [SerializeField, Header("ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌzÀ•W")] private float _z;
+        [SerializeField, Header("ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®zåº§æ¨™")] private float _z;
         internal float Z => _z;
-        [SerializeField, Header("‚¿ã‚°‚½Û‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÌzÀ•W")] private float followZ;
+        [SerializeField, Header("æŒã¡ä¸Šã’ãŸéš›ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®zåº§æ¨™")] private float followZ;
 
         internal Vector3 InitPosition { get; set; }
 
@@ -74,7 +74,7 @@ namespace Main.Handler
 
                     if (GameManager.Instance.Formula.Data[toIndex] != Symbol.NONE)
                     {
-                        // “ü‚ê‘Ö‚¦
+                        // å…¥ã‚Œæ›¿ãˆ
 
                         var otherInstance = GameManager.Instance.FormulaInstances[toIndex];
 
@@ -102,12 +102,12 @@ namespace Main.Handler
                 {
                     if (Symbol.IsNumber(Type.GetSymbol()) == true)
                     {
-                        // Œ³‚ÌˆÊ’u‚É–ß‚·
+                        // å…ƒã®ä½ç½®ã«æˆ»ã™
                         transform.position = InitPosition;
                     }
                     else
                     {
-                        // Á‚·
+                        // æ¶ˆã™
                         int index = GameManager.Instance.GetIndexFromSymbolPosition(InitPosition);
                         GameManager.Instance.Formula.Data[index] = Symbol.NONE;
                         GameManager.Instance.FormulaInstances[index] = null;

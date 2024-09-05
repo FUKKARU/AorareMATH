@@ -1,4 +1,4 @@
-using Main.Data.Formula;
+я╗┐using Main.Data.Formula;
 using SO;
 using UnityEngine;
 
@@ -33,7 +33,7 @@ namespace Main.Data
                 SymbolType.OD => Symbol.OD,
                 SymbolType.PL => Symbol.PL,
                 SymbolType.PR => Symbol.PR,
-                _ => throw new System.Exception("ХsР│В╚ОэЧ▐В┼В╖")
+                _ => throw new System.Exception("ф╕НцнгуБкчиощбЮуБзуБЩ")
             };
         }
 
@@ -57,7 +57,7 @@ namespace Main.Data
                 SymbolType.OD => SO_Sprite.Entity.OD,
                 SymbolType.PL => SO_Sprite.Entity.PL,
                 SymbolType.PR => SO_Sprite.Entity.PR,
-                _ => throw new System.Exception("ХsР│В╚ОэЧ▐В┼В╖")
+                _ => throw new System.Exception("ф╕НцнгуБкчиощбЮуБзуБЩ")
             };
         }
     }

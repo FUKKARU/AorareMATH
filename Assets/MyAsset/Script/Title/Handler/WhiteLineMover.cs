@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
@@ -60,7 +60,7 @@ namespace Title.Handler
         private void UpdateLine(ReadOnlyCollection<Transform> line, ref float x, float sx, float ex)
         {
             if (line == null || line.Count == 0) return;
-            if (sx <= ex) throw new Exception($"{sx}‚Í{ex}‚æ‚è‚à‘å‚«‚¢’l‚Å‚ ‚é•K—v‚ª‚ ‚è‚Ü‚·");
+            if (sx <= ex) throw new Exception($"{sx}ã¯{ex}ã‚ˆã‚Šã‚‚å¤§ãã„å€¤ã§ã‚ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™");
 
             for (int i = 0; i < line.Count; i++)
             {

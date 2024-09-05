@@ -1,4 +1,4 @@
-using SO;
+ï»¿using SO;
 using UnityEngine;
 
 namespace General
@@ -19,7 +19,7 @@ namespace General
                 SoundType.Master => "MasterParam",
                 SoundType.BGM => "BGMParam",
                 SoundType.SE => "SEParam",
-                _ => throw new System.Exception("•s³‚È’l‚Å‚·")
+                _ => throw new System.Exception("ä¸æ­£ãªå€¤ã§ã™")
             };
         }
 
@@ -60,7 +60,7 @@ namespace General
             }
             else
             {
-                throw new System.Exception("Master‚Íg‚¦‚Ü‚¹‚ñ");
+                throw new System.Exception("Masterã¯ä½¿ãˆã¾ã›ã‚“");
             }
         }
     }

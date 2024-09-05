@@ -1,4 +1,4 @@
-namespace Main.Data
+﻿namespace Main.Data
 {
     internal sealed class Question
     {
