@@ -83,7 +83,11 @@ namespace Main.Handler
 
                 await UniTask.Yield(cancellationToken: ct);
                 t += Time.deltaTime;
-                if (duration <= t) break;
+                if (duration <= t)
+                {
+                    tmpro.text = num.ToString();
+                    break;
+                }
             }
         }
     }
