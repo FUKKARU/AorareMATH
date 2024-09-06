@@ -46,11 +46,14 @@ namespace Main.Handler
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
         [SerializeField] private CountDown countDown;
         [SerializeField] private ShowTimerDiff showTimerDiff;
+        [SerializeField] private ParticleSystem justEffectLeft;
+        [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
 
         [SerializeField] private AudioSource selectSEAudioSource;
         [SerializeField] private AudioSource attackSEAudioSource;
         [SerializeField] private AudioSource attackFailedSEAudioSource;
+        [SerializeField] private AudioSource justAttackedSEAudioSource;
         [SerializeField] private AudioSource resultSEAudioSource;
 
         private Vector2[] _symbolPositions;
@@ -107,10 +110,13 @@ namespace Main.Handler
             previewText = null;
             countDown = null;
             showTimerDiff = null;
+            justEffectLeft = null;
+            justEffectRight = null;
             resultShower = null;
             selectSEAudioSource = null;
             attackSEAudioSource = null;
             attackFailedSEAudioSource = null;
+            justAttackedSEAudioSource = null;
             resultSEAudioSource = null;
             _formulaInstances = null;
             GameData = null;
@@ -244,7 +250,16 @@ namespace Main.Handler
 
         private void OnAttackSucceeded(float diff)
         {
-            attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
+            bool isJust = (diff == 0);
+
+            if (attackSEAudioSource) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
+            if (isJust)
+            {
+                if (justAttackedSEAudioSource)
+                    justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE);
+                if (justEffectLeft) justEffectLeft.Play();
+                if (justEffectRight) justEffectRight.Play();
+            }
 
             var list = Array.AsReadOnly(SO_Handler.Entity.TimeIncreaseAmountList);
             for (int i = 0; i < list.Count; i++)
@@ -256,12 +271,12 @@ namespace Main.Handler
                 showTimerDiff.PlayAnimation
                     (duration.TimerDiffText, endValue.TimerDiffText,
                     $"+ {(int)timeDiff}",
-                    diff == 0 ? Colors.ValueJust : Colors.ValueFar);
+                    isJust ? Colors.ValueJust : Colors.ValueFar);
                 break;
             }
 
             GameData.DefeatedEnemyNum++;
-            if (diff == 0) GameData.PerfectlyDefeatedEnemyNum++;
+            if (isJust) GameData.PerfectlyDefeatedEnemyNum++;
 
             CreateQuestion();
         }

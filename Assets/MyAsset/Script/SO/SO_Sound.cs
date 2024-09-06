@@ -53,6 +53,8 @@ namespace SO
         internal AudioClip AttackSE => _attackSE;
         [SerializeField] private AudioClip _attackFailedSE;
         internal AudioClip AttackFailedSE => _attackFailedSE;
+        [SerializeField] private AudioClip _justAttackedSE;
+        internal AudioClip JustAttackedSE => _justAttackedSE;
         [SerializeField] private AudioClip _enemyCarSE;
         internal AudioClip EnemyCarSE => _enemyCarSE;
         [SerializeField] private AudioClip _resultSE;
