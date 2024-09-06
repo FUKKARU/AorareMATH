@@ -59,7 +59,7 @@ namespace SO
 
         public void Dispose()
         {
-            Sprite = null;
+
         }
 
         public bool IsNullExist()
