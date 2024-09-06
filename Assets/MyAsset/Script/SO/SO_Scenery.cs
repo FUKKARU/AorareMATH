@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using General.Extension;
+using System;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SO
 {
@@ -28,25 +31,41 @@ namespace SO
         }
         #endregion
 
-        [SerializeField] private SceneryElementProperty _whiteLineProperty;
-        internal SceneryElementProperty WhiteLineProperty => _whiteLineProperty;
+        [SerializeField, FormerlySerializedAs("_whiteLineProperty")] private SceneryElementProperty _whitelineProperty;
+        internal SceneryElementProperty WhitelineProperty => _whitelineProperty;
 
-        [SerializeField] private SceneryElementProperty _buildingProperty;
-        internal SceneryElementProperty BuildingProperty => _buildingProperty;
+        [SerializeField] private SceneryElementProperty _treeProperty;
+        internal SceneryElementProperty TreeProperty => _treeProperty;
+
+        [SerializeField] private SceneryElementProperty _poleProperty;
+        internal SceneryElementProperty PoleProperty => _poleProperty;
     }
 
-    [System.Serializable]
-    internal struct SceneryElementProperty
+    [Serializable]
+    internal sealed class SceneryElementProperty : IDisposable, INullExistable
     {
-        public float Interval;
-        public float Duration;
+        [SerializeField, Header("このエレメントを表示するならチェック")] internal bool IsDisplay;
 
-        public Sprite Sprite;
+        [SerializeField] internal float Interval;
+        [SerializeField] internal float Duration;
 
-        public Vector3 StartVelocity;
-        public Vector3 StartPosition;
-        public float StartLocalScale;
-        public float VelocityCoefficient;
-        public float ScaleCoefficient;
+        [SerializeField] internal Sprite Sprite;
+
+        [SerializeField] internal Vector3 StartVelocity;
+        [SerializeField] internal Vector3 StartPosition;
+        [SerializeField] internal float StartLocalScale;
+        [SerializeField] internal float VelocityCoefficient;
+        [SerializeField] internal float ScaleCoefficient;
+
+        public void Dispose()
+        {
+            Sprite = null;
+        }
+
+        public bool IsNullExist()
+        {
+            if (Sprite == null) return true;
+            return false;
+        }
     }
 }

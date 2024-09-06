@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 533d57aea49384b428e0eb54e00bd2a4, type: 3}
   m_Name: SO_Scenery
   m_EditorClassIdentifier: 
-  _whiteLineProperty:
+  _whitelineProperty:
+    IsDisplay: 1
     Interval: 0.5
     Duration: 1.5
     Sprite: {fileID: 21300000, guid: 46c897638ca644642a200ceedfe10a8e, type: 3}
@@ -21,12 +22,23 @@ MonoBehaviour:
     StartLocalScale: 0
     VelocityCoefficient: 10
     ScaleCoefficient: 0.75
-  _buildingProperty:
+  _treeProperty:
+    IsDisplay: 0
     Interval: 1
-    Duration: 3
-    Sprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-    StartVelocity: {x: 0, y: 0, z: 0}
-    StartPosition: {x: -1, y: 4, z: 90}
-    StartLocalScale: 1
-    VelocityCoefficient: 0
-    ScaleCoefficient: 0
+    Duration: 1.5
+    Sprite: {fileID: 21300000, guid: 3d8346ed83e95a44ea334885da72a3eb, type: 3}
+    StartVelocity: {x: -2.2, y: 0.25, z: 0}
+    StartPosition: {x: -0.13, y: 0.79, z: 90}
+    StartLocalScale: 0
+    VelocityCoefficient: 5
+    ScaleCoefficient: 0.1
+  _poleProperty:
+    IsDisplay: 0
+    Interval: 1
+    Duration: 1.5
+    Sprite: {fileID: 21300000, guid: d3e607ce924999148b98d05bc4e86002, type: 3}
+    StartVelocity: {x: -2.2, y: 0.25, z: 0}
+    StartPosition: {x: -0.13, y: 0.79, z: 90}
+    StartLocalScale: 0
+    VelocityCoefficient: 5
+    ScaleCoefficient: 0.1

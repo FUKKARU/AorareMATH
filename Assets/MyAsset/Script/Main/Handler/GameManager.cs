@@ -7,6 +7,7 @@ using Main.Data.Formula;
 using SO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -88,7 +89,7 @@ namespace Main.Handler
 
             Formula.Init();
 
-            _symbolPositions = symbolFrames.Map(e => e.position.ToVector2()).ToArray();
+            _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
             SetPositionX(loadImageTf, 0);
             sceneReloader.SetActive(false);

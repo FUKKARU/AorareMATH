@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using General.Debug;
 using General.Extension;
 
@@ -376,10 +377,7 @@ namespace Main.Data.Formula
         /// <summary>
         /// IntStrをFltStrに変換する(リスト)
         /// </summary>
-        internal static List<FltStr> Convert(this List<IntStr> intStr)
-        {
-            return intStr.Map(e => e.Convert()).ToList();
-        }
+        internal static List<FltStr> Convert(this List<IntStr> intStr) => intStr.Select(e => e.Convert()).ToList();
 
         /// <summary>
         /// 式を計算する

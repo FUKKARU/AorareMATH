@@ -68,36 +68,6 @@ namespace General.Extension
 
     internal static class IteratorExtension
     {
-        internal static List<T> ToList<T>(this IEnumerable<T> itr) => new(itr);
-
-        internal static T[] ToArray<T>(this IEnumerable<T> itr) => itr.ToList().ToArray();
-
-        internal static IEnumerable<T2> Map<T1, T2>(this IEnumerable<T1> itr, Func<T1, T2> f)
-        {
-            foreach (T1 e in itr)
-            {
-                yield return f(e);
-            }
-        }
-
-        internal static bool All<T>(this IEnumerable<T> itr, Func<T, bool> f)
-        {
-            foreach (T e in itr)
-            {
-                if (!f(e)) return false;
-            }
-            return true;
-        }
-
-        internal static bool Any<T>(this IEnumerable<T> itr, Func<T, bool> f)
-        {
-            foreach (T e in itr)
-            {
-                if (f(e)) return true;
-            }
-            return false;
-        }
-
         internal static bool All<T>(this T val, params Func<T, bool>[] functions)
         {
             foreach (var f in functions)
@@ -127,5 +97,10 @@ namespace General.Extension
 
             return (default, -1, false);
         }
+    }
+
+    internal interface INullExistable
+    {
+        bool IsNullExist();
     }
 }
