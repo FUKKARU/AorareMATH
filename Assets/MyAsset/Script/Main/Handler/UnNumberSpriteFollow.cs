@@ -17,6 +17,7 @@ namespace Main.Handler
         private SpriteRenderer thisInstance = null;
 
         [SerializeField, Header("インスタンスのz座標")] private float z;
+        internal float Z => z;
         [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
 
         private bool isFollowingMouse = false;
@@ -108,6 +109,18 @@ namespace Main.Handler
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pos.z = z;
             return pos;
+        }
+
+        internal void ForciblyInstantiateSpriteFollowHere(IntStr symbol, int index)
+        {
+            if (Symbol.IsNumber(symbol) != false) return;
+
+            Vector3 toPos = GameManager.Instance.SymbolPositions[index].ToVector3(z);
+            SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
+            // 演算子orかっこの前提
+            instance.transform.localScale =
+            Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
+            GameManager.Instance.FormulaInstances[index] = instance;
         }
     }
 }

@@ -41,5 +41,8 @@ namespace SO
 
         [SerializeField, Header("攻撃成功になる、差分の境界値")] private float _diffLimit;
         internal float DiffLimit => _diffLimit;
+
+        [SerializeField, Header("ピッタリになる、差分の境界値")] private float _justDiffLimit;
+        internal float JustDiffLimit => _justDiffLimit;
     }
 }
