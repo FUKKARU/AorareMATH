@@ -7,6 +7,7 @@ using Main.Data.Formula;
 using SO;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -36,6 +37,7 @@ namespace Main.Handler
         #endregion
 
         [SerializeField, Header("N0 - N9 の順番")] private SpriteFollow[] symbolSprites;
+        [SerializeField, Header("OA, OS, OM, OD, PL, PR の順番\nアシストありの時だけ使用")] private UnNumberSpriteFollow[] assistSymbolSprites;
         [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
 
         [SerializeField] private EndValue endValue;
@@ -131,7 +133,7 @@ namespace Main.Handler
                 GameState.Stay => OnStay,
                 GameState.OnGoing => OnOnGoing,
                 GameState.Over => OnOver,
-                _ => throw new Exception("不正な種類です")
+                _ => null
             });
         }
 
@@ -173,7 +175,7 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-            (Question.N, Question.Target) = QuestionGenerater.GetRandom();
+            (Question.N, Question.Target) = QuestionGenerater.GetNew(out Formula answer);
 
             // 前の問題のインスタンスを消す
             Formula.Init();
@@ -181,10 +183,60 @@ namespace Main.Handler
             Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
             // 新しくインスタンスを作る
-            InstantiateNumber(Question.N.N1, 2);
-            InstantiateNumber(Question.N.N2, 4);
-            InstantiateNumber(Question.N.N3, 7);
-            InstantiateNumber(Question.N.N4, 9);
+            InstantiateNumbers(Question.N, answer);
+        }
+
+        private void InstantiateNumbers((int N1, int N2, int N3, int N4) n, Formula answer)
+        {
+            switch (Difficulty.Value)
+            {
+                // nは無視
+                case Difficulty.Type.EasyWithAssist:
+                    {
+                        // 数字の位置一覧
+                        int[] indices = new int[4];
+                        int _i = 0;
+
+                        // 数字の位置を探して生成(引数が正しい前提)
+                        foreach ((int i, IntStr e) in answer.Data.Enumerate())
+                        {
+                            if (Symbol.IsNumber(e) == true)
+                            {
+                                InstantiateNumber(e.Int, i);
+                                indices[_i++] = i;
+                            }
+                        }
+
+                        // ランダムに取得する演算子のインデックス(演算子が1つ以上存在する前提)
+                        int j = 0;
+                        do
+                        {
+                            j = Random.Range(0, answer.Data.Count);
+                        }
+                        while (Symbol.IsOperator(answer.Data[j]) != true);
+                        InstantiateAssistUnNumber(answer.Data[j], j);
+                    }
+                    break;
+                // answerは無視
+                case Difficulty.Type.EasyWithoutAssist:
+                    {
+                        InstantiateNumber(n.N1, 2);
+                        InstantiateNumber(n.N2, 4);
+                        InstantiateNumber(n.N3, 7);
+                        InstantiateNumber(n.N4, 9);
+                    }
+                    break;
+                // answerは無視
+                case Difficulty.Type.Normal:
+                    {
+                        InstantiateNumber(n.N1, 2);
+                        InstantiateNumber(n.N2, 4);
+                        InstantiateNumber(n.N3, 7);
+                        InstantiateNumber(n.N4, 9);
+                    }
+                    break;
+                default: return;
+            }
         }
 
         private void InstantiateNumber(int n, int i)
@@ -198,6 +250,15 @@ namespace Main.Handler
             _formulaInstances[i] = instance;
         }
 
+        private void InstantiateAssistUnNumber(IntStr symbol, int i)
+        {
+            Formula.Data[i] = symbol;
+
+            Vector2 pos = SymbolPositions[i];
+            var assistInstance = ToAssistInstance(symbol);
+            assistInstance.ForciblyInstantiateSpriteFollowHere(symbol, i);
+        }
+
         private void ShowPreview()
         {
             float? r = Formula.Calcurate();
@@ -208,7 +269,7 @@ namespace Main.Handler
                 float diff = Mathf.Abs(Question.Target - r.Value);
                 Color32 color;
                 if (SO_Handler.Entity.DiffLimit < diff) color = Colors.ValueFar;
-                else if (diff != 0) color = Colors.ValueClose;
+                else if (SO_Handler.Entity.JustDiffLimit < diff) color = Colors.ValueClose;
                 else color = Colors.ValueJust;
                 SetColor(previewText, color);
             }
@@ -297,11 +358,24 @@ namespace Main.Handler
         private void SendScoreImpl(int boardNo, int score)
            => UnityroomApiClient.Instance.SendScore(boardNo, score, ScoreboardWriteMode.HighScoreDesc);
 
-        private void Do(Action action) => action();
+        private void Do(Action action) => action?.Invoke();
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
             foreach (var e in symbolSprites)
+            {
+                if (e.Type.GetSymbol() == symbol)
+                {
+                    return e;
+                }
+            }
+
+            throw new Exception("インスタンスが見つかりませんでした");
+        }
+
+        private UnNumberSpriteFollow ToAssistInstance(IntStr symbol)
+        {
+            foreach (var e in assistSymbolSprites)
             {
                 if (e.Type.GetSymbol() == symbol)
                 {
@@ -403,10 +477,65 @@ namespace Main.Handler
 
     internal static class QuestionGenerater
     {
-        internal static ((int N1, int N2, int N3, int N4) N, int Target) GetRandom()
+        internal static ((int N1, int N2, int N3, int N4) N, int Target) GetNew(out Formula answer)
+        {
+            switch (Difficulty.Value)
+            {
+                case Difficulty.Type.EasyWithAssist: return GetFixed(out answer);
+                case Difficulty.Type.EasyWithoutAssist: return GetFixed(out answer);
+                case Difficulty.Type.Normal: answer = null; return GetRandom();
+                default: answer = null; return default;
+            }
+        }
+
+        // ランダムに生成
+        private static ((int N1, int N2, int N3, int N4) N, int Target) GetRandom()
         {
             return (CreateLicensePlateNumbers(), CreateTargetNumber());
         }
+
+        // 事前生成
+        private static ((int N1, int N2, int N3, int N4) N, int Target) GetFixed(out Formula answer)
+        {
+            if (FixedQuestions == null) { answer = null; return default; }
+            int len = FixedQuestions.Count;
+            if (len == 0) { answer = null; return default; }
+            int index = Random.Range(0, len);
+            ((int n1, int n2, int n3, int n4) n, int target, Formula _answer) = FixedQuestions[index];
+            answer = _answer;
+            return (n, target);
+        }
+
+        // 事前生成のデータ(両端の間隔も意識して、データを格納すること！)
+        // ↓は適当なデータ
+        internal static ReadOnlyCollection<((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)> FixedQuestions =
+        new List<((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)>()
+        {
+            ((1, 2, 3, 4), 10, new Formula()
+            {
+                Data = new()
+                {
+                   Symbol.NONE,Symbol.NONE, Symbol.N1, Symbol.OA, Symbol.N2, Symbol.OA,
+                    Symbol.NONE, Symbol.N3, Symbol.OA, Symbol.N4,Symbol.NONE,Symbol.NONE
+                }
+            }),
+             ((1, 9, 1, 9), 10, new Formula()
+            {
+                Data = new()
+                {
+                    Symbol.NONE, Symbol.PL, Symbol.N1, Symbol.OD, Symbol.N9, Symbol.OA,
+                    Symbol.N1, Symbol.PR,Symbol.OM,Symbol.N9,Symbol.NONE,Symbol.NONE
+                }
+            }),
+             ((1, 2, 5, 1), 10, new Formula()
+            {
+                Data = new()
+                {
+                    Symbol.NONE, Symbol.PL, Symbol.N1, Symbol.OM, Symbol.PL, Symbol.N2,
+                    Symbol.OA,Symbol.N5,Symbol.PR,Symbol.PR,Symbol.OM,Symbol.N1
+                }
+            })
+        }.AsReadOnly();
 
         private static (int N1, int N2, int N3, int N4) CreateLicensePlateNumbers()
         {

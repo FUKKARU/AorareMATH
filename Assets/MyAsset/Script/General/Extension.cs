@@ -97,6 +97,16 @@ namespace General.Extension
 
             return (default, -1, false);
         }
+
+        internal static IEnumerable<(int Index, T Element)> Enumerate<T>(this IEnumerable<T> itr)
+        {
+            int i = 0;
+            foreach (T e in itr)
+            {
+                yield return (i, e);
+                i++;
+            }
+        }
     }
 
     internal interface INullExistable
