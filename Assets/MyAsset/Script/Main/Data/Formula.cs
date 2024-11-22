@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using General.Debug;
 using General.Extension;
 
 namespace Main.Data.Formula
@@ -185,11 +184,11 @@ namespace Main.Data.Formula
             Data = new();
         }
 
-        internal Formula(List<IntStr> data)
+        internal Formula(IntStr[] data)
         {
             if (data == null) return;
-            if (data.Count != 12) return;
-            Data = data;
+            if (data.Length != 12) return;
+            Data = data.ToList();
         }
 
         internal void Init()

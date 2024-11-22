@@ -507,35 +507,7 @@ namespace Main.Handler
         }
 
         // 事前生成のデータ(両端の間隔も意識して、データを格納すること！)
-        // ↓は適当なデータ
-        internal static ReadOnlyCollection<((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)> FixedQuestions =
-        new List<((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)>()
-        {
-            ((1, 2, 3, 4), 10, new Formula()
-            {
-                Data = new()
-                {
-                   Symbol.NONE,Symbol.NONE, Symbol.N1, Symbol.OA, Symbol.N2, Symbol.OA,
-                    Symbol.NONE, Symbol.N3, Symbol.OA, Symbol.N4,Symbol.NONE,Symbol.NONE
-                }
-            }),
-             ((1, 9, 1, 9), 10, new Formula()
-            {
-                Data = new()
-                {
-                    Symbol.NONE, Symbol.PL, Symbol.N1, Symbol.OD, Symbol.N9, Symbol.OA,
-                    Symbol.N1, Symbol.PR,Symbol.OM,Symbol.N9,Symbol.NONE,Symbol.NONE
-                }
-            }),
-             ((1, 2, 5, 1), 10, new Formula()
-            {
-                Data = new()
-                {
-                    Symbol.NONE, Symbol.PL, Symbol.N1, Symbol.OM, Symbol.PL, Symbol.N2,
-                    Symbol.OA,Symbol.N5,Symbol.PR,Symbol.PR,Symbol.OM,Symbol.N1
-                }
-            })
-        }.AsReadOnly();
+        internal static ReadOnlyCollection<((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)> FixedQuestions = null;
 
         private static (int N1, int N2, int N3, int N4) CreateLicensePlateNumbers()
         {

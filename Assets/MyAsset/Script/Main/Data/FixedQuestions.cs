@@ -1,6 +1,8 @@
+using General.Extension;
 using Main.Data.Formula;
 using Main.Handler;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Main.Data
@@ -10,8 +12,49 @@ namespace Main.Data
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Convert()
         {
-            // ‚Ü‚¾
-            QuestionGenerater.FixedQuestions = null;
+            LinkedList<((int N1, int N2, int N3, int N4) N, int Target, Formula.Formula Answer)> normedData = new();
+
+            foreach (string e in Data)
+            {
+                try
+                {
+                    string[] elements = e.Split(", ");
+                    int[] nums = new int[4];
+                    for (int i = 0; i < 4; i++) nums[i] = int.Parse(elements[i]);
+                    int target = int.Parse(elements[4]);
+                    string formula = elements[5]; // ‘S‚Ä11•¶Žš‚Á‚Û‚¢‚Ì‚ÅA¶‹l‚ß‚Ås‚­
+
+                    IntStr[] symbols = new IntStr[12];
+                    foreach ((int i, char c) in formula.Enumerate())
+                    {
+                        symbols[i] = c switch
+                        {
+                            '0' => Symbol.N0,
+                            '1' => Symbol.N1,
+                            '2' => Symbol.N2,
+                            '3' => Symbol.N3,
+                            '4' => Symbol.N4,
+                            '5' => Symbol.N5,
+                            '6' => Symbol.N6,
+                            '7' => Symbol.N7,
+                            '8' => Symbol.N8,
+                            '9' => Symbol.N9,
+                            '+' => Symbol.OA,
+                            '-' => Symbol.OS,
+                            '*' => Symbol.OM,
+                            '/' => Symbol.OD,
+                            '(' => Symbol.PL,
+                            ')' => Symbol.PR,
+                            _ => Symbol.NONE
+                        };
+                    }
+
+                    normedData.AddLast(((nums[0], nums[1], nums[2], nums[3]), target, new(symbols)));
+                }
+                catch { continue; }
+            }
+
+            QuestionGenerater.FixedQuestions = normedData.ToList().AsReadOnly();
         }
 
         private static string[] Data =
