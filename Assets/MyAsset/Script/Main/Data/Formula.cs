@@ -185,6 +185,13 @@ namespace Main.Data.Formula
             Data = new();
         }
 
+        internal Formula(List<IntStr> data)
+        {
+            if (data == null) return;
+            if (data.Count != 12) return;
+            Data = data;
+        }
+
         internal void Init()
         {
             Data = new()
