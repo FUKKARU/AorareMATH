@@ -5,13 +5,17 @@ using SO;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 namespace Title.Handler
 {
     internal sealed class ButtonManager : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer sr;
+        [SerializeField] private SpriteRenderer easyWithAssistStartButton;
+        [SerializeField] private SpriteRenderer easyWithoutAssistStartButton;
+        [SerializeField] private SpriteRenderer normalStartButton;
+
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite hoverSprite;
         [SerializeField] private Transform carTf;
@@ -27,17 +31,28 @@ namespace Title.Handler
 
         private void OnEnable()
         {
-            if (!sr) return;
+            if (!easyWithAssistStartButton) return;
+            if (!easyWithoutAssistStartButton) return;
+            if (!normalStartButton) return;
             if (!normalSprite) return;
 
-            sr.sprite = normalSprite;
+            easyWithAssistStartButton.sprite = normalSprite;
+            easyWithoutAssistStartButton.sprite = normalSprite;
+            normalStartButton.sprite = normalSprite;
 
             ct = this.GetCancellationTokenOnDestroy();
+
+            MakeThisToButton(easyWithAssistStartButton, Difficulty.Type.EasyWithAssist);
+            MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.EasyWithoutAssist);
+            MakeThisToButton(normalStartButton, Difficulty.Type.Normal);
         }
 
         private void OnDisable()
         {
-            sr = null;
+            easyWithAssistStartButton = null;
+            easyWithoutAssistStartButton = null;
+            normalStartButton = null;
+
             normalSprite = null;
             hoverSprite = null;
             carTf = null;
@@ -46,7 +61,25 @@ namespace Title.Handler
             bgmPlayer = null;
         }
 
-        public void OnEnter()
+        private void MakeThisToButton(SpriteRenderer sr, Difficulty.Type difficultyType)
+        {
+            if (sr == null) return;
+            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
+            enter.callback.AddListener(_ => OnEnter(sr));
+            et.triggers.Add(enter);
+
+            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
+            exit.callback.AddListener(_ => OnExit(sr));
+            et.triggers.Add(exit);
+
+            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
+            click.callback.AddListener(_ => OnClick(difficultyType));
+            et.triggers.Add(click);
+        }
+
+        private void OnEnter(SpriteRenderer sr)
         {
             if (!isActive) return;
             if (!sr) return;
@@ -55,7 +88,7 @@ namespace Title.Handler
             sr.sprite = hoverSprite;
         }
 
-        public void OnExit()
+        private void OnExit(SpriteRenderer sr)
         {
             if (!isActive) return;
             if (!sr) return;
@@ -64,19 +97,20 @@ namespace Title.Handler
             sr.sprite = normalSprite;
         }
 
-        public void OnClick()
+        private void OnClick(Difficulty.Type difficultyType)
         {
             if (!isActive) return;
 
             isActive = false;
 
-            Load(ct).Forget();
+            Load(difficultyType, ct).Forget();
         }
 
         private void PlayOnStartCarSE() => onStartCarSEAudioSource.Raise(SO_Sound.Entity.EnemyCarSE, SoundType.SE);
 
-        private async UniTask Load(CancellationToken ct)
+        private async UniTask Load(Difficulty.Type difficultyType, CancellationToken ct)
         {
+            Difficulty.Value = difficultyType;
             await Direction(endValue, duration, ct);
             await SceneManager.LoadSceneAsync(SO_SceneName.Entity.Main).ToUniTask(cancellationToken: ct);
         }
