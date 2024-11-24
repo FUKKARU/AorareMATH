@@ -2145,6 +2145,42 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 4458703188222196744, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -255
+      objectReference: {fileID: 0}
+    - target: {fileID: 4458703188222196744, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496101556899262300, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -249
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496101556899262300, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155071098141935118, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155071098141935118, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155071098141935118, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155071098141935118, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 725.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5155071098141935118, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
