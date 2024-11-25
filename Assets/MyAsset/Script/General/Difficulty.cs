@@ -4,11 +4,12 @@ namespace General
     {
         public enum Type
         {
-            EasyWithAssist,
-            EasyWithoutAssist,
-            Normal,
+            AssistNone,
+            Assist1,
+            Assist2,
+            Assist3,
         }
 
-        public static Type Value = Type.EasyWithAssist;
+        public static Type Value = Type.AssistNone;
     }
 }

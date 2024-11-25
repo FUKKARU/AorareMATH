@@ -42,9 +42,9 @@ namespace Title.Handler
 
             ct = this.GetCancellationTokenOnDestroy();
 
-            MakeThisToButton(easyWithAssistStartButton, Difficulty.Type.EasyWithAssist);
-            MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.EasyWithoutAssist);
-            MakeThisToButton(normalStartButton, Difficulty.Type.Normal);
+            MakeThisToButton(easyWithAssistStartButton, Difficulty.Type.Assist1);
+            MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.Assist2);
+            MakeThisToButton(normalStartButton, Difficulty.Type.Assist3);
         }
 
         private void OnDisable()

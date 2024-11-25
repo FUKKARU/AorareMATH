@@ -188,54 +188,49 @@ namespace Main.Handler
 
         private void InstantiateNumbers((int N1, int N2, int N3, int N4) n, Formula answer)
         {
-            switch (Difficulty.Value)
+            Action action = Difficulty.Value switch
             {
-                // nは無視
-                case Difficulty.Type.EasyWithAssist:
-                    {
-                        // 数字の位置一覧
-                        int[] indices = new int[4];
-                        int _i = 0;
+                Difficulty.Type.AssistNone => () => InstantiateNumbersWithoutAssist(n),
+                Difficulty.Type.Assist1 => () => InstantiateNumbersWithAssist(answer, 1),
+                Difficulty.Type.Assist2 => () => InstantiateNumbersWithAssist(answer, 2),
+                Difficulty.Type.Assist3 => () => InstantiateNumbersWithAssist(answer, 3),
+                _ => null
+            };
+            action?.Invoke();
+        }
 
-                        // 数字の位置を探して生成(引数が正しい前提)
-                        foreach ((int i, IntStr e) in answer.Data.Enumerate())
-                        {
-                            if (Symbol.IsNumber(e) == true)
-                            {
-                                InstantiateNumber(e.Int, i);
-                                indices[_i++] = i;
-                            }
-                        }
+        private void InstantiateNumbersWithoutAssist((int N1, int N2, int N3, int N4) n)
+        {
+            InstantiateNumber(n.N1, 2);
+            InstantiateNumber(n.N2, 4);
+            InstantiateNumber(n.N3, 7);
+            InstantiateNumber(n.N4, 9);
+        }
 
-                        // ランダムに取得する演算子のインデックス(演算子が1つ以上存在する前提)
-                        int j = 0;
-                        do
-                        {
-                            j = Random.Range(0, answer.Data.Count);
-                        }
-                        while (Symbol.IsOperator(answer.Data[j]) != true);
-                        InstantiateAssistUnNumber(answer.Data[j], j);
-                    }
-                    break;
-                // answerは無視
-                case Difficulty.Type.EasyWithoutAssist:
-                    {
-                        InstantiateNumber(n.N1, 2);
-                        InstantiateNumber(n.N2, 4);
-                        InstantiateNumber(n.N3, 7);
-                        InstantiateNumber(n.N4, 9);
-                    }
-                    break;
-                // answerは無視
-                case Difficulty.Type.Normal:
-                    {
-                        InstantiateNumber(n.N1, 2);
-                        InstantiateNumber(n.N2, 4);
-                        InstantiateNumber(n.N3, 7);
-                        InstantiateNumber(n.N4, 9);
-                    }
-                    break;
-                default: return;
+        // 引数が正しい値の前提
+        private void InstantiateNumbersWithAssist(Formula answer, int assistNum)
+        {
+            if (assistNum is not (1 or 2 or 3)) return;
+
+            List<int> operatorIndices = new();  // 要素は4個になるはず
+
+            foreach ((int i, IntStr e) in answer.Data.Enumerate())
+            {
+                if (Symbol.IsNumber(e) != true)
+                {
+                    if (Symbol.IsOperator(e) != true) continue;
+                    operatorIndices.Add(i);
+                    continue;
+                }
+                InstantiateNumber(e.Int, i);
+            }
+
+            for (int i = 0; i < assistNum; i++)
+            {
+                int j = Random.Range(0, operatorIndices.Count);
+                int instantiateIndex = operatorIndices[j];
+                operatorIndices.RemoveAt(j);
+                InstantiateAssistUnNumber(answer.Data[instantiateIndex], instantiateIndex);
             }
         }
 
@@ -481,9 +476,10 @@ namespace Main.Handler
         {
             switch (Difficulty.Value)
             {
-                case Difficulty.Type.EasyWithAssist: return GetFixed(out answer);
-                case Difficulty.Type.EasyWithoutAssist: return GetFixed(out answer);
-                case Difficulty.Type.Normal: answer = null; return GetRandom();
+                case Difficulty.Type.AssistNone: answer = null; return GetRandom();
+                case Difficulty.Type.Assist1: return GetFixed(out answer);
+                case Difficulty.Type.Assist2: return GetFixed(out answer);
+                case Difficulty.Type.Assist3: return GetFixed(out answer);
                 default: answer = null; return default;
             }
         }
