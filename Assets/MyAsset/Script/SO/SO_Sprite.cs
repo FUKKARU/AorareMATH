@@ -3,31 +3,8 @@
 namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Sprite", fileName = "SO_Sprite")]
-    public class SO_Sprite : ScriptableObject
+    public class SO_Sprite : AResourceLoadableScriptableObject<SO_Sprite>
     {
-        #region
-        public const string PATH = "SO_Sprite";
-
-        private static SO_Sprite _entity = null;
-        public static SO_Sprite Entity
-        {
-            get
-            {
-                if (_entity == null)
-                {
-                    _entity = Resources.Load<SO_Sprite>(PATH);
-
-                    if (_entity == null)
-                    {
-                        Debug.LogError(PATH + " not found");
-                    }
-                }
-
-                return _entity;
-            }
-        }
-        #endregion
-
         [SerializeField] private Sprite _n0;
         internal Sprite N0 => _n0;
 
