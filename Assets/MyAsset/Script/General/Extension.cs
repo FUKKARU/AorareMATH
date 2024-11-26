@@ -42,7 +42,7 @@ namespace General.Extension
         internal static void AddListener(this EventTrigger eventTrigger, EventTriggerType type, Action action)
         {
             EventTrigger.Entry entry = new() { eventID = type };
-            entry.callback.AddListener(_ => { action(); });
+            entry.callback.AddListener(_ => action?.Invoke());
             eventTrigger.triggers.Add(entry);
         }
 
@@ -60,10 +60,7 @@ namespace General.Extension
         internal static Vector2 ToVector2(this Vector3 v) => new(v.x, v.y);
         internal static Vector3 ToVector3(this Vector2 v, float z) => new(v.x, v.y, z);
 
-        internal static void Pass()
-        {
-            return;
-        }
+        internal static void Pass() { }
     }
 
     internal static class IteratorExtension
@@ -107,10 +104,5 @@ namespace General.Extension
                 i++;
             }
         }
-    }
-
-    internal interface INullExistable
-    {
-        bool IsNullExist();
     }
 }

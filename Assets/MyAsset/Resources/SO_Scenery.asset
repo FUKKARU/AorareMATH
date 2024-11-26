@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: SO_Scenery
   m_EditorClassIdentifier: 
   _whitelineProperty:
-    IsDisplay: 1
     Interval: 0.5
     Duration: 1.5
     Sprite: {fileID: 21300000, guid: 46c897638ca644642a200ceedfe10a8e, type: 3}
@@ -22,23 +21,21 @@ MonoBehaviour:
     StartLocalScale: 0
     VelocityCoefficient: 10
     ScaleCoefficient: 0.75
-  _treeProperty:
-    IsDisplay: 0
-    Interval: 1
+  _buildingsLeftProperty:
+    Interval: 0.5
     Duration: 1.5
-    Sprite: {fileID: 21300000, guid: 3d8346ed83e95a44ea334885da72a3eb, type: 3}
-    StartVelocity: {x: -2.2, y: 0.25, z: 0}
-    StartPosition: {x: -0.13, y: 0.79, z: 90}
+    Sprite: {fileID: 21300000, guid: de4397e226c754a6eac16fdf7d52dad1, type: 3}
+    StartVelocity: {x: -1, y: 0.23, z: 0}
+    StartPosition: {x: 0.045, y: 0.9, z: 90}
     StartLocalScale: 0
-    VelocityCoefficient: 5
-    ScaleCoefficient: 0.1
-  _poleProperty:
-    IsDisplay: 0
-    Interval: 1
+    VelocityCoefficient: 10
+    ScaleCoefficient: 0.75
+  _buildingsRightProperty:
+    Interval: 0.5
     Duration: 1.5
-    Sprite: {fileID: 21300000, guid: d3e607ce924999148b98d05bc4e86002, type: 3}
-    StartVelocity: {x: -2.2, y: 0.25, z: 0}
-    StartPosition: {x: -0.13, y: 0.79, z: 90}
+    Sprite: {fileID: 21300000, guid: 98207d961a7f84572baaf0a613197d87, type: 3}
+    StartVelocity: {x: 0, y: 0, z: 0}
+    StartPosition: {x: 0, y: 0, z: 0}
     StartLocalScale: 0
-    VelocityCoefficient: 5
-    ScaleCoefficient: 0.1
+    VelocityCoefficient: 0
+    ScaleCoefficient: 0
