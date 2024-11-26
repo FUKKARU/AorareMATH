@@ -15,11 +15,11 @@ MonoBehaviour:
   _soundVolumeRange: {x: -20, y: 20}
   _initTimeLimit: 60
   _timeIncreaseAmountList:
-  - 10
+  - 13
+  - 7
+  - 6
   - 5
   - 4
   - 3
-  - 2
-  - 1
-  _diffLimit: 10
+  _diffLimit: 13
   _justDiffLimit: 0.0001
