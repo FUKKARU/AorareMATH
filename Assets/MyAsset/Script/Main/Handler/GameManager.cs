@@ -83,8 +83,7 @@ namespace Main.Handler
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
 
-        private bool _isAttackable = false;
-        internal bool IsAttackable => _isAttackable;
+        private bool isAttackable = false;
 
         private void OnEnable()
         {
@@ -149,6 +148,8 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
+            if (isAttackable && Input.GetKeyDown(KeyCode.Space)) Attack();
+
             if (Time > 0)
             {
                 Time -= UnityEngine.Time.deltaTime;
@@ -289,7 +290,7 @@ namespace Main.Handler
             tmpro.color = color;
         }
 
-        internal void Attack()
+        private void Attack()
         {
             float? r = Formula.Calcurate();
 
@@ -331,8 +332,20 @@ namespace Main.Handler
                 break;
             }
 
-            GameData.DefeatedEnemyNum++;
-            if (isJust) GameData.PerfectlyDefeatedEnemyNum++;
+            if (++GameData.DefeatedEnemyNum >= SO_Handler.Entity.ForceClearDefeatLimit)
+            {
+                State = GameState.Over;
+                return;
+            }
+
+            if (isJust)
+            {
+                if (++GameData.PerfectlyDefeatedEnemyNum >= SO_Handler.Entity.ForceClearJustLimit)
+                {
+                    State = GameState.Over;
+                    return;
+                }
+            }
 
             CreateQuestion();
         }
@@ -405,7 +418,7 @@ namespace Main.Handler
             await countDown.Play(ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.CountDownToGameStart), cancellationToken: ct);
 
-            _isAttackable = true;
+            isAttackable = true;
             CreateQuestion();
             State = GameState.OnGoing;
         }
