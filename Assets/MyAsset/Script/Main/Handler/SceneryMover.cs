@@ -98,6 +98,9 @@ namespace Main.Handler
 
             int len = elements.Length;
             if (len <= 0) return;
+
+            await UniTask.Delay(TimeSpan.FromSeconds(elements[0].TimeOffset), cancellationToken: ct);
+
             int i = 0;
             while (true)
             {
@@ -123,6 +126,7 @@ namespace Main.Handler
         private SceneryElementReference reference;
         private SceneryElementProperty property;
         internal float Interval => property.Interval;
+        internal float TimeOffset => property.TimeOffset;
 
         internal bool IsActive { get; set; } = false;
 

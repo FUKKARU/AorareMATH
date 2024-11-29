@@ -15,6 +15,7 @@ MonoBehaviour:
   _whitelineProperty:
     Interval: 0.5
     Duration: 1.5
+    TimeOffset: 0
     Sprite: {fileID: 21300000, guid: 46c897638ca644642a200ceedfe10a8e, type: 3}
     StartVelocity: {x: 1, y: -1, z: 0}
     StartPosition: {x: 0.25, y: 0.85, z: 90}
@@ -22,20 +23,22 @@ MonoBehaviour:
     VelocityCoefficient: 10
     ScaleCoefficient: 0.75
   _buildingsLeftProperty:
-    Interval: 0.5
+    Interval: 3
     Duration: 1.5
+    TimeOffset: 0.5
     Sprite: {fileID: 21300000, guid: de4397e226c754a6eac16fdf7d52dad1, type: 3}
-    StartVelocity: {x: -1, y: 0.23, z: 0}
-    StartPosition: {x: 0.045, y: 0.9, z: 90}
-    StartLocalScale: 0
-    VelocityCoefficient: 10
-    ScaleCoefficient: 0.75
+    StartVelocity: {x: -1, y: -0.08, z: 0}
+    StartPosition: {x: 0.045, y: 0.8, z: 90}
+    StartLocalScale: 0.2
+    VelocityCoefficient: 30
+    ScaleCoefficient: 0.6
   _buildingsRightProperty:
-    Interval: 0.5
+    Interval: 3
     Duration: 1.5
+    TimeOffset: 2
     Sprite: {fileID: 21300000, guid: 98207d961a7f84572baaf0a613197d87, type: 3}
-    StartVelocity: {x: 0, y: 0, z: 0}
-    StartPosition: {x: 0, y: 0, z: 0}
-    StartLocalScale: 0
-    VelocityCoefficient: 0
-    ScaleCoefficient: 0
+    StartVelocity: {x: 1, y: -0.09, z: 0}
+    StartPosition: {x: 0.425, y: 0.8, z: 90}
+    StartLocalScale: 0.2
+    VelocityCoefficient: 30
+    ScaleCoefficient: 0.6
