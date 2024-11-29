@@ -23,6 +23,7 @@ namespace SO
     {
         [SerializeField] internal float Interval;
         [SerializeField] internal float Duration;
+        [SerializeField] internal float TimeOffset;
 
         [SerializeField] internal Sprite Sprite;
 
