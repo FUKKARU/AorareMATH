@@ -23,7 +23,7 @@ MonoBehaviour:
     VelocityCoefficient: 10
     ScaleCoefficient: 0.75
   _buildingsLeftProperty:
-    Interval: 3
+    Interval: 0.4
     Duration: 1.5
     TimeOffset: 0.5
     Sprite: {fileID: 21300000, guid: de4397e226c754a6eac16fdf7d52dad1, type: 3}
@@ -33,9 +33,9 @@ MonoBehaviour:
     VelocityCoefficient: 15
     ScaleCoefficient: 0.7
   _buildingsRightProperty:
-    Interval: 3
+    Interval: 0.4
     Duration: 1.5
-    TimeOffset: 2
+    TimeOffset: 0.5
     Sprite: {fileID: 21300000, guid: 98207d961a7f84572baaf0a613197d87, type: 3}
     StartVelocity: {x: 1, y: -0.09, z: 0}
     StartPosition: {x: 0.425, y: 0.8, z: 90}
@@ -43,9 +43,9 @@ MonoBehaviour:
     VelocityCoefficient: 15
     ScaleCoefficient: 0.7
   _lampLeftProperty:
-    Interval: 3
+    Interval: 0.5
     Duration: 1.5
-    TimeOffset: 1.5
+    TimeOffset: 0.5
     Sprite: {fileID: 21300000, guid: ca7513d4ed20a43ff8c5c73d8f9e6686, type: 3}
     StartVelocity: {x: -1, y: -0.08, z: 0}
     StartPosition: {x: 0.045, y: 0.8, z: 90}
@@ -53,9 +53,9 @@ MonoBehaviour:
     VelocityCoefficient: 15
     ScaleCoefficient: 0.3
   _lampRightProperty:
-    Interval: 3
+    Interval: 0.5
     Duration: 1.5
-    TimeOffset: 3
+    TimeOffset: 0.5
     Sprite: {fileID: 21300000, guid: bd02b909ca23d43bd9150f069ad7cb51, type: 3}
     StartVelocity: {x: 1, y: -0.09, z: 0}
     StartPosition: {x: 0.425, y: 0.8, z: 90}
