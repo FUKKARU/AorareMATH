@@ -16,6 +16,12 @@ namespace SO
 
         [SerializeField] private SceneryElementProperty _buildingsRightProperty;
         internal SceneryElementProperty BuildingsRightProperty => _buildingsRightProperty;
+
+        [SerializeField] private SceneryElementProperty _lampLeftProperty;
+        internal SceneryElementProperty LampLeftProperty => _lampLeftProperty;
+
+        [SerializeField] private SceneryElementProperty _lampRightProperty;
+        internal SceneryElementProperty LampRightProperty => _lampRightProperty;
     }
 
     [Serializable]
