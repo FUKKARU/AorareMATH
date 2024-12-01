@@ -16,12 +16,16 @@ namespace Main.Handler
         private SceneryMoverImpl whiteLineImpl;
         private SceneryMoverImpl buildingsLeftImpl;
         private SceneryMoverImpl buildingsRightImpl;
+        private SceneryMoverImpl lampLeftImpl;
+        private SceneryMoverImpl lampRightImpl;
 
         private void OnEnable()
         {
             InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
             InstantiateThis(ref buildingsLeftImpl, SO_Scenery.Entity.BuildingsLeftProperty);
             InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
+            InstantiateThis(ref lampLeftImpl, SO_Scenery.Entity.LampLeftProperty);
+            InstantiateThis(ref lampRightImpl, SO_Scenery.Entity.LampRightProperty);
 
             void InstantiateThis(ref SceneryMoverImpl impl, SceneryElementProperty property)
             {
@@ -48,10 +52,14 @@ namespace Main.Handler
             whiteLineImpl?.Dispose();
             buildingsLeftImpl?.Dispose();
             buildingsRightImpl?.Dispose();
+            lampLeftImpl?.Dispose();
+            lampRightImpl?.Dispose();
 
             whiteLineImpl = null;
             buildingsLeftImpl = null;
             buildingsRightImpl = null;
+            lampLeftImpl = null;
+            lampRightImpl = null;
         }
 
         private void Update()
@@ -59,6 +67,8 @@ namespace Main.Handler
             whiteLineImpl?.Update();
             buildingsLeftImpl?.Update();
             buildingsRightImpl?.Update();
+            lampLeftImpl?.Update();
+            lampRightImpl?.Update();
         }
     }
 
@@ -128,7 +138,16 @@ namespace Main.Handler
         internal float Interval => property.Interval;
         internal float TimeOffset => property.TimeOffset;
 
-        internal bool IsActive { get; set; } = false;
+        private bool isActive = false;
+        internal bool IsActive
+        {
+            get => isActive;
+            set
+            {
+                isActive = value;
+                if (reference != null) reference.IsActive = value;
+            }
+        }
 
         private float t = 0;
 
@@ -155,23 +174,16 @@ namespace Main.Handler
 
         internal void Update()
         {
-            if (!IsActive)
-            {
-                if (reference.IsActive) reference.IsActive = false;
-            }
-            else
-            {
-                if (!reference.IsActive) reference.IsActive = true;
+            if (!IsActive) return;
 
-                reference.Position = reference.Position + CalcVelocity(t) * Time.deltaTime;
-                reference.LocalScale = CalcLocalScale(t);
+            reference.Position += CalcVelocity(t) * Time.deltaTime;
+            reference.LocalScale = CalcLocalScale(t);
 
-                t += Time.deltaTime;
-                if (t >= property.Duration)
-                {
-                    t = 0;
-                    Init();
-                }
+            t += Time.deltaTime;
+            if (t >= property.Duration)
+            {
+                t = 0;
+                Init();
             }
         }
 
