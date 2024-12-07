@@ -19,6 +19,9 @@ namespace Title.Handler
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite hoverSprite;
         [SerializeField] private Transform carTf;
+        [SerializeField] private Transform car2Tf;
+        [SerializeField] private Transform logoTf;
+        [SerializeField] private Transform buttonMoveTf;
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private AudioSource onStartCarSEAudioSource;
         [SerializeField] private BGMPlayer bgmPlayer;
@@ -45,6 +48,8 @@ namespace Title.Handler
             MakeThisToButton(easyWithAssistStartButton, Difficulty.Type.Assist1);
             MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.Assist2);
             MakeThisToButton(normalStartButton, Difficulty.Type.Assist3);
+            logoTf.DOLocalMoveY( 1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ToUniTask(cancellationToken: ct).Forget();
+            logoTf.DOScale(new Vector2(0.8f, 0.8f), duration:2.0f).SetEase(Ease.InOutExpo).ToUniTask(cancellationToken: ct).Forget();
         }
 
         private void OnDisable()
@@ -56,6 +61,7 @@ namespace Title.Handler
             normalSprite = null;
             hoverSprite = null;
             carTf = null;
+            logoTf = null;
             loadImageTf = null;
             onStartCarSEAudioSource = null;
             bgmPlayer = null;
@@ -106,6 +112,15 @@ namespace Title.Handler
             Load(difficultyType, ct).Forget();
         }
 
+        [SerializeField]
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.Space))
+            {
+                buttonMoveTf.DOLocalMoveX(-10, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
+            }
+        }
+
         private void PlayOnStartCarSE() => onStartCarSEAudioSource.Raise(SO_Sound.Entity.EnemyCarSE, SoundType.SE);
 
         private async UniTask Load(Difficulty.Type difficultyType, CancellationToken ct)
@@ -120,7 +135,10 @@ namespace Title.Handler
         {
             PlayOnStartCarSE();
             bgmPlayer.AudioSource.DOFade(endValue.BGMVolume, duration.BGMFade).ToUniTask(cancellationToken: ct).Forget();
+            carTf.DOLocalJump(new Vector2(0,-4.0f),jumpPower:1.0f,numJumps: 4,duration:3).ToUniTask(cancellationToken: ct).Forget();
             carTf.DOLocalMoveX(endValue.CarX, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
+            car2Tf.DOLocalJump(new Vector2(0, -4.0f), jumpPower: 1.0f, numJumps: 4, duration: 3).ToUniTask(cancellationToken: ct).Forget();
+            car2Tf.DOLocalMoveX(endValue.CarX - 4, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
             await UniTask.Delay(TimeSpan.FromSeconds(duration.UntilLoadImageMove), cancellationToken: ct);
             await loadImageTf.DOLocalMoveX(endValue.LoadImageX, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.AfterLoadImageMoved), cancellationToken: ct);
