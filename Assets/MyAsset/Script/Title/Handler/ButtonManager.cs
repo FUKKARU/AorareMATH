@@ -1,9 +1,11 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
+using Main.Handler;
 using SO;
 using System;
 using System.Threading;
+using Title.Tutorial;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -28,6 +30,8 @@ namespace Title.Handler
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
 
+        [SerializeField] private TutorialPlayer tutorialPlayer;
+
         private bool isActive = true;
 
         private CancellationToken ct;
@@ -45,7 +49,7 @@ namespace Title.Handler
 
             ct = this.GetCancellationTokenOnDestroy();
 
-            MakeThisToButton(easyWithAssistStartButton, Difficulty.Type.Assist1);
+            MakeThisToTutorialButton(easyWithAssistStartButton);
             MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.Assist2);
             MakeThisToButton(normalStartButton, Difficulty.Type.Assist3);
             logoTf.DOLocalMoveY( 1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ToUniTask(cancellationToken: ct).Forget();
@@ -65,6 +69,24 @@ namespace Title.Handler
             loadImageTf = null;
             onStartCarSEAudioSource = null;
             bgmPlayer = null;
+        }
+
+        private void MakeThisToTutorialButton(SpriteRenderer sr)
+        {
+            if (sr == null) return;
+            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
+            enter.callback.AddListener(_ => OnEnter(sr));
+            et.triggers.Add(enter);
+
+            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
+            exit.callback.AddListener(_ => OnExit(sr));
+            et.triggers.Add(exit);
+
+            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
+            click.callback.AddListener(_ => OnClickTutorial(sr));
+            et.triggers.Add(click);
         }
 
         private void MakeThisToButton(SpriteRenderer sr, Difficulty.Type difficultyType)
@@ -110,6 +132,12 @@ namespace Title.Handler
             isActive = false;
 
             Load(difficultyType, ct).Forget();
+        }
+
+        private void OnClickTutorial(SpriteRenderer sr)
+        {
+            sr.sprite = normalSprite;
+            tutorialPlayer.PlayTutorial();
         }
 
         [SerializeField]
