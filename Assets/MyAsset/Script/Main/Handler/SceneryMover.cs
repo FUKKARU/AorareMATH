@@ -4,84 +4,90 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using SO;
-using General.Extension;
+using System.Collections.Generic;
 
 namespace Main.Handler
 {
     internal sealed class SceneryMover : MonoBehaviour
     {
-        [SerializeField] private SceneryElementReference[] whitelineReference;
-        [SerializeField] private SceneryElementReference[] treeReference;
-        [SerializeField] private SceneryElementReference[] poleReference;
+        [SerializeField] private SpriteRenderer elementPrefab;
+        [SerializeField] private Transform parent;
 
-        private SceneryMoverImpl impl;
+        private SceneryMoverImpl whiteLineImpl;
+        private SceneryMoverImpl buildingsLeftImpl;
+        private SceneryMoverImpl buildingsRightImpl;
+        private SceneryMoverImpl lampLeftImpl;
+        private SceneryMoverImpl lampRightImpl;
 
         private void OnEnable()
         {
-            impl = new
-                (whitelineReference, SO_Scenery.Entity.WhitelineProperty,
-                treeReference, SO_Scenery.Entity.TreeProperty,
-                poleReference, SO_Scenery.Entity.PoleProperty,
-                this.GetCancellationTokenOnDestroy());
+            InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
+            InstantiateThis(ref buildingsLeftImpl, SO_Scenery.Entity.BuildingsLeftProperty);
+            InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
+            InstantiateThis(ref lampLeftImpl, SO_Scenery.Entity.LampLeftProperty);
+            InstantiateThis(ref lampRightImpl, SO_Scenery.Entity.LampRightProperty);
+
+            void InstantiateThis(ref SceneryMoverImpl impl, SceneryElementProperty property)
+            {
+                if (impl != null) return;
+                if (property == null) return;
+
+                LinkedList<SceneryElement> elements = new();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    SpriteRenderer instance = Instantiate(elementPrefab, parent);
+                    if (instance == null) continue;
+                    SceneryElementReference reference = new(instance.transform, instance);
+                    SceneryElement element = new(reference, property);
+                    elements.AddLast(element);
+                }
+
+                impl = new(elements.ToArray());
+            }
         }
 
         private void OnDisable()
         {
-            impl.Dispose();
-            impl = null;
+            whiteLineImpl?.Dispose();
+            buildingsLeftImpl?.Dispose();
+            buildingsRightImpl?.Dispose();
+            lampLeftImpl?.Dispose();
+            lampRightImpl?.Dispose();
+
+            whiteLineImpl = null;
+            buildingsLeftImpl = null;
+            buildingsRightImpl = null;
+            lampLeftImpl = null;
+            lampRightImpl = null;
         }
 
         private void Update()
         {
-            impl.Update();
+            whiteLineImpl?.Update();
+            buildingsLeftImpl?.Update();
+            buildingsRightImpl?.Update();
+            lampLeftImpl?.Update();
+            lampRightImpl?.Update();
         }
     }
 
-    internal sealed class SceneryMoverImpl : IDisposable, INullExistable
+    internal sealed class SceneryMoverImpl : IDisposable
     {
-        private readonly CancellationToken ct;
-
-        private SceneryElement[] whitelines;
-        private SceneryElement[] trees;
-        private SceneryElement[] poles;
-
+        private CancellationTokenSource cts = new();
+        private SceneryElement[] elements;
         private bool isFirstUpdate = true;
 
-        internal SceneryMoverImpl
-            (SceneryElementReference[] whitelineReference, SceneryElementProperty whitelineProperty,
-            SceneryElementReference[] treeReference, SceneryElementProperty treeProperty,
-            SceneryElementReference[] poleReference, SceneryElementProperty poleProperty,
-            CancellationToken ct)
-        {
-            this.ct = ct;
-
-            whitelines = whitelineReference.Select(e => new SceneryElement(e, whitelineProperty)).ToArray();
-            trees = treeReference.Select(e => new SceneryElement(e, treeProperty)).ToArray();
-            poles = poleReference.Select(e => new SceneryElement(e, poleProperty)).ToArray();
-        }
+        internal SceneryMoverImpl(SceneryElement[] elements) => this.elements = elements;
 
         public void Dispose()
         {
-            foreach (var e in whitelines) e.Dispose();
-            foreach (var e in trees) e.Dispose();
-            foreach (var e in poles) e.Dispose();
+            cts.Cancel();
+            cts.Dispose();
+            cts = null;
 
-            whitelines = null;
-            trees = null;
-            poles = null;
-        }
-
-        public bool IsNullExist()
-        {
-            if (whitelines == null) return true;
-            if (trees == null) return true;
-            if (poles == null) return true;
-
-            foreach (var e in whitelines) if (e.IsNullExist()) return true;
-            foreach (var e in trees) if (e.IsNullExist()) return true;
-            foreach (var e in poles) if (e.IsNullExist()) return true;
-
-            return false;
+            if (elements != null) foreach (var e in elements) e.Dispose();
+            Array.Clear(elements, 0, elements.Length);
         }
 
         internal void Update()
@@ -90,26 +96,21 @@ namespace Main.Handler
             {
                 isFirstUpdate = false;
 
-                CreateElements(whitelines, ct).Forget();
-                CreateElements(trees, ct).Forget();
-                CreateElements(poles, ct).Forget();
+                CreateElements(elements, cts.Token).Forget();
             }
 
-            foreach (var e in whitelines) e.Update();
-            foreach (var e in trees) e.Update();
-            foreach (var e in poles) e.Update();
+            foreach (var e in elements) e.Update();
         }
 
         private async UniTask CreateElements(SceneryElement[] elements, CancellationToken ct)
         {
-            if (elements == null) return;  // 配列の参照が存在する
-            if (elements.Length <= 0) return; // 配列の要素数が1以上
-            if (elements[0] == null) return;  // 最初の要素について、その参照が存在する
-            if (elements[0].IsPropertyNull) return;  // 最初の要素について、その中に、プロパティの参照が存在する
-            if (!elements[0].IsDisplay) return;  // 最初の要素について、その中のプロパティの参照において、表示のフラグが有効である
-            foreach (var e in elements) if (e.IsNullExist()) return;  //　配列の全ての要素について、そのメンバにnullが存在しない
+            if (elements == null) return;
 
             int len = elements.Length;
+            if (len <= 0) return;
+
+            await UniTask.Delay(TimeSpan.FromSeconds(elements[0].TimeOffset), cancellationToken: ct);
+
             int i = 0;
             while (true)
             {
@@ -130,71 +131,66 @@ namespace Main.Handler
         }
     }
 
-    internal sealed class SceneryElement : IDisposable, INullExistable
+    internal sealed class SceneryElement : IDisposable
     {
         private SceneryElementReference reference;
         private SceneryElementProperty property;
-        internal bool IsReferenceNull => reference == null;
-        internal bool IsPropertyNull => property == null;
         internal float Interval => property.Interval;
-        internal bool IsDisplay => property.IsDisplay;
+        internal float TimeOffset => property.TimeOffset;
 
-        internal bool IsActive { get; set; } = false;
+        private bool isActive = false;
+        internal bool IsActive
+        {
+            get => isActive;
+            set
+            {
+                isActive = value;
+                if (reference != null) reference.IsActive = value;
+            }
+        }
 
         private float t = 0;
 
         internal SceneryElement(SceneryElementReference reference, SceneryElementProperty property)
         {
+            if (reference == null) return;
+            if (property == null) return;
             this.reference = reference;
             this.property = property;
-            this.reference.SpriteRenderer.sprite = this.property.Sprite;
+
+            Sprite sprite = property.Sprite;
+            if (sprite == null) return;
+            reference.Sprite = sprite;
             Init();
         }
 
         public void Dispose()
         {
             reference.Dispose();
-            property.Dispose();
 
             reference = null;
             property = null;
         }
 
-        public bool IsNullExist()
-        {
-            if (reference.IsNullExist()) return true;
-            if (property.IsNullExist()) return true;
-            return false;
-        }
-
         internal void Update()
         {
-            if (IsNullExist()) return;
+            if (!IsActive) return;
 
-            if (!IsActive)
+            reference.Position += CalcVelocity(t) * Time.deltaTime;
+            reference.LocalScale = CalcLocalScale(t);
+
+            t += Time.deltaTime;
+            if (t >= property.Duration)
             {
-                if (reference.SpriteRenderer.enabled) reference.SpriteRenderer.enabled = false;
-            }
-            else
-            {
-                if (!reference.SpriteRenderer.enabled) reference.SpriteRenderer.enabled = true;
-
-                reference.Transform.position = reference.Transform.position + CalcVelocity(t) * Time.deltaTime;
-                reference.Transform.localScale = CalcLocalScale(t);
-
-                t += Time.deltaTime;
-                if (t >= property.Duration)
-                {
-                    t = 0;
-                    Init();
-                }
+                t = 0;
+                Init();
             }
         }
 
         private void Init()
         {
-            reference.Transform.position = property.StartPosition;
-            reference.Transform.localScale = Vector3.one * property.StartLocalScale;
+            reference.Position = property.StartPosition;
+            reference.LocalScale = Vector3.one * property.StartLocalScale;
             IsActive = false;
         }
 
@@ -211,22 +207,75 @@ namespace Main.Handler
     }
 
     [Serializable]
-    internal sealed class SceneryElementReference : IDisposable, INullExistable
+    internal sealed class SceneryElementReference : IDisposable
     {
-        [SerializeField] internal Transform Transform;
-        [SerializeField] internal SpriteRenderer SpriteRenderer;
+        [SerializeField] private Transform transform;
+        [SerializeField] private SpriteRenderer spriteRenderer;
+
+        internal SceneryElementReference(Transform transform, SpriteRenderer spriteRenderer)
+        {
+            if (transform == null) return;
+            if (spriteRenderer == null) return;
+
+            this.transform = transform;
+            this.spriteRenderer = spriteRenderer;
+        }
+
+        internal Vector3 Position
+        {
+            get
+            {
+                if (transform == null) return default;
+                return transform.position;
+            }
+            set
+            {
+                if (transform == null) return;
+                transform.position = value;
+            }
+        }
+
+        internal Vector3 LocalScale
+        {
+            get
+            {
+                if (transform == null) return default;
+                return transform.localScale;
+            }
+            set
+            {
+                if (transform == null) return;
+                transform.localScale = value;
+            }
+        }
+
+        internal bool IsActive
+        {
+            get
+            {
+                if (spriteRenderer == null) return false;
+                return spriteRenderer.enabled;
+            }
+            set
+            {
+                if (spriteRenderer == null) return;
+                spriteRenderer.enabled = value;
+            }
+        }
+
+        internal Sprite Sprite
+        {
+            set
+            {
+                if (spriteRenderer == null) return;
+                spriteRenderer.sprite = value;
+            }
+        }
 
         public void Dispose()
         {
-            Transform = null;
-            SpriteRenderer = null;
-        }
-
-        public bool IsNullExist()
-        {
-            if (Transform == null) return true;
-            if (SpriteRenderer == null) return true;
-            return false;
+            transform = null;
+            spriteRenderer = null;
         }
     }
 }

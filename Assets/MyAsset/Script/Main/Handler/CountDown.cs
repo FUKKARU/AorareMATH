@@ -39,6 +39,7 @@ namespace Main.Handler
         [SerializeField] private Sr sr;
         [SerializeField] private Sp sp;
         [SerializeField] private AudioSource as_;
+        [SerializeField, Range(0.1f, 3.0f)] private float oneCountDuration;
 
         private void OnEnable()
         {
@@ -62,27 +63,27 @@ namespace Main.Handler
 
         internal async UniTask Play(CancellationToken ct)
         {
-            if (as_ != null) as_.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE);
+            if (as_ != null) as_.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1 / oneCountDuration);
 
             sr.Red.enabled = true;
-            await WaitForASecond(ct);
+            await WaitForOneCount(ct);
 
             sr.Yellow.enabled = true;
-            await WaitForASecond(ct);
+            await WaitForOneCount(ct);
 
             sr.Green.enabled = true;
-            await WaitForASecond(ct);
+            await WaitForOneCount(ct);
 
             sr.Red.sprite = sr.Green.sprite;
             sr.Yellow.sprite = sr.Green.sprite;
-            await WaitForASecond(ct);
+            await WaitForOneCount(ct);
 
             await base_.Tf.DOLocalMoveY(base_.EndY, base_.Duration).ToUniTask(cancellationToken: ct);
         }
 
-        private async UniTask WaitForASecond(CancellationToken ct)
+        private async UniTask WaitForOneCount(CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(oneCountDuration), cancellationToken: ct);
         }
     }
 }

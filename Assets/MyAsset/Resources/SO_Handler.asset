@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: SO_Handler
   m_EditorClassIdentifier: 
   _soundVolumeRange: {x: -20, y: 20}
-  _initTimeLimit: 60
+  _initTimeLimit: 90
   _timeIncreaseAmountList:
-  - 10
+  - 15
+  - 7
+  - 6
   - 5
   - 4
   - 3
-  - 2
-  - 1
   _diffLimit: 10
+  _justDiffLimit: 0.0001
+  _forceClearDefeatLimit: 50
+  _forceClearJustLimit: 20

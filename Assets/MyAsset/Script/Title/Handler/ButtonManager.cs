@@ -1,25 +1,36 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
+using Main.Handler;
 using SO;
 using System;
 using System.Threading;
+using Title.Tutorial;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 namespace Title.Handler
 {
     internal sealed class ButtonManager : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer sr;
+        [SerializeField] private SpriteRenderer easyWithAssistStartButton;
+        [SerializeField] private SpriteRenderer easyWithoutAssistStartButton;
+        [SerializeField] private SpriteRenderer normalStartButton;
+
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite hoverSprite;
         [SerializeField] private Transform carTf;
+        [SerializeField] private Transform car2Tf;
+        [SerializeField] private Transform logoTf;
+        [SerializeField] private Transform buttonMoveTf;
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private AudioSource onStartCarSEAudioSource;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private EndValue endValue;
         [SerializeField] private Duration duration;
+
+        [SerializeField] private TutorialPlayer tutorialPlayer;
 
         private bool isActive = true;
 
@@ -27,26 +38,76 @@ namespace Title.Handler
 
         private void OnEnable()
         {
-            if (!sr) return;
+            if (!easyWithAssistStartButton) return;
+            if (!easyWithoutAssistStartButton) return;
+            if (!normalStartButton) return;
             if (!normalSprite) return;
 
-            sr.sprite = normalSprite;
+            easyWithAssistStartButton.sprite = normalSprite;
+            easyWithoutAssistStartButton.sprite = normalSprite;
+            normalStartButton.sprite = normalSprite;
 
             ct = this.GetCancellationTokenOnDestroy();
+
+            MakeThisToTutorialButton(easyWithAssistStartButton);
+            MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.Assist2);
+            MakeThisToButton(normalStartButton, Difficulty.Type.Assist3);
+            logoTf.DOLocalMoveY( 1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ToUniTask(cancellationToken: ct).Forget();
+            logoTf.DOScale(new Vector2(0.8f, 0.8f), duration:2.0f).SetEase(Ease.InOutExpo).ToUniTask(cancellationToken: ct).Forget();
         }
 
         private void OnDisable()
         {
-            sr = null;
+            easyWithAssistStartButton = null;
+            easyWithoutAssistStartButton = null;
+            normalStartButton = null;
+
             normalSprite = null;
             hoverSprite = null;
             carTf = null;
+            logoTf = null;
             loadImageTf = null;
             onStartCarSEAudioSource = null;
             bgmPlayer = null;
         }
 
-        public void OnEnter()
+        private void MakeThisToTutorialButton(SpriteRenderer sr)
+        {
+            if (sr == null) return;
+            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
+            enter.callback.AddListener(_ => OnEnter(sr));
+            et.triggers.Add(enter);
+
+            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
+            exit.callback.AddListener(_ => OnExit(sr));
+            et.triggers.Add(exit);
+
+            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
+            click.callback.AddListener(_ => OnClickTutorial(sr));
+            et.triggers.Add(click);
+        }
+
+        private void MakeThisToButton(SpriteRenderer sr, Difficulty.Type difficultyType)
+        {
+            if (sr == null) return;
+            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
+            enter.callback.AddListener(_ => OnEnter(sr));
+            et.triggers.Add(enter);
+
+            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
+            exit.callback.AddListener(_ => OnExit(sr));
+            et.triggers.Add(exit);
+
+            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
+            click.callback.AddListener(_ => OnClick(difficultyType));
+            et.triggers.Add(click);
+        }
+
+        private void OnEnter(SpriteRenderer sr)
         {
             if (!isActive) return;
             if (!sr) return;
@@ -55,7 +116,7 @@ namespace Title.Handler
             sr.sprite = hoverSprite;
         }
 
-        public void OnExit()
+        private void OnExit(SpriteRenderer sr)
         {
             if (!isActive) return;
             if (!sr) return;
@@ -64,19 +125,35 @@ namespace Title.Handler
             sr.sprite = normalSprite;
         }
 
-        public void OnClick()
+        private void OnClick(Difficulty.Type difficultyType)
         {
             if (!isActive) return;
 
             isActive = false;
 
-            Load(ct).Forget();
+            Load(difficultyType, ct).Forget();
+        }
+
+        private void OnClickTutorial(SpriteRenderer sr)
+        {
+            sr.sprite = normalSprite;
+            tutorialPlayer.PlayTutorial();
+        }
+
+        [SerializeField]
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.Space))
+            {
+                buttonMoveTf.DOLocalMoveX(-10, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
+            }
         }
 
         private void PlayOnStartCarSE() => onStartCarSEAudioSource.Raise(SO_Sound.Entity.EnemyCarSE, SoundType.SE);
 
-        private async UniTask Load(CancellationToken ct)
+        private async UniTask Load(Difficulty.Type difficultyType, CancellationToken ct)
         {
+            Difficulty.Value = difficultyType;
             await Direction(endValue, duration, ct);
             await SceneManager.LoadSceneAsync(SO_SceneName.Entity.Main).ToUniTask(cancellationToken: ct);
         }
@@ -86,7 +163,10 @@ namespace Title.Handler
         {
             PlayOnStartCarSE();
             bgmPlayer.AudioSource.DOFade(endValue.BGMVolume, duration.BGMFade).ToUniTask(cancellationToken: ct).Forget();
+            carTf.DOLocalJump(new Vector2(0,-4.0f),jumpPower:1.0f,numJumps: 4,duration:3).ToUniTask(cancellationToken: ct).Forget();
             carTf.DOLocalMoveX(endValue.CarX, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
+            car2Tf.DOLocalJump(new Vector2(0, -4.0f), jumpPower: 1.0f, numJumps: 4, duration: 3).ToUniTask(cancellationToken: ct).Forget();
+            car2Tf.DOLocalMoveX(endValue.CarX - 4, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
             await UniTask.Delay(TimeSpan.FromSeconds(duration.UntilLoadImageMove), cancellationToken: ct);
             await loadImageTf.DOLocalMoveX(endValue.LoadImageX, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
             await UniTask.Delay(TimeSpan.FromSeconds(duration.AfterLoadImageMoved), cancellationToken: ct);
