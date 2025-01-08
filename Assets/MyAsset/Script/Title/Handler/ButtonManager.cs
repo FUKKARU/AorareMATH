@@ -1,193 +1,57 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
-using Main.Handler;
 using SO;
 using System;
 using System.Threading;
-using Title.Tutorial;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 namespace Title.Handler
 {
+    /// <summary>
+    /// nullチェック控えめ
+    /// </summary>
     internal sealed class ButtonManager : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer easyWithAssistStartButton;
-        [SerializeField] private SpriteRenderer easyWithoutAssistStartButton;
-        [SerializeField] private SpriteRenderer normalStartButton;
+        [SerializeField] private ButtonHandler startWithAssistButton;
+        [SerializeField] private ButtonHandler startWithoutAssistButton;
 
-        [SerializeField] private Sprite normalSprite;
-        [SerializeField] private Sprite hoverSprite;
-        [SerializeField] private Transform carTf;
-        [SerializeField] private Transform car2Tf;
         [SerializeField] private Transform logoTf;
-        [SerializeField] private Transform buttonMoveTf;
         [SerializeField] private Transform loadImageTf;
-        [SerializeField] private AudioSource onStartCarSEAudioSource;
+
         [SerializeField] private BGMPlayer bgmPlayer;
-        [SerializeField] private EndValue endValue;
-        [SerializeField] private Duration duration;
+        [SerializeField] private BillMover billMover;
 
-        [SerializeField] private TutorialPlayer tutorialPlayer;
-
-        private bool isActive = true;
-
-        private CancellationToken ct;
-
-        private void OnEnable()
+        private async UniTaskVoid OnEnable()
         {
-            if (!easyWithAssistStartButton) return;
-            if (!easyWithoutAssistStartButton) return;
-            if (!normalStartButton) return;
-            if (!normalSprite) return;
+            startWithAssistButton.OnClicked = () => Load(Difficulty.Type.Assist2, destroyCancellationToken).Forget();
+            startWithoutAssistButton.OnClicked = () => Load(Difficulty.Type.AssistNone, destroyCancellationToken).Forget();
 
-            easyWithAssistStartButton.sprite = normalSprite;
-            easyWithoutAssistStartButton.sprite = normalSprite;
-            normalStartButton.sprite = normalSprite;
-
-            ct = this.GetCancellationTokenOnDestroy();
-
-            MakeThisToTutorialButton(easyWithAssistStartButton);
-            MakeThisToButton(easyWithoutAssistStartButton, Difficulty.Type.Assist2);
-            MakeThisToButton(normalStartButton, Difficulty.Type.Assist3);
-            logoTf.DOLocalMoveY( 1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ToUniTask(cancellationToken: ct).Forget();
-            logoTf.DOScale(new Vector2(0.8f, 0.8f), duration:2.0f).SetEase(Ease.InOutExpo).ToUniTask(cancellationToken: ct).Forget();
+            billMover.Play();
+            await DoLogo(destroyCancellationToken);
+            startWithAssistButton.SetActive(true);
+            startWithoutAssistButton.SetActive(true);
         }
 
-        private void OnDisable()
+        private async UniTask DoLogo(CancellationToken ct)
         {
-            easyWithAssistStartButton = null;
-            easyWithoutAssistStartButton = null;
-            normalStartButton = null;
-
-            normalSprite = null;
-            hoverSprite = null;
-            carTf = null;
-            logoTf = null;
-            loadImageTf = null;
-            onStartCarSEAudioSource = null;
-            bgmPlayer = null;
+            logoTf.DOLocalMoveY(1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ToUniTask(cancellationToken: ct).Forget();
+            logoTf.DOScale(new Vector2(0.8f, 0.8f), duration: 2.0f).SetEase(Ease.InOutExpo).ToUniTask(cancellationToken: ct).Forget();
+            await UniTask.Delay(TimeSpan.FromSeconds(1.8f), cancellationToken: ct);
         }
-
-        private void MakeThisToTutorialButton(SpriteRenderer sr)
-        {
-            if (sr == null) return;
-            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
-
-            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
-            enter.callback.AddListener(_ => OnEnter(sr));
-            et.triggers.Add(enter);
-
-            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
-            exit.callback.AddListener(_ => OnExit(sr));
-            et.triggers.Add(exit);
-
-            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
-            click.callback.AddListener(_ => OnClickTutorial(sr));
-            et.triggers.Add(click);
-        }
-
-        private void MakeThisToButton(SpriteRenderer sr, Difficulty.Type difficultyType)
-        {
-            if (sr == null) return;
-            EventTrigger et = sr.gameObject.AddComponent<EventTrigger>();
-
-            EventTrigger.Entry enter = new() { eventID = EventTriggerType.PointerEnter };
-            enter.callback.AddListener(_ => OnEnter(sr));
-            et.triggers.Add(enter);
-
-            EventTrigger.Entry exit = new() { eventID = EventTriggerType.PointerExit };
-            exit.callback.AddListener(_ => OnExit(sr));
-            et.triggers.Add(exit);
-
-            EventTrigger.Entry click = new() { eventID = EventTriggerType.PointerClick };
-            click.callback.AddListener(_ => OnClick(difficultyType));
-            et.triggers.Add(click);
-        }
-
-        private void OnEnter(SpriteRenderer sr)
-        {
-            if (!isActive) return;
-            if (!sr) return;
-            if (!hoverSprite) return;
-
-            sr.sprite = hoverSprite;
-        }
-
-        private void OnExit(SpriteRenderer sr)
-        {
-            if (!isActive) return;
-            if (!sr) return;
-            if (!normalSprite) return;
-
-            sr.sprite = normalSprite;
-        }
-
-        private void OnClick(Difficulty.Type difficultyType)
-        {
-            if (!isActive) return;
-
-            isActive = false;
-
-            Load(difficultyType, ct).Forget();
-        }
-
-        private void OnClickTutorial(SpriteRenderer sr)
-        {
-            sr.sprite = normalSprite;
-            tutorialPlayer.PlayTutorial();
-        }
-
-        [SerializeField]
-        private void Update()
-        {
-            if (Input.GetKey(KeyCode.Space))
-            {
-                buttonMoveTf.DOLocalMoveX(-10, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
-            }
-        }
-
-        private void PlayOnStartCarSE() => onStartCarSEAudioSource.Raise(SO_Sound.Entity.EnemyCarSE, SoundType.SE);
 
         private async UniTask Load(Difficulty.Type difficultyType, CancellationToken ct)
         {
+            startWithAssistButton.SetActive(false);
+            startWithoutAssistButton.SetActive(false);
+
             Difficulty.Value = difficultyType;
-            await Direction(endValue, duration, ct);
+            bgmPlayer.Fade();
+            await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: ct);
+            await loadImageTf.DOLocalMoveX(0, 1).ToUniTask(cancellationToken: ct);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: ct);
             await SceneManager.LoadSceneAsync(SO_SceneName.Entity.Main).ToUniTask(cancellationToken: ct);
-        }
-
-        private async UniTask Direction
-            (EndValue endValue, Duration duration, CancellationToken ct)
-        {
-            PlayOnStartCarSE();
-            bgmPlayer.AudioSource.DOFade(endValue.BGMVolume, duration.BGMFade).ToUniTask(cancellationToken: ct).Forget();
-            carTf.DOLocalJump(new Vector2(0,-4.0f),jumpPower:1.0f,numJumps: 4,duration:3).ToUniTask(cancellationToken: ct).Forget();
-            carTf.DOLocalMoveX(endValue.CarX, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
-            car2Tf.DOLocalJump(new Vector2(0, -4.0f), jumpPower: 1.0f, numJumps: 4, duration: 3).ToUniTask(cancellationToken: ct).Forget();
-            car2Tf.DOLocalMoveX(endValue.CarX - 4, duration.CarMove).ToUniTask(cancellationToken: ct).Forget();
-            await UniTask.Delay(TimeSpan.FromSeconds(duration.UntilLoadImageMove), cancellationToken: ct);
-            await loadImageTf.DOLocalMoveX(endValue.LoadImageX, duration.LoadImageMove).ToUniTask(cancellationToken: ct);
-            await UniTask.Delay(TimeSpan.FromSeconds(duration.AfterLoadImageMoved), cancellationToken: ct);
-        }
-
-        [Serializable]
-        internal struct EndValue
-        {
-            [SerializeField] internal float CarX;
-            [SerializeField] internal float LoadImageX;
-            [SerializeField] internal float BGMVolume;
-        }
-
-        [Serializable]
-        internal struct Duration
-        {
-            [SerializeField] internal float BGMFade;
-            [SerializeField] internal float CarMove;
-            [SerializeField] internal float LoadImageMove;
-            [SerializeField] internal float UntilLoadImageMove;
-            [SerializeField] internal float AfterLoadImageMoved;
         }
     }
 }
