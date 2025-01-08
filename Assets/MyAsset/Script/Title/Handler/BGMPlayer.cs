@@ -1,4 +1,6 @@
-﻿using General;
+﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using General;
 using SO;
 using UnityEngine;
 
@@ -7,16 +9,17 @@ namespace Title.Handler
     internal sealed class BGMPlayer : MonoBehaviour
     {
         [SerializeField] private AudioSource _audioSource;
-        internal AudioSource AudioSource => _audioSource;
 
-        private void OnEnable()
-        {
-            if (_audioSource != null) _audioSource.Raise(SO_Sound.Entity.TitleBGM, SoundType.BGM);
-        }
+        private bool hasFaded = false;
 
-        private void OnDisable()
+        private void OnEnable() => _audioSource.Raise(SO_Sound.Entity.TitleBGM, SoundType.BGM);
+
+        internal void Fade()
         {
-            _audioSource = null;
+            if (hasFaded) return;
+            if (_audioSource == null) return;
+            hasFaded = true;
+            _audioSource.DOFade(0, 3).ToUniTask(cancellationToken: destroyCancellationToken).Forget();
         }
     }
 }
