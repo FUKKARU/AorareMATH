@@ -85,6 +85,9 @@ namespace Main.Handler
 
         private bool isAttackable = false;
 
+        private bool hasForciblyClearedByTotalNum = false;
+        private bool hasForciblyClearedByJustNum = false;
+
         private void OnEnable()
         {
             ct = this.GetCancellationTokenOnDestroy();
@@ -335,6 +338,7 @@ namespace Main.Handler
             if (++GameData.DefeatedEnemyNum >= SO_Handler.Entity.ForceClearDefeatLimit)
             {
                 State = GameState.Over;
+                hasForciblyClearedByTotalNum = true;
                 return;
             }
 
@@ -343,6 +347,7 @@ namespace Main.Handler
                 if (++GameData.PerfectlyDefeatedEnemyNum >= SO_Handler.Entity.ForceClearJustLimit)
                 {
                     State = GameState.Over;
+                    hasForciblyClearedByJustNum = true;
                     return;
                 }
             }
@@ -431,7 +436,7 @@ namespace Main.Handler
 
             SendScore();
 
-            await resultShower.Play(GameData.DefeatedEnemyNum, GameData.PerfectlyDefeatedEnemyNum, ct);
+            await resultShower.Play(GameData.DefeatedEnemyNum, GameData.PerfectlyDefeatedEnemyNum, hasForciblyClearedByTotalNum, hasForciblyClearedByJustNum, ct);
 
             string sceneName;
             while (true)

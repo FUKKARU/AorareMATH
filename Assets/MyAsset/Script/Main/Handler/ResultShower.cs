@@ -57,8 +57,11 @@ namespace Main.Handler
             guideText = null;
         }
 
-        internal async UniTask Play(int totalNum, int justNum, CancellationToken ct)
+        internal async UniTask Play(int totalNum, int justNum, bool hasForciblyClearedByTotalNum, bool hasForciblyClearedByJustNum, CancellationToken ct)
         {
+            if (hasForciblyClearedByTotalNum) totalNumText.color = Color.yellow;
+            if (hasForciblyClearedByJustNum) justNumText.color = Color.yellow;
+
             await duration.BeforeBaseImageMove.SecondsWait(ct);
 
             await baseImageRt.DOAnchorPosY(value.BaseImageEndY, duration.BaseImageMove).ToUniTask(cancellationToken: ct);
