@@ -1,7 +1,7 @@
 using General.Extension;
 using Main.Data.Formula;
-using Main.Handler;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ namespace Main.Data
         {
             LinkedList<((int N1, int N2, int N3, int N4) N, int Target, Formula.Formula Answer)> normedData = new();
 
-            foreach (string e in Data)
+            foreach (string e in RawData)
             {
                 try
                 {
@@ -22,7 +22,7 @@ namespace Main.Data
                     int[] nums = new int[4];
                     for (int i = 0; i < 4; i++) nums[i] = int.Parse(elements[i]);
                     int target = int.Parse(elements[4]);
-                    string formula = elements[5]; // �S��11�������ۂ��̂ŁA���l�߂ōs��
+                    string formula = elements[5]; // �S��11�������ۂ��̂ŁA���l�߂ōs��
 
                     IntStr[] symbols = new IntStr[12];
                     foreach ((int i, char c) in formula.Enumerate())
@@ -54,10 +54,14 @@ namespace Main.Data
                 catch { continue; }
             }
 
-            QuestionGenerater.FixedQuestions = normedData.ToList().AsReadOnly();
+            FixedQuestions.Data = normedData.ToList().AsReadOnly();
         }
 
-        private static string[] Data =
+        // 事前生成のデータ(両端の間隔も意識して、データを格納すること！)
+        // 今の所、Answerは使わない
+        internal static ReadOnlyCollection<((int N1, int N2, int N3, int N4) N, int Target, Formula.Formula Answer)> Data = null;
+
+        private static string[] RawData =
         {
 "4, 3, 2, 9, 7, 4-((3*2)-9)",
 "3, 3, 8, 9, 14, 3+(8+(9/3))",

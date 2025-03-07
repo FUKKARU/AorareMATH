@@ -1,5 +1,5 @@
-﻿using General;
-using UnityEngine;
+﻿using UnityEngine;
+using General;
 
 namespace SO
 {
@@ -10,25 +10,15 @@ namespace SO
         internal float MinVolume => _soundVolumeRange.x;
         internal float MaxVolume => _soundVolumeRange.y;
 
+        [SerializeField, Header("問題数（最大まで行くと、強制クリア）")] private int _questionAmount;
+        internal int QuestionAmount => _questionAmount;
+
         [SerializeField, Header("ゲームの初期制限時間(秒)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
 
-        [SerializeField, Header("式の値の差分と、時間増加量の、対応関係\n(差分：0,1,2,3,4,...)")] private float[] _timeIncreaseAmountList;
-        internal float[] TimeIncreaseAmountList => _timeIncreaseAmountList;
+        [SerializeField, Header("ピッタリ時の時間増加量")] private float _timeIncreaseAmount;
+        internal float TimeIncreaseAmount => _timeIncreaseAmount;
 
-        [SerializeField, Header("攻撃成功になる、差分の境界値")] private float _diffLimit;
-        internal float DiffLimit => _diffLimit;
-
-        [SerializeField, Header("ピッタリになる、差分の境界値")] private float _justDiffLimit;
-        internal float JustDiffLimit => _justDiffLimit;
-
-        [Space(25)]
-        [Header("強制クリア条件：いずれかを満たせばOK")]
-
-        [SerializeField, Header("攻撃成功回数の境界値")] private float _forceClearDefeatLimit;
-        internal float ForceClearDefeatLimit => _forceClearDefeatLimit;
-
-        [SerializeField, Header("ピッタリ回数の上限値")] private int _forceClearJustLimit;
-        internal int ForceClearJustLimit => _forceClearJustLimit;
+        internal static readonly float DiffLimit = 1e-8f;
     }
 }

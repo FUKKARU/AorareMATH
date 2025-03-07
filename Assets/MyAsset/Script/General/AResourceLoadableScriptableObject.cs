@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SO
+namespace General
 {
     public abstract class AResourceLoadableScriptableObject<T> : ScriptableObject where T : ScriptableObject
     {
@@ -17,7 +17,7 @@ namespace SO
 
                     if (_entity == null)
                     {
-                        Debug.LogError(Path + " not found");
+                        UnityEngine.Debug.LogError(Path + " not found");
                     }
                 }
 

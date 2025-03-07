@@ -1,7 +1,7 @@
-﻿using General.Extension;
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using General;
 
 namespace SO
 {
