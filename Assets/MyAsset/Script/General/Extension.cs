@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace General.Extension
 {
@@ -80,6 +81,24 @@ namespace General.Extension
             CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
+
+        /// <summary>
+        /// キャンセル不可
+        /// </summary>
+        internal static async UniTaskVoid LoadAsync(this string sceneName)
+        {
+            if (isSceneLoading) return;
+            if (string.IsNullOrEmpty(sceneName)) return;
+
+            isSceneLoading = true;
+            var opr = SceneManager.LoadSceneAsync(sceneName);
+            opr.allowSceneActivation = false;
+            await UniTask.WaitUntil(() => opr.progress >= 0.9f);
+            opr.allowSceneActivation = true;
+            await UniTask.WaitUntil(() => opr.isDone);
+            isSceneLoading = false;
+        }
+        private static bool isSceneLoading = false;
     }
 
     internal static class IteratorExtension

@@ -314,7 +314,7 @@ namespace Main.Handler
 
                 await UniTask.NextFrame(ct);
             }
-            SceneManager.LoadScene(sceneName);
+            sceneName.LoadAsync().Forget();
         }
 
         private void Shuffle<T>(T[] array)
