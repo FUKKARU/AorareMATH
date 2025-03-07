@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,13 +28,13 @@ namespace General.Extension
 
         internal static async UniTask SecondsWaitAndDo(this float waitSeconds, Action act, CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: ct);
-            act();
+            await UniTask.WaitForSeconds(waitSeconds, cancellationToken: ct);
+            act?.Invoke();
         }
 
         internal static async UniTask SecondsWait(this float waitSeconds, CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: ct);
+            await UniTask.WaitForSeconds(waitSeconds, cancellationToken: ct);
         }
 
         /// <summary>
@@ -61,6 +62,24 @@ namespace General.Extension
         internal static Vector3 ToVector3(this Vector2 v, float z) => new(v.x, v.y, z);
 
         internal static void Pass() { }
+
+        internal static UniTask ConvertToUniTask(this Tween tween, MonoBehaviour targetObject, CancellationToken ct)
+        {
+            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            return tween.ToUniTask(cancellationToken: cts.Token);
+        }
+
+        internal static UniTask ConvertToUniTask(this Tween tween, GameObject targetObject, CancellationToken ct)
+        {
+            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            return tween.ToUniTask(cancellationToken: cts.Token);
+        }
+
+        internal static UniTask ConvertToUniTask(this Tween tween, Component targetObject, CancellationToken ct)
+        {
+            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            return tween.ToUniTask(cancellationToken: cts.Token);
+        }
     }
 
     internal static class IteratorExtension

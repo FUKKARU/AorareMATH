@@ -24,10 +24,8 @@ namespace Main.Handler
             [SerializeField] internal float BeforeBaseImageMove;
             [SerializeField] internal float BaseImageMove;
             [SerializeField] internal float AfterBaseImageMoved;
-            [SerializeField] internal float TotalNumTextCount;
-            [SerializeField] internal float AfterTotalNumTextCounted;
-            [SerializeField] internal float JustNumTextCount;
-            [SerializeField] internal float AfterJustNumTextCounted;
+            [SerializeField] internal float CorrectAmountTextCount;
+            [SerializeField] internal float AfterCorrectAmountTextCounted;
             [SerializeField] internal float AfterGuideTextAppeared;
         }
     }
@@ -35,8 +33,7 @@ namespace Main.Handler
     internal sealed class ResultShower : MonoBehaviour
     {
         [SerializeField] private RectTransform baseImageRt;
-        [SerializeField] private TextMeshProUGUI totalNumText;
-        [SerializeField] private TextMeshProUGUI justNumText;
+        [SerializeField] private TextMeshProUGUI correctAmountText;
         [SerializeField] private GameObject guideText;
         [SerializeField] private Value value;
         [SerializeField] private Duration duration;
@@ -44,33 +41,21 @@ namespace Main.Handler
         private void OnEnable()
         {
             baseImageRt.localPosition = new(0, value.BaseImageStartY, 0);
-            totalNumText.text = "";
-            justNumText.text = "";
+            correctAmountText.text = string.Empty;
             guideText.SetActive(false);
         }
 
-        private void OnDisable()
+        internal async UniTask Play(int correctAmount, bool hasForciblyCleared, CancellationToken ct)
         {
-            baseImageRt = null;
-            totalNumText = null;
-            justNumText = null;
-            guideText = null;
-        }
-
-        internal async UniTask Play(int totalNum, int justNum, bool hasForciblyClearedByTotalNum, bool hasForciblyClearedByJustNum, CancellationToken ct)
-        {
-            if (hasForciblyClearedByTotalNum) totalNumText.color = Color.yellow;
-            if (hasForciblyClearedByJustNum) justNumText.color = Color.yellow;
+            if (hasForciblyCleared) correctAmountText.color = Color.yellow;
 
             await duration.BeforeBaseImageMove.SecondsWait(ct);
 
-            await baseImageRt.DOAnchorPosY(value.BaseImageEndY, duration.BaseImageMove).ToUniTask(cancellationToken: ct);
+            await baseImageRt.DOAnchorPosY(value.BaseImageEndY, duration.BaseImageMove).ConvertToUniTask(baseImageRt, ct);
             await duration.AfterBaseImageMoved.SecondsWait(ct);
 
-            await ShowText(totalNumText, totalNum, duration.TotalNumTextCount, ct);
-            await duration.AfterJustNumTextCounted.SecondsWait(ct);
-            await ShowText(justNumText, justNum, duration.JustNumTextCount, ct);
-            await duration.AfterJustNumTextCounted.SecondsWait(ct);
+            await ShowText(correctAmountText, correctAmount, duration.CorrectAmountTextCount, ct);
+            await duration.AfterCorrectAmountTextCounted.SecondsWait(ct);
 
             guideText.SetActive(true);
             await duration.AfterGuideTextAppeared.SecondsWait(ct);

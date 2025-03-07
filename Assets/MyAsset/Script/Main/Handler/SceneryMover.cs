@@ -14,18 +14,22 @@ namespace Main.Handler
         [SerializeField] private Transform parent;
 
         private SceneryMoverImpl whiteLineImpl;
+#if false
         private SceneryMoverImpl buildingsLeftImpl;
         private SceneryMoverImpl buildingsRightImpl;
         private SceneryMoverImpl lampLeftImpl;
         private SceneryMoverImpl lampRightImpl;
+#endif
 
         private void OnEnable()
         {
             InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
+#if false
             InstantiateThis(ref buildingsLeftImpl, SO_Scenery.Entity.BuildingsLeftProperty);
             InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
             InstantiateThis(ref lampLeftImpl, SO_Scenery.Entity.LampLeftProperty);
             InstantiateThis(ref lampRightImpl, SO_Scenery.Entity.LampRightProperty);
+#endif
 
             void InstantiateThis(ref SceneryMoverImpl impl, SceneryElementProperty property)
             {
@@ -50,25 +54,31 @@ namespace Main.Handler
         private void OnDisable()
         {
             whiteLineImpl?.Dispose();
+#if false
             buildingsLeftImpl?.Dispose();
             buildingsRightImpl?.Dispose();
             lampLeftImpl?.Dispose();
             lampRightImpl?.Dispose();
+#endif
 
             whiteLineImpl = null;
+#if false
             buildingsLeftImpl = null;
             buildingsRightImpl = null;
             lampLeftImpl = null;
             lampRightImpl = null;
+#endif
         }
 
         private void Update()
         {
             whiteLineImpl?.Update();
+#if false
             buildingsLeftImpl?.Update();
             buildingsRightImpl?.Update();
             lampLeftImpl?.Update();
             lampRightImpl?.Update();
+#endif
         }
     }
 
