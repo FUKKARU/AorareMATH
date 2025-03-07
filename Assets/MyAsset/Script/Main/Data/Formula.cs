@@ -4,7 +4,7 @@ using General.Extension;
 
 namespace Main.Data.Formula
 {
-    internal sealed class IntStr
+    internal sealed record IntStr
     {
         private int _int;
         internal int Int => _int;
@@ -27,9 +27,13 @@ namespace Main.Data.Formula
             this._int = _int;
             this._str = _str;
         }
+
+        public static implicit operator FltStr(IntStr intStr) => intStr is null ? null : new(intStr.Int, intStr.Str);
+        public static bool operator ==(IntStr left, FltStr right) => left is not null && right is not null && left.Int == right.Flt && left.Str == right.Str;
+        public static bool operator !=(IntStr left, FltStr right) => !(left == right);
     }
 
-    internal sealed class FltStr
+    internal sealed record FltStr
     {
         private float _flt;
         internal float Flt => _flt;
@@ -52,6 +56,10 @@ namespace Main.Data.Formula
             this._flt = _flt;
             this._str = _str;
         }
+
+        public static implicit operator IntStr(FltStr fltStr) => fltStr is null ? null : new((int)fltStr.Flt, fltStr.Str);
+        public static bool operator ==(FltStr left, IntStr right) => left is not null && right is not null && left.Flt == right.Int && left.Str == right.Str;
+        public static bool operator !=(FltStr left, IntStr right) => !(left == right);
     }
 
     internal static class Symbol
@@ -229,7 +237,7 @@ namespace Main.Data.Formula
         private bool IsListOK(List<IntStr> list)
         {
             if (list == null) return false;
-            if (list.Count == 0) return false;
+            if (list.Count <= 0) return false;
             return true;
         }
 
@@ -241,41 +249,57 @@ namespace Main.Data.Formula
             for (int i = 0; i < list.Count - 1; i++)
             {
                 IntStr e = list[i], f = list[i + 1];
-                if (Symbol.IsNumber(e) == true && f.Str == Symbol.PL.Str) return false;
-                else if (e.Str == Symbol.PR.Str && Symbol.IsNumber(f) == true) return false;
+                if (Symbol.IsNumber(e) == true && f == Symbol.PL) return false;
+                else if (e == Symbol.PR && Symbol.IsNumber(f) == true) return false;
             }
 
             return true;
         }
 
         /// <summary>
-        /// 演算子が端になく、(数字の数) - (演算子の数) >= 1 であるか
-        /// かっこを無視する時、演算子が2個連続していないか
+        /// 「+」「-」の演算子について、「一つ前の要素が存在しそれが 数字,(,) のいずれかである、または一つ前の要素が存在しない」かつ「一つ後の要素が存在しそれが 数字,( のいずれかである」であるか
+        /// 「+」「-」を除いた演算子について、「一つ前の要素が存在しそれが 数字,) のいずれかである」かつ「一つ後の要素が存在しそれが 数字,( のいずれかである」であるか
         /// </summary>
         private bool IsOperatorOK(List<IntStr> list)
         {
-            if (Symbol.IsOperator(list[0]) == true) return false;
-            if (Symbol.IsOperator(list[^1]) == true) return false;
+            int n = list.Count;
 
-            int n = 0;
-            foreach (var e in list)
+            for (int i = 0; i < n; i++)
             {
-                if (Symbol.IsNumber(e) == true) n++;
-                else if (Symbol.IsOperator(e) == true) n--;
-            }
-            if (n < 1) return false;
+                IntStr e = list[i];
 
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (Symbol.IsOperator(list[i]) == true)
+                if (Symbol.IsOperator(e) != true) continue;
+
+                if (e == Symbol.OA || e == Symbol.OS)
                 {
-                    for (int j = i + 1; j < list.Count; j++)
+                    if (i > 0)
                     {
-                        if (Symbol.IsNumber(list[j]) == true) break;
-                        else if (Symbol.IsParagraph(list[j]) == true) continue;
-                        else if (Symbol.IsOperator(list[j]) == true) return false;
-                        else return false;
+                        IntStr left = list[i - 1];
+                        if (Symbol.IsNumber(left) != true && left != Symbol.PL && left != Symbol.PR) return false;
                     }
+
+                    if (i < n - 1)
+                    {
+                        IntStr right = list[i + 1];
+                        if (Symbol.IsNumber(right) != true && right != Symbol.PL) return false;
+                    }
+                    else return false;
+                }
+                else
+                {
+                    if (i > 0)
+                    {
+                        IntStr left = list[i - 1];
+                        if (Symbol.IsNumber(left) != true && left != Symbol.PR) return false;
+                    }
+                    else return false;
+
+                    if (i < n - 1)
+                    {
+                        IntStr right = list[i + 1];
+                        if (Symbol.IsNumber(right) != true && right != Symbol.PL) return false;
+                    }
+                    else return false;
                 }
             }
 
@@ -292,8 +316,8 @@ namespace Main.Data.Formula
             int n = 0;
             foreach (var e in list)
             {
-                if (e.Str == Symbol.PL.Str) n++;
-                else if (e.Str == Symbol.PR.Str) n--;
+                if (e == Symbol.PL) n++;
+                else if (e == Symbol.PR) n--;
 
                 if (n < 0) return false;
             }
@@ -301,12 +325,12 @@ namespace Main.Data.Formula
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Str == Symbol.PL.Str)
+                if (list[i] == Symbol.PL)
                 {
                     int j = i + 1;
                     while (j < list.Count)
                     {
-                        if (list[j].Str == Symbol.PR.Str) break;
+                        if (list[j] == Symbol.PR) break;
                         j++;
                     }
 
@@ -317,7 +341,7 @@ namespace Main.Data.Formula
             for (int i = 0; i < list.Count - 1; i++)
             {
                 IntStr e = list[i], f = list[i + 1];
-                if (e.Str == Symbol.PR.Str && f.Str == Symbol.PL.Str) return false;
+                if (e == Symbol.PR && f == Symbol.PL) return false;
             }
 
             return true;
@@ -329,8 +353,6 @@ namespace Main.Data.Formula
         /// <summary>
         /// Noneを消して詰める
         /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
         internal static List<IntStr> RemoveNone(this List<IntStr> list)
         {
             List<IntStr> ret = new(list);
@@ -364,14 +386,14 @@ namespace Main.Data.Formula
             {
                 // 今調べている要素が数字でないなら、結合しない
                 IntStr s = list[i];
-                if (!s.IsNumber()) { ret.Add(s); continue; }
+                if (Symbol.IsNumber(s) != true) { ret.Add(s); continue; }
 
                 // 先の要素を順に見ていき、数字を結合していく
                 int n = s.Int;
                 for (int j = i + 1; j < list.Count; i++, j++)
                 {
                     IntStr _s = list[j];
-                    if (!_s.IsNumber()) break;
+                    if (Symbol.IsNumber(_s) != true) break;
                     else n = n * 10 + _s.Int;
                 }
                 ret.Add(new(n));
@@ -383,7 +405,7 @@ namespace Main.Data.Formula
         /// <summary>
         /// IntStrをFltStrに変換する(リスト)
         /// </summary>
-        internal static List<FltStr> Convert(this List<IntStr> intStr) => intStr.Select(e => e.Convert()).ToList();
+        internal static List<FltStr> Convert(this List<IntStr> intStr) => intStr.Select(e => (FltStr)e).ToList();
 
         /// <summary>
         /// 式を計算する
@@ -398,14 +420,14 @@ namespace Main.Data.Formula
             int i = 0, cnt = 0;
             while (i < _list.Count)
             {
-                if (_list[i].Str != Symbol.PL.Str) { i++; continue; }
+                if (_list[i] != Symbol.PL) { i++; continue; }
 
                 // その右を順に探索し、対応する")"を探す
                 int n = 0;
                 for (int j = i + 1; j < _list.Count; j++)
                 {
-                    string str = _list[j].Str;
-                    if (str != Symbol.PR.Str) { if (str == Symbol.PL.Str) n++; continue; }
+                    IntStr e = _list[j];
+                    if (e != Symbol.PR) { if (e == Symbol.PL) n++; continue; }
                     if (n >= 1) { n--; continue; }
 
                     // "()"の間を再帰的に計算し、_listを更新する
@@ -429,14 +451,26 @@ namespace Main.Data.Formula
         {
             List<FltStr> _list = new(list);
 
+            // 正負の符号
+            FltStr first = _list[0];
+            if (first == Symbol.OA)
+            {
+                _list.RemoveAt(0);
+            }
+            else if (first == Symbol.OS)
+            {
+                _list[1] = new(-_list[1].Flt);
+                _list.RemoveAt(0);
+            }
+
             // 乗除
             for (int i = 0; i < _list.Count; i++)
             {
-                if (_list[i].Str == Symbol.OM.Str)
+                if (_list[i] == Symbol.OM)
                 {
                     (_list[i - 1].Flt * _list[i + 1].Flt).ReplaceAroundOperator(ref _list, ref i);
                 }
-                else if (_list[i].Str == Symbol.OD.Str)
+                else if (_list[i] == Symbol.OD)
                 {
                     if (_list[i + 1].Flt == 0) throw new System.Exception("0除算");
                     (_list[i - 1].Flt / _list[i + 1].Flt).ReplaceAroundOperator(ref _list, ref i);
@@ -446,11 +480,11 @@ namespace Main.Data.Formula
             // 加減
             for (int i = 0; i < _list.Count; i++)
             {
-                if (_list[i].Str == Symbol.OA.Str)
+                if (_list[i] == Symbol.OA)
                 {
                     (_list[i - 1].Flt + _list[i + 1].Flt).ReplaceAroundOperator(ref _list, ref i);
                 }
-                else if (_list[i].Str == Symbol.OS.Str)
+                else if (_list[i] == Symbol.OS)
                 {
                     (_list[i - 1].Flt - _list[i + 1].Flt).ReplaceAroundOperator(ref _list, ref i);
                 }
@@ -467,23 +501,6 @@ namespace Main.Data.Formula
             list.RemoveRange(operatorIndex - 1, 3);
             list.Insert(operatorIndex - 1, new(val));
             operatorIndex--;
-        }
-
-        /// <summary>
-        /// IntStrをFltStrに変換する
-        /// </summary>
-        private static FltStr Convert(this IntStr intStr)
-        {
-            return new(intStr.Int, intStr.Str);
-        }
-
-        /// <summary>
-        /// 数字かどうか判定する
-        /// </summary>
-        private static bool IsNumber(this IntStr var)
-        {
-            bool? isNum = Symbol.IsNumber(var);
-            return isNum.HasValue && isNum.Value;
         }
     }
 }

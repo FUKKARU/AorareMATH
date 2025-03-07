@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
+using General.Extension;
 using SO;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace Title.Handler
             if (hasFaded) return;
             if (_audioSource == null) return;
             hasFaded = true;
-            _audioSource.DOFade(0, 3).ToUniTask(cancellationToken: destroyCancellationToken).Forget();
+            _audioSource.DOFade(0, 3).ConvertToUniTask(_audioSource, destroyCancellationToken).Forget();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
+using General.Extension;
 using SO;
 using System;
 using System.Threading;
@@ -56,11 +57,6 @@ namespace Main.Handler
             base_.Tf.position = pos;
         }
 
-        private void OnDisable()
-        {
-            as_ = null;
-        }
-
         internal async UniTask Play(CancellationToken ct)
         {
             if (as_ != null) as_.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1 / oneCountDuration);
@@ -78,12 +74,12 @@ namespace Main.Handler
             sr.Yellow.sprite = sr.Green.sprite;
             await WaitForOneCount(ct);
 
-            await base_.Tf.DOLocalMoveY(base_.EndY, base_.Duration).ToUniTask(cancellationToken: ct);
+            await base_.Tf.DOLocalMoveY(base_.EndY, base_.Duration).ConvertToUniTask(base_.Tf, ct);
         }
 
         private async UniTask WaitForOneCount(CancellationToken ct)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(oneCountDuration), cancellationToken: ct);
+            await UniTask.WaitForSeconds(oneCountDuration, cancellationToken: ct);
         }
     }
 }

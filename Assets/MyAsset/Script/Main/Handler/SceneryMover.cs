@@ -119,12 +119,12 @@ namespace Main.Handler
             int len = elements.Length;
             if (len <= 0) return;
 
-            await UniTask.Delay(TimeSpan.FromSeconds(elements[0].TimeOffset), cancellationToken: ct);
+            await UniTask.WaitForSeconds(elements[0].TimeOffset, cancellationToken: ct);
 
             int i = 0;
             while (true)
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(elements[0].Interval), cancellationToken: ct);
+                await UniTask.WaitForSeconds(elements[0].Interval, cancellationToken: ct);
                 elements[i].IsActive = true;
                 i = Looped(++i, 0, len - 1);
             }

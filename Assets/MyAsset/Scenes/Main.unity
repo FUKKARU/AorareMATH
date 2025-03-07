@@ -254,7 +254,6 @@ MonoBehaviour:
   - {fileID: 2051959596}
   - {fileID: 1670923210}
   loadImageTf: {fileID: 232617390}
-  sceneReloader: {fileID: 0}
   previewText: {fileID: 1109169591}
   countDown: {fileID: 20690751}
   showTimerDiff: {fileID: 1449689697}
@@ -2636,7 +2635,8 @@ PrefabInstance:
       value: Canvas
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 994286907729485074, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 75517215365410409, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       insertIndex: -1
@@ -3176,8 +3176,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292935905
-  m_fontColor: {r: 0.88235295, g: 0, b: 0.88235295, a: 1}
+    rgba: 4278255615
+  m_fontColor: {r: 1, g: 1, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

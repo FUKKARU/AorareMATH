@@ -24,7 +24,7 @@ namespace Title.Handler
         {
             logoTf.DOLocalMoveY(1.15f, duration: 1.2f).SetEase(Ease.OutExpo).ConvertToUniTask(logoTf, ct).Forget();
             logoTf.DOScale(new Vector2(0.8f, 0.8f), duration: 2.0f).SetEase(Ease.InOutExpo).ConvertToUniTask(logoTf, ct).Forget();
-            await UniTask.Delay(TimeSpan.FromSeconds(1.8f), cancellationToken: ct);
+            await UniTask.WaitForSeconds(1.8f, cancellationToken: ct);
         }
     }
 }

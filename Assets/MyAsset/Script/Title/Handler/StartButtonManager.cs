@@ -6,7 +6,6 @@ using SO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 
 namespace Title.Handler
 {
@@ -49,7 +48,7 @@ namespace Title.Handler
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
             await loadImageTf.DOLocalMoveX(0, 0.5f).ConvertToUniTask(loadImageTf, ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
-            await SceneManager.LoadSceneAsync(SO_SceneName.Entity.Main).ToUniTask(cancellationToken: ct);
+            SO_SceneName.Entity.Main.LoadAsync().Forget();
         }
     }
 }
