@@ -9,7 +9,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using unityroom.Api;
 using Random = UnityEngine.Random;
 
@@ -31,7 +30,8 @@ namespace Main.Handler
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private TMPro.TextMeshProUGUI previewText;
         [SerializeField] private CountDown countDown;
-        [SerializeField] private ShowTimerDiff showTimerDiff;
+        [SerializeField] private TimeShower timeShower;
+        [SerializeField] private HandleManager handleManager;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -57,10 +57,14 @@ namespace Main.Handler
         private ((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)[] questions = null;
 
         private float _time = 0;
-        internal float Time
+        private float time
         {
             get { return _time; }
-            set { _time = Mathf.Clamp(value, byte.MinValue, byte.MaxValue); }
+            set
+            {
+                _time = Mathf.Clamp(value, byte.MinValue, byte.MaxValue);
+                timeShower.UpdateTimeUI(_time);
+            }
         }
 
         private bool isFirstOnStay = true;
@@ -80,7 +84,7 @@ namespace Main.Handler
             SetPositionX(loadImageTf, 0);
             SetPreviewText(text: string.Empty);
 
-            Time = SO_Handler.Entity.InitTimeLimt;
+            time = SO_Handler.Entity.InitTimeLimt;
         }
 
         private void Update()
@@ -106,17 +110,17 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            if (isAttackable && Input.GetKeyDown(KeyCode.Space)) Attack();
+            if (isAttackable && handleManager.Clicked) Attack();
 
-            if (Time > 0)
+            if (time > 0)
             {
-                Time -= UnityEngine.Time.deltaTime;
-                Time = Mathf.Max(0, Time);
+                time -= UnityEngine.Time.deltaTime;
+                time = Mathf.Max(0, time);
 
                 ShowPreview();
             }
 
-            if (Time <= 0)
+            if (time <= 0)
             {
                 State = GameState.Over;
             }
@@ -223,8 +227,9 @@ namespace Main.Handler
             if (justEffectRight != null) justEffectRight.Play();
 
             float timeDiff = SO_Handler.Entity.TimeIncreaseAmount;
-            Time += timeDiff;
-            showTimerDiff.PlayAnimation(1.0f, 260, $"+ {(int)timeDiff}", Color.yellow);
+            time += timeDiff;
+
+            timeShower.PlayTimeIncreaseAnimation();
 
             if (++GameData.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
             {

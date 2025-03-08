@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: aed0a8195ebc41243a094c96c74b270c
+guid: c4824f8fb77724534add1b8c2d9fdf5c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2828831895957235320
-    second: Handle_hover_0
+      213: 4939377423839114888
+    second: Kakutei_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Handle_hover_0
+      name: Kakutei_0
       rect:
         serializedVersion: 2
-        x: 66
-        y: 67
-        width: 891
-        height: 891
+        x: 0
+        y: 0
+        width: 449
+        height: 249
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,8 +127,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8899c20e068fdb8d0800000000000000
-      internalID: -2828831895957235320
+      spriteID: 886b387d8913c8440800000000000000
+      internalID: 4939377423839114888
       vertices: []
       indices: 
       edges: []
@@ -144,7 +144,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Handle_hover_0: -2828831895957235320
+      Kakutei_0: 4939377423839114888
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

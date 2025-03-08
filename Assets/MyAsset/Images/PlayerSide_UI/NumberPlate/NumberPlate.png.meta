@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: aed0a8195ebc41243a094c96c74b270c
+guid: 7f30b0a677f31470c86bcff5208f1b79
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2828831895957235320
-    second: Handle_hover_0
+      213: 3075023623919715008
+    second: NumberPlate_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Handle_hover_0
+      name: NumberPlate_0
       rect:
         serializedVersion: 2
-        x: 66
-        y: 67
-        width: 891
-        height: 891
+        x: 1
+        y: 83
+        width: 1918
+        height: 913
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,8 +127,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8899c20e068fdb8d0800000000000000
-      internalID: -2828831895957235320
+      spriteID: 0c24bab91bdacaa20800000000000000
+      internalID: 3075023623919715008
       vertices: []
       indices: 
       edges: []
@@ -144,7 +144,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Handle_hover_0: -2828831895957235320
+      NumberPlate_0: 3075023623919715008
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
