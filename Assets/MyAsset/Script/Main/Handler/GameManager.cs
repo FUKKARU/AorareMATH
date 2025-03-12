@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
+using General.Debug;
 using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
@@ -138,7 +139,13 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
+#if UNITY_EDITOR
+            Formula answer = null;
+            (Question.N, Question.Target, answer) = questions[GameData.CorrectAmount];
+            answer.Dump().Show();
+#else
             (Question.N, Question.Target, _) = questions[GameData.CorrectAmount];
+#endif
 
             // 前の問題のインスタンスを消す
             Formula.Init();
