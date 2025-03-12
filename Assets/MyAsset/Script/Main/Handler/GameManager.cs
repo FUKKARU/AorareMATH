@@ -12,7 +12,8 @@ using System.Threading;
 using UnityEngine;
 using unityroom.Api;
 using Random = UnityEngine.Random;
-
+using System.Collections.Generic;
+using CI.QuickSave;
 namespace Main.Handler
 {
     internal enum GameState
@@ -54,6 +55,9 @@ namespace Main.Handler
         internal Question Question { get; set; } = new();
         internal Formula Formula { get; set; } = new();
 
+        private List<int> writeuserdataList = new List<int>();
+        private List<int> loaduserdataList = new List<int>();
+
         // 事前生成の問題データから、一定個数をシャッフルして抽出
         private ((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)[] questions = null;
 
@@ -75,7 +79,8 @@ namespace Main.Handler
 
         private void OnEnable()
         {
-            State = GameState.Stay;
+
+                State = GameState.Stay;
 
             Formula.Init();
             PickupQuestions();
@@ -106,6 +111,30 @@ namespace Main.Handler
 
             // 以降は1回だけ実行される
 
+            //クイックセーブのインスタンスの作成
+            var settings = new QuickSaveSettings();
+            //暗号化の方法
+            settings.SecurityMode = SecurityMode.Aes;
+            //Aesの暗号化キー
+            settings.Password = "Iput_Fukkaru";
+            //圧縮方法
+            settings.CompressionMode = CompressionMode.Gzip;
+
+            /*QuickSaveWriter dataWriter = QuickSaveWriter.Create("userData", settings);
+            dataWriter.Write("List", writeuserdataList);
+            dataWriter.Commit();*/
+
+            if (QuickSaveRaw.Exists("userData"))
+            {
+            }
+            else
+            {
+                QuickSaveReader dataReader = QuickSaveReader.Create("userData", settings);
+
+                loaduserdataList = dataReader.Read<List<int>>("List");
+                UnityEngine.Debug.Log(loaduserdataList);
+            }
+
             OnLoadFinished(destroyCancellationToken).Forget();
         }
 
@@ -133,6 +162,18 @@ namespace Main.Handler
             else isFirstOnOver = false;
 
             // 以降は1回だけ実行される
+            //クイックセーブのインスタンスの作成
+            var settings = new QuickSaveSettings();
+            //暗号化の方法
+            settings.SecurityMode = SecurityMode.Aes;
+            //Aesの暗号化キー
+            settings.Password = "Iput_Fukkaru";
+            //圧縮方法
+            settings.CompressionMode = CompressionMode.Gzip;
+            QuickSaveWriter dataWriter = QuickSaveWriter.Create("userData", settings);
+            SetDataList();
+            dataWriter.Write("List", writeuserdataList);
+            dataWriter.Commit();
 
             OnResult(destroyCancellationToken).Forget();
         }
@@ -342,6 +383,14 @@ namespace Main.Handler
                 array[j] = tmp;
             }
         }
+
+        private void SetDataList()
+        {
+            writeuserdataList.Add(GameData.CorrectAmount);
+            writeuserdataList.Sort((a, b) => b - a);
+            if (writeuserdataList.Count == 11) writeuserdataList.Remove(writeuserdataList[10]);
+        }
+
     }
 
     internal static class GameManagerEx
