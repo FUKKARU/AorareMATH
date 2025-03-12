@@ -10,8 +10,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-using unityroom.Api;
 using Random = UnityEngine.Random;
+using Text = TMPro.TextMeshProUGUI;
 
 namespace Main.Handler
 {
@@ -29,7 +29,8 @@ namespace Main.Handler
         [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
 
         [SerializeField] private Transform loadImageTf;
-        [SerializeField] private TMPro.TextMeshProUGUI previewText;
+        [SerializeField] private Text previewText;
+        [SerializeField] private Text targetText;
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private HandleManager handleManager;
@@ -49,13 +50,10 @@ namespace Main.Handler
         private SpriteFollow[] _formulaInstances = new SpriteFollow[12];
         internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
-        internal GameState State { get; set; } = GameState.Stay;
-        internal GameData GameData { get; set; } = new();
-        internal Question Question { get; set; } = new();
-        internal Formula Formula { get; set; } = new();
-
-        // 事前生成の問題データから、一定個数をシャッフルして抽出
-        private ((int N1, int N2, int N3, int N4) N, int Target, Formula Answer)[] questions = null;
+        internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
+        internal GameData GameData { get; private set; } = new(); // セーブデータ（正解数を格納）
+        internal Formula Formula { get; private set; } = new(); // 出題中の問題
+        private int target = 0; // 出題中の問題の答え
 
         private float _time = 0;
         private float time
@@ -78,11 +76,11 @@ namespace Main.Handler
             State = GameState.Stay;
 
             Formula.Init();
-            PickupQuestions();
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
             SetPositionX(loadImageTf, 0);
+            SetTargetText(string.Empty);
             SetPreviewText(text: string.Empty);
 
             time = SO_Handler.Entity.InitTimeLimt;
@@ -90,13 +88,14 @@ namespace Main.Handler
 
         private void Update()
         {
-            Do(State switch
+            Action action = State switch
             {
                 GameState.Stay => OnStay,
                 GameState.OnGoing => OnOnGoing,
                 GameState.Over => OnOver,
                 _ => null
-            });
+            };
+            action?.Invoke();
         }
 
         private void OnStay()
@@ -139,50 +138,65 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-#if UNITY_EDITOR
+            // 今生成しようとしている問題は、何問目であるか
+            int index = GameData.CorrectAmount + 1;
+
+            // TODO: 出題する問題を決定 TODO:要修正
             Formula answer = null;
-            (Question.N, Question.Target, answer) = questions[GameData.CorrectAmount];
+            //(numbers, target, answer) = default;//////////////////
+#if UNITY_EDITOR
             answer.Dump().Show();
-#else
-            (Question.N, Question.Target, _) = questions[GameData.CorrectAmount];
 #endif
 
-            // 前の問題のインスタンスを消す
-            Formula.Init();
-            foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
-            Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
+            // インスタンスを作り直す
+            DestroyInstances();
+            CreateInstances();
 
-            // 新しくインスタンスを作る
-            InstantiateNumbers(Question.N);
-        }
+            return;
 
-        private void InstantiateNumbers((int N1, int N2, int N3, int N4) n)
-        {
-            int[] numbers = new int[4] { n.N1, n.N2, n.N3, n.N4 };
-            Shuffle(numbers);
 
-            InstantiateNumber(numbers[0], 2);
-            InstantiateNumber(numbers[1], 4);
-            InstantiateNumber(numbers[2], 7);
-            InstantiateNumber(numbers[3], 9);
-        }
 
-        private void InstantiateNumber(int n, int i)
-        {
-            Formula.Data[i] = n.ToIntStr();
+            void DestroyInstances()
+            {
+                Formula.Init();
 
-            Vector2 pos = SymbolPositions[i];
-            var prefabInstance = ToInstance(n.ToIntStr());
-            var instance =
-                Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
-            _formulaInstances[i] = instance;
-        }
+                foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
+                Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
 
-        private void PickupQuestions()
-        {
-            var fixedQuestions = FixedQuestions.Data.ToArray();
-            Shuffle(fixedQuestions);
-            this.questions = fixedQuestions.Take(SO_Handler.Entity.QuestionAmount).ToArray();
+                SetTargetText(string.Empty);
+            }
+
+            void CreateInstances()
+            {
+                //InstantiateNumbers(?, numbers);/////////////////
+                SetTargetText(target.ToString());
+
+                void InstantiateNumbers(bool doShuffle, params int[] numbers)
+                {
+                    if (numbers == null) return;
+                    if (numbers.Length <= 0 || Formula.MaxLength < numbers.Length) return;
+                    if (doShuffle) Shuffle(numbers);
+
+                    int brankAmount = Formula.MaxLength - numbers.Length;
+                    float brankLength = 1.0f * brankAmount / (numbers.Length + 1);
+                    for (int i = 0; i < numbers.Length; i++)
+                    {
+                        float _x = brankLength * (i + 1) + i + 0.49f; // 左端からの位置（インデックスを小数に拡張した感じ）
+                        int x = Mathf.Clamp(Mathf.RoundToInt(_x), 0, Formula.MaxLength - 1); // 丸める（このインデックスに数字を生成）
+                        InstantiateNumber(numbers[i], x);
+                    }
+                }
+
+                void InstantiateNumber(int n, int i)
+                {
+                    Formula.Data[i] = n.ToIntStr();
+
+                    Vector2 pos = SymbolPositions[i];
+                    var prefabInstance = ToInstance(n.ToIntStr());
+                    var instance = Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
+                    _formulaInstances[i] = instance;
+                }
+            }
         }
 
         private void ShowPreview()
@@ -192,7 +206,7 @@ namespace Main.Handler
             {
                 SetPreviewText(text: $"= {(int)r.Value}");
 
-                float diff = Mathf.Abs(Question.Target - r.Value);
+                float diff = Mathf.Abs(target - r.Value);
                 Color32 color = diff < SO_Handler.DiffLimit ? Color.yellow : Color.red;
                 SetPreviewText(color: color);
             }
@@ -200,6 +214,11 @@ namespace Main.Handler
             {
                 SetPreviewText(text: string.Empty);
             }
+        }
+
+        private void SetTargetText(string text)
+        {
+            if (targetText != null) targetText.text = text;
         }
 
         private void SetPreviewText(string text = null, Color? color = null)
@@ -217,8 +236,11 @@ namespace Main.Handler
 
             if (r.HasValue)
             {
-                float diff = Mathf.Abs(Question.Target - r.Value);
-                Do((diff <= SO_Handler.DiffLimit) ? () => OnAttackSucceeded(diff) : OnAttackFailed);
+                float diff = Mathf.Abs(target - r.Value);
+                if (diff <= SO_Handler.DiffLimit)
+                    OnAttackSucceeded(diff);
+                else
+                    OnAttackFailed();
             }
             else
             {
@@ -254,18 +276,6 @@ namespace Main.Handler
         }
 
         internal void PlaySelectSE() => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
-
-#if false
-        private void SendScore()
-        {
-            SendScoreImpl(1, GameData.CorrectAmount);
-        }
-
-        private void SendScoreImpl(int boardNo, int score)
-           => UnityroomApiClient.Instance.SendScore(boardNo, score, ScoreboardWriteMode.HighScoreDesc);
-#endif
-
-        private void Do(Action action) => action?.Invoke();
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
@@ -311,10 +321,6 @@ namespace Main.Handler
         private async UniTask OnResult(CancellationToken ct)
         {
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
-
-#if false
-            SendScore();
-#endif
 
             await resultShower.Play(GameData.CorrectAmount, hasForciblyCleared, ct);
 

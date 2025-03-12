@@ -58,7 +58,14 @@ namespace Main.Data
         }
 
         // 事前生成のデータ(両端の間隔も意識して、データを格納すること！)
-        // 今の所、Answerは使わない
+        /*
+        * 1     問目 2-1   数字２個、演算子1個
+        * 2 - 5 問目 3-2-0 数字３個、演算子２個(+,- 2個)
+        * 6 -10 問目 3-2   数字３個、演算子２個
+        * 11-15 問目 4-3-0 数字４個、演算子３個(+,- ３個)
+        * 16-20 問目 4-2-1 数字４個、演算子３個(+,- 2個、*,/ 1個)
+        * 21-   問目 4-3   数字４個、演算子３個
+        */
         internal static ReadOnlyCollection<((int N1, int N2, int N3, int N4) N, int Target, Formula.Formula Answer)> Data = null;
 
         private static string[] RawData =
