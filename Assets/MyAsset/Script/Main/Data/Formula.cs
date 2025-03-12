@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using General.Debug;
 using General.Extension;
 
 namespace Main.Data.Formula
@@ -212,6 +213,10 @@ namespace Main.Data.Formula
         {
             Data.Clear();
         }
+
+#if UNITY_EDITOR
+        internal string Dump() => string.Join("", Data.Select(e => e is null ? string.Empty : Symbol.IsNumber(e) == true ? e.Int.ToString() : e.Str));
+#endif
 
         internal float? Calcurate()
         {
