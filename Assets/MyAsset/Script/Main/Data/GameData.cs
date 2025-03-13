@@ -1,6 +1,7 @@
-﻿using CI.QuickSave;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using CI.QuickSave;
+using unityroom.Api;
 
 namespace Main.Data
 {
@@ -64,5 +65,10 @@ namespace Main.Data
         }
 
         internal void Reset() => _correctAmount = 0;
+
+        private void SendToUnityroom()
+        {
+            UnityroomApiClient.Instance.SendScore(1, _correctAmount, ScoreboardWriteMode.HighScoreDesc);
+        }
     }
 }
