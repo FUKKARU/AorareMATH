@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using Text = TMPro.TextMeshProUGUI;
 
 namespace Main.Handler
@@ -79,7 +78,7 @@ namespace Main.Handler
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
-            SetPositionX(loadImageTf, 0);
+            loadImageTf.SetPositionX(0);
             SetTargetText(string.Empty);
             SetPreviewText(text: string.Empty);
 
@@ -138,14 +137,11 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-            // 今生成しようとしている問題は、何問目であるか
-            int index = GameData.CorrectAmount + 1;
-
-            // TODO: 出題する問題を決定 TODO:要修正
-            Formula answer = null;
-            //(numbers, target, answer) = default;//////////////////
+            bool result = GameData.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
+            if (!result) return;
+            this.target = target;
 #if UNITY_EDITOR
-            answer.Dump().Show();
+            answer.Show();
 #endif
 
             // インスタンスを作り直す
@@ -168,14 +164,14 @@ namespace Main.Handler
 
             void CreateInstances()
             {
-                //InstantiateNumbers(?, numbers);/////////////////
+                InstantiateNumbers(numbers: numbers);
                 SetTargetText(target.ToString());
 
-                void InstantiateNumbers(bool doShuffle, params int[] numbers)
+                void InstantiateNumbers(bool doShuffle = true, params int[] numbers)
                 {
                     if (numbers == null) return;
                     if (numbers.Length <= 0 || Formula.MaxLength < numbers.Length) return;
-                    if (doShuffle) Shuffle(numbers);
+                    if (doShuffle) numbers.ShuffleSelf();
 
                     int brankAmount = Formula.MaxLength - numbers.Length;
                     float brankLength = 1.0f * brankAmount / (numbers.Length + 1);
@@ -189,10 +185,11 @@ namespace Main.Handler
 
                 void InstantiateNumber(int n, int i)
                 {
-                    Formula.Data[i] = n.ToIntStr();
+                    IntStr intStr = new(n);
+                    Formula.Data[i] = intStr;
 
                     Vector2 pos = SymbolPositions[i];
-                    var prefabInstance = ToInstance(n.ToIntStr());
+                    var prefabInstance = ToInstance(intStr);
                     var instance = Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
                     _formulaInstances[i] = instance;
                 }
@@ -298,13 +295,6 @@ namespace Main.Handler
             else throw new Exception("見つかりませんでした");
         }
 
-        private void SetPositionX(Transform tf, float x)
-        {
-            Vector3 pos = tf.position;
-            pos.x = x;
-            tf.position = pos;
-        }
-
         private async UniTask OnLoadFinished(CancellationToken ct)
         {
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
@@ -333,41 +323,6 @@ namespace Main.Handler
                 await UniTask.NextFrame(ct);
             }
             sceneName.LoadAsync().Forget();
-        }
-
-        private void Shuffle<T>(T[] array)
-        {
-            if (array == null) return;
-            int n = array.Length;
-            if (n <= 0) return;
-            for (int i = n - 1; i > 0; i--)
-            {
-                int j = Random.Range(0, i + 1);
-                var tmp = array[i];
-                array[i] = array[j];
-                array[j] = tmp;
-            }
-        }
-    }
-
-    internal static class GameManagerEx
-    {
-        internal static IntStr ToIntStr(this int val)
-        {
-            return val switch
-            {
-                0 => Symbol.N0,
-                1 => Symbol.N1,
-                2 => Symbol.N2,
-                3 => Symbol.N3,
-                4 => Symbol.N4,
-                5 => Symbol.N5,
-                6 => Symbol.N6,
-                7 => Symbol.N7,
-                8 => Symbol.N8,
-                9 => Symbol.N9,
-                _ => throw new Exception("不正な種類です")
-            };
         }
     }
 }

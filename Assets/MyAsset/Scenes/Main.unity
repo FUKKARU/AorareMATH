@@ -255,6 +255,7 @@ MonoBehaviour:
   - {fileID: 1670923210}
   loadImageTf: {fileID: 232617390}
   previewText: {fileID: 1109169591}
+  targetText: {fileID: 761119554}
   countDown: {fileID: 20690751}
   timeShower: {fileID: 1019521105}
   handleManager: {fileID: 1468049014}
@@ -5327,57 +5328,11 @@ Transform:
   - {fileID: 63894703}
   - {fileID: 20690750}
   - {fileID: 1457230429}
-  - {fileID: 1874153340}
   - {fileID: 1019521104}
   - {fileID: 585194457}
   - {fileID: 758501018}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1874153339
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1874153340}
-  - component: {fileID: 1874153341}
-  m_Layer: 0
-  m_Name: TargetNumberShower
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1874153340
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1874153339}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1870115866}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1874153341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1874153339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5ffc367152e96747b65f1d88919052a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 761119554}
 --- !u!1 &1879992251
 GameObject:
   m_ObjectHideFlags: 0
