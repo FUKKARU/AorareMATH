@@ -2,10 +2,12 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
+using Ct = System.Threading.CancellationToken;
+using Cts = System.Threading.CancellationTokenSource;
 
 namespace General.Extension
 {
@@ -27,13 +29,13 @@ namespace General.Extension
 #endif
         }
 
-        internal static async UniTask SecondsWaitAndDo(this float waitSeconds, Action act, CancellationToken ct)
+        internal static async UniTask SecondsWaitAndDo(this float waitSeconds, Action act, Ct ct)
         {
             await UniTask.WaitForSeconds(waitSeconds, cancellationToken: ct);
             act?.Invoke();
         }
 
-        internal static async UniTask SecondsWait(this float waitSeconds, CancellationToken ct)
+        internal static async UniTask SecondsWait(this float waitSeconds, Ct ct)
         {
             await UniTask.WaitForSeconds(waitSeconds, cancellationToken: ct);
         }
@@ -64,21 +66,34 @@ namespace General.Extension
 
         internal static void Pass() { }
 
-        internal static UniTask ConvertToUniTask(this Tween tween, MonoBehaviour targetObject, CancellationToken ct)
+        internal static void SetPositionX(this Transform tf, float x)
         {
-            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            Vector3 pos = tf.position;
+            pos.x = x;
+            tf.position = pos;
+        }
+        internal static void SetPositionY(this Transform tf, float y)
+        {
+            Vector3 pos = tf.position;
+            pos.y = y;
+            tf.position = pos;
+        }
+
+        internal static UniTask ConvertToUniTask(this Tween tween, MonoBehaviour targetObject, Ct ct)
+        {
+            Cts cts = Cts.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
 
-        internal static UniTask ConvertToUniTask(this Tween tween, GameObject targetObject, CancellationToken ct)
+        internal static UniTask ConvertToUniTask(this Tween tween, GameObject targetObject, Ct ct)
         {
-            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            Cts cts = Cts.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
 
-        internal static UniTask ConvertToUniTask(this Tween tween, Component targetObject, CancellationToken ct)
+        internal static UniTask ConvertToUniTask(this Tween tween, Component targetObject, Ct ct)
         {
-            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
+            Cts cts = Cts.CreateLinkedTokenSource(ct, targetObject.GetCancellationTokenOnDestroy());
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
 
@@ -140,6 +155,20 @@ namespace General.Extension
             {
                 yield return (i, e);
                 i++;
+            }
+        }
+
+        internal static void ShuffleSelf<T>(this T[] array)
+        {
+            if (array == null) return;
+            int n = array.Length;
+            if (n <= 0) return;
+            for (int i = n - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                T tmp = array[i];
+                array[i] = array[j];
+                array[j] = tmp;
             }
         }
     }

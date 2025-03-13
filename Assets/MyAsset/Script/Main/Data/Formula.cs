@@ -187,6 +187,7 @@ namespace Main.Data.Formula
     internal sealed class Formula
     {
         internal List<IntStr> Data { get; set; }
+        internal static readonly int MaxLength = 12;
 
         internal Formula()
         {
@@ -196,7 +197,7 @@ namespace Main.Data.Formula
         internal Formula(IntStr[] data)
         {
             if (data == null) return;
-            if (data.Length != 12) return;
+            if (data.Length != MaxLength) return;
             Data = data.ToList();
         }
 
