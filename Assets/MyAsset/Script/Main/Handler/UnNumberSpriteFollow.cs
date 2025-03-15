@@ -1,6 +1,7 @@
 ﻿using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,6 +18,8 @@ namespace Main.Handler
         [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private SpriteFollow prefab;
         [SerializeField] private SpriteRenderer thisSpriteRenderer;
+        [SerializeField] private Sprite normalSprite;
+        [SerializeField] private Sprite hoverSprite;
         private SpriteRenderer thisInstance = null;
 
         [SerializeField, Header("インスタンスのz座標")] private float z;
@@ -36,8 +39,11 @@ namespace Main.Handler
 
         private void OnEnable()
         {
+            eventTrigger.AddListener(EventTriggerType.PointerEnter, OnPointerEnter);
+            eventTrigger.AddListener(EventTriggerType.PointerExit, OnPointerExit);
             eventTrigger.AddListener(EventTriggerType.PointerDown, OnPointerDown);
             eventTrigger.AddListener(EventTriggerType.PointerUp, OnPointerUp);
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
         }
 
         private void OnDisable()
@@ -57,6 +63,7 @@ namespace Main.Handler
                 if (GameManager.Instance.State == GameState.Over)
                 {
                     isFollowingMouse = false;
+                    if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
                     Destroy(thisInstance.gameObject);
                     thisInstance = null;
                     return;
@@ -64,6 +71,24 @@ namespace Main.Handler
 
                 thisInstance.transform.position = Camera.main.MousePositionToWorldPosition(thisZ);
             }
+        }
+
+        private void OnPointerEnter()
+        {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+            if (isFollowingMouse) return;
+            if (GameManager.Instance.IsHoldingSymbol) return;
+
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
+        }
+
+        private void OnPointerExit()
+        {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+            if (isFollowingMouse) return;
+            if (GameManager.Instance.IsHoldingSymbol) return;
+
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
         }
 
         private void OnPointerDown()
@@ -74,6 +99,7 @@ namespace Main.Handler
 
             isFollowingMouse = true;
             GameManager.Instance.PlaySelectSE();
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
             thisInstance = Instantiate(thisSpriteRenderer, Camera.main.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
