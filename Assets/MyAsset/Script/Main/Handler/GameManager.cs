@@ -43,6 +43,8 @@ namespace Main.Handler
         [SerializeField] private AudioSource attackFailedSEAudioSource;
         [SerializeField] private AudioSource justAttackedSEAudioSource;
         [SerializeField] private AudioSource resultSEAudioSource;
+        [SerializeField, Range(0.01f, 5.0f)] private float mouseHoverSymbolFrameLimitWidth;
+        [SerializeField, Range(0.01f, 5.0f)] private float mouseHoverSymbolFrameLimitHeight;
 
         private Vector2[] _symbolPositions;
         internal Vector2[] SymbolPositions => _symbolPositions;
@@ -342,6 +344,55 @@ namespace Main.Handler
             await loadImageTf.DOLocalMoveX(0, 0.5f).ConvertToUniTask(loadImageTf, ct);
             await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
             sceneName.LoadAsync().Forget();
+        }
+
+        internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)
+        {
+            float lw = mouseHoverSymbolFrameLimitWidth;
+            float lh = mouseHoverSymbolFrameLimitHeight;
+            Vector2 mousePosition = Extension.MousePositionToWorldPosition(Camera.main, 0).ToVector2();
+
+            for (int i = 0; i < SymbolPositions.Length; i++)
+            {
+                if (i < SymbolPositions.Length - 1)
+                {
+                    Vector3 leftPos = SymbolPositions[i];
+                    Vector3 rightPos = SymbolPositions[i + 1];
+                    bool isMouseHoverLeft = mousePosition.IsIn(-lw, lw, -lh, lh, leftPos);
+                    bool isMouseHoverRight = mousePosition.IsIn(-lw, lw, -lh, lh, rightPos);
+
+                    if (isMouseHoverLeft)
+                    {
+                        if (isMouseHoverRight)
+                        {
+                            hovering = true;
+                            index = i + 1; // 右優先
+                            return;
+                        }
+                        else
+                        {
+                            hovering = true;
+                            index = i;
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Vector3 leftPos = SymbolPositions[i];
+                    bool isMouseHoverLeft = mousePosition.IsIn(-lw, lw, -lh, lh, leftPos);
+
+                    if (isMouseHoverLeft)
+                    {
+                        hovering = true;
+                        index = i;
+                        return;
+                    }
+                }
+            }
+
+            hovering = false;
+            index = -1;
         }
     }
 }

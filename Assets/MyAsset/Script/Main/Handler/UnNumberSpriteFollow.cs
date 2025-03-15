@@ -17,6 +17,8 @@ namespace Main.Handler
         [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private SpriteFollow prefab;
         [SerializeField] private SpriteRenderer thisSpriteRenderer;
+        [SerializeField] private Sprite normalSprite;
+        [SerializeField] private Sprite hoverSprite;
         private SpriteRenderer thisInstance = null;
 
         [SerializeField, Header("インスタンスのz座標")] private float z;
@@ -36,8 +38,11 @@ namespace Main.Handler
 
         private void OnEnable()
         {
+            eventTrigger.AddListener(EventTriggerType.PointerEnter, OnPointerEnter);
+            eventTrigger.AddListener(EventTriggerType.PointerExit, OnPointerExit);
             eventTrigger.AddListener(EventTriggerType.PointerDown, OnPointerDown);
             eventTrigger.AddListener(EventTriggerType.PointerUp, OnPointerUp);
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
         }
 
         private void OnDisable()
@@ -57,6 +62,7 @@ namespace Main.Handler
                 if (GameManager.Instance.State == GameState.Over)
                 {
                     isFollowingMouse = false;
+                    if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
                     Destroy(thisInstance.gameObject);
                     thisInstance = null;
                     return;
@@ -64,6 +70,24 @@ namespace Main.Handler
 
                 thisInstance.transform.position = Camera.main.MousePositionToWorldPosition(thisZ);
             }
+        }
+
+        private void OnPointerEnter()
+        {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+            if (isFollowingMouse) return;
+            if (GameManager.Instance.IsHoldingSymbol) return;
+
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
+        }
+
+        private void OnPointerExit()
+        {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
+            if (isFollowingMouse) return;
+            if (GameManager.Instance.IsHoldingSymbol) return;
+
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
         }
 
         private void OnPointerDown()
@@ -74,6 +98,7 @@ namespace Main.Handler
 
             isFollowingMouse = true;
             GameManager.Instance.PlaySelectSE();
+            if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
             thisInstance = Instantiate(thisSpriteRenderer, Camera.main.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
@@ -86,34 +111,36 @@ namespace Main.Handler
 
             isFollowingMouse = false;
 
-            thisInstance.transform.position.ToVector2().JudgeAttachable
-                (p =>
-                {
-                    Vector3 toPos = p.ToVector3(z);
-                    int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
-                    IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
+            GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
+            if (hovering)
+            {
+                Vector2 symbolPosition = GameManager.Instance.SymbolPositions[index];
 
-                    bool? isNumber = Symbol.IsNumber(toSymbol);
-                    if (!isNumber.HasValue || isNumber.Value)
-                    {
-                        GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
-                        return;
-                    }
-                    GameManager.Instance.PlaySelectSE();
+                Vector3 toPos = symbolPosition.ToVector3(z);
+                int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
+                IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
 
-                    SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    instance.transform.localScale =
-                        Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
-
-                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
-                    if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
-                    GameManager.Instance.FormulaInstances[toIndex] = instance;
-                },
-                p =>
+                bool? isNumber = Symbol.IsNumber(toSymbol);
+                if (!isNumber.HasValue || isNumber.Value)
                 {
                     GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
-                });
+                    return;
+                }
+                GameManager.Instance.PlaySelectSE();
+
+                SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
+                instance.transform.localScale =
+                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
+
+                GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+
+                if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
+                GameManager.Instance.FormulaInstances[toIndex] = instance;
+            }
+            else
+            {
+                GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
+            }
 
             Destroy(thisInstance.gameObject);
             thisInstance = null;
