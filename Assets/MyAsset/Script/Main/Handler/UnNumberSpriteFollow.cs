@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 namespace Main.Handler
 {
+    /// <summary>
+    /// 車内にあるスプライト（演算子orかっこの前提）
+    /// </summary>
     internal sealed class UnNumberSpriteFollow : MonoBehaviour
     {
         [SerializeField] private SymbolType _type;
@@ -50,7 +53,7 @@ namespace Main.Handler
                     return;
                 }
 
-                thisInstance.transform.position = MouseToWorld(thisZ);
+                thisInstance.transform.position = Camera.main.MousePositionToWorldPosition(thisZ);
             }
         }
 
@@ -61,7 +64,8 @@ namespace Main.Handler
             if (thisInstance != null) return;
 
             isFollowingMouse = true;
-            thisInstance = Instantiate(thisSpriteRenderer, MouseToWorld(thisZ), Quaternion.identity, transform);
+            GameManager.Instance.PlaySelectSE();
+            thisInstance = Instantiate(thisSpriteRenderer, Camera.main.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
 
@@ -86,9 +90,8 @@ namespace Main.Handler
                     if (!isNumber.HasValue || isNumber.Value) return;
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    // 演算子orかっこの前提
                     instance.transform.localScale =
-                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
+                        Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
 
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
 
@@ -102,13 +105,6 @@ namespace Main.Handler
 
             Destroy(thisInstance.gameObject);
             thisInstance = null;
-        }
-
-        private Vector3 MouseToWorld(float z)
-        {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = z;
-            return pos;
         }
 
         internal void ForciblyInstantiateSpriteFollowHere(IntStr symbol, int index)

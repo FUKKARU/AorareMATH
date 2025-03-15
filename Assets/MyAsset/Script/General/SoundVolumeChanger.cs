@@ -24,8 +24,8 @@ namespace General
             bgmSlider.onValueChanged.AddListener(value => SoundManager.SetVolume(SoundType.BGM, value.ConvertToVolume()));
             seSlider.onValueChanged.AddListener(value => SoundManager.SetVolume(SoundType.SE, value.ConvertToVolume()));
 
-            seSampleEventTrigger.Bind(EventTriggerType.PointerClick, () => seSampleAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE));
-            seSampleEventTrigger.Bind(EventTriggerType.PointerUp, () => seSampleAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE));
+            seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, () => seSampleAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE));
+            seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, () => seSampleAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE));
         }
     }
 

@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 namespace Main.Handler
 {
+    /// <summary>
+    /// パネル上のスプライト
+    /// </summary>
     internal sealed class SpriteFollow : MonoBehaviour
     {
         [SerializeField] private SymbolType _type;
@@ -45,7 +48,7 @@ namespace Main.Handler
                     return;
                 }
 
-                transform.position = MouseToWorld(followZ);
+                transform.position = Camera.main.MousePositionToWorldPosition(followZ);
             }
         }
 
@@ -114,13 +117,6 @@ namespace Main.Handler
                         Destroy(gameObject);
                     }
                 });
-        }
-
-        private Vector3 MouseToWorld(float z)
-        {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = z;
-            return pos;
         }
     }
 
