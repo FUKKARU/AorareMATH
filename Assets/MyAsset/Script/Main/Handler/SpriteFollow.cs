@@ -78,73 +78,62 @@ namespace Main.Handler
 
             isFollowingMouse = false;
 
-            transform.position.ToVector2().JudgeAttachable
-                (p =>
+            GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
+            if (hovering)
+            {
+                Vector2 symbolPosition = GameManager.Instance.SymbolPositions[index];
+
+                GameManager.Instance.PlaySelectSE();
+
+                Vector3 fromPos = InitPosition;
+                Vector3 toPos = symbolPosition.ToVector3(Z);
+                int fromIndex = GameManager.Instance.GetIndexFromSymbolPosition(fromPos);
+                int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
+
+                if (GameManager.Instance.Formula.Data[toIndex] != Symbol.NONE)
                 {
-                    GameManager.Instance.PlaySelectSE();
+                    // 入れ替え
 
-                    Vector3 fromPos = InitPosition;
-                    Vector3 toPos = p.ToVector3(Z);
-                    int fromIndex = GameManager.Instance.GetIndexFromSymbolPosition(fromPos);
-                    int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
+                    var otherInstance = GameManager.Instance.FormulaInstances[toIndex];
 
-                    if (GameManager.Instance.Formula.Data[toIndex] != Symbol.NONE)
-                    {
-                        // 入れ替え
+                    GameManager.Instance.Formula.Data[fromIndex] = otherInstance.Type.GetSymbol();
+                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
 
-                        var otherInstance = GameManager.Instance.FormulaInstances[toIndex];
+                    GameManager.Instance.FormulaInstances[fromIndex] = otherInstance;
+                    GameManager.Instance.FormulaInstances[toIndex] = this;
 
-                        GameManager.Instance.Formula.Data[fromIndex] = otherInstance.Type.GetSymbol();
-                        GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
-                        GameManager.Instance.FormulaInstances[fromIndex] = otherInstance;
-                        GameManager.Instance.FormulaInstances[toIndex] = this;
-
-                        transform.position = toPos; InitPosition = toPos;
-                        otherInstance.transform.position = fromPos; otherInstance.InitPosition = fromPos;
-                    }
-                    else
-                    {
-                        GameManager.Instance.Formula.Data[fromIndex] = Symbol.NONE;
-                        GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
-                        GameManager.Instance.FormulaInstances[fromIndex] = null;
-                        GameManager.Instance.FormulaInstances[toIndex] = this;
-
-                        transform.position = toPos; InitPosition = toPos;
-                    }
-                },
-                p =>
+                    transform.position = toPos; InitPosition = toPos;
+                    otherInstance.transform.position = fromPos; otherInstance.InitPosition = fromPos;
+                }
+                else
                 {
-                    GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
+                    GameManager.Instance.Formula.Data[fromIndex] = Symbol.NONE;
+                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
 
-                    if (Symbol.IsNumber(Type.GetSymbol()) == true)
-                    {
-                        // 元の位置に戻す
-                        transform.position = InitPosition;
-                    }
-                    else
-                    {
-                        // 消す
-                        int index = GameManager.Instance.GetIndexFromSymbolPosition(InitPosition);
-                        GameManager.Instance.Formula.Data[index] = Symbol.NONE;
-                        GameManager.Instance.FormulaInstances[index] = null;
-                        Destroy(gameObject);
-                    }
-                });
-        }
-    }
+                    GameManager.Instance.FormulaInstances[fromIndex] = null;
+                    GameManager.Instance.FormulaInstances[toIndex] = this;
 
-    internal static class SpriteFollowEx
-    {
-        internal static void JudgeAttachable(this Vector2 position,
-            System.Action<Vector2> actionIfAttachable, System.Action<Vector2> actionIfNotAttachable)
-        {
-            (Vector2 p, _, bool isFound) = GameManager.Instance.SymbolPositions.Find
-                (e => position.IsIn(-0.54f, 0.54f, -1.40f, 1.40f, e));
+                    transform.position = toPos; InitPosition = toPos;
+                }
+            }
+            else
+            {
+                GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
 
-            if (isFound) actionIfAttachable(p);
-            else actionIfNotAttachable(p);
+                if (Symbol.IsNumber(Type.GetSymbol()) == true)
+                {
+                    // 元の位置に戻す
+                    transform.position = InitPosition;
+                }
+                else
+                {
+                    // 消す
+                    int i = GameManager.Instance.GetIndexFromSymbolPosition(InitPosition);
+                    GameManager.Instance.Formula.Data[i] = Symbol.NONE;
+                    GameManager.Instance.FormulaInstances[i] = null;
+                    Destroy(gameObject);
+                }
+            }
         }
     }
 }

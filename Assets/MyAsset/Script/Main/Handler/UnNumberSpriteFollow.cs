@@ -1,7 +1,6 @@
 ﻿using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -112,34 +111,36 @@ namespace Main.Handler
 
             isFollowingMouse = false;
 
-            thisInstance.transform.position.ToVector2().JudgeAttachable
-                (p =>
-                {
-                    Vector3 toPos = p.ToVector3(z);
-                    int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
-                    IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
+            GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
+            if (hovering)
+            {
+                Vector2 symbolPosition = GameManager.Instance.SymbolPositions[index];
 
-                    bool? isNumber = Symbol.IsNumber(toSymbol);
-                    if (!isNumber.HasValue || isNumber.Value)
-                    {
-                        GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
-                        return;
-                    }
-                    GameManager.Instance.PlaySelectSE();
+                Vector3 toPos = symbolPosition.ToVector3(z);
+                int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
+                IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
 
-                    SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    instance.transform.localScale =
-                        Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
-
-                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
-                    if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
-                    GameManager.Instance.FormulaInstances[toIndex] = instance;
-                },
-                p =>
+                bool? isNumber = Symbol.IsNumber(toSymbol);
+                if (!isNumber.HasValue || isNumber.Value)
                 {
                     GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
-                });
+                    return;
+                }
+                GameManager.Instance.PlaySelectSE();
+
+                SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
+                instance.transform.localScale =
+                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
+
+                GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+
+                if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
+                GameManager.Instance.FormulaInstances[toIndex] = instance;
+            }
+            else
+            {
+                GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
+            }
 
             Destroy(thisInstance.gameObject);
             thisInstance = null;
