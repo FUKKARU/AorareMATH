@@ -34,6 +34,7 @@ namespace Main.Handler
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private HandleManager handleManager;
+        [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -249,9 +250,8 @@ namespace Main.Handler
 
             if (r.HasValue)
             {
-                float diff = Mathf.Abs(target - r.Value);
-                if (diff <= SO_Handler.DiffLimit)
-                    OnAttackSucceeded(diff);
+                if (Mathf.Abs(target - r.Value) <= SO_Handler.DiffLimit)
+                    OnAttackSucceeded();
                 else
                     OnAttackFailed();
             }
@@ -261,7 +261,7 @@ namespace Main.Handler
             }
         }
 
-        private void OnAttackSucceeded(float diff)
+        private void OnAttackSucceeded()
         {
             if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
             if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
@@ -277,6 +277,7 @@ namespace Main.Handler
                 hasForciblyCleared = true;
                 return;
             }
+            if (GameData.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
 
             CreateQuestion();
         }

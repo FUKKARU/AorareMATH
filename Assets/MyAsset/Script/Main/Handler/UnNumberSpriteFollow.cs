@@ -120,22 +120,19 @@ namespace Main.Handler
                 int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
                 IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
 
-                bool? isNumber = Symbol.IsNumber(toSymbol);
-                if (!isNumber.HasValue || isNumber.Value)
+                if (Symbol.IsNumber(toSymbol) == false)
+                {
+                    GameManager.Instance.PlaySelectSE();
+
+                    SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
+                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+                    if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
+                    GameManager.Instance.FormulaInstances[toIndex] = instance;
+                }
+                else
                 {
                     GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
-                    return;
                 }
-                GameManager.Instance.PlaySelectSE();
-
-                SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                instance.transform.localScale =
-                    Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
-
-                GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
-                if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
-                GameManager.Instance.FormulaInstances[toIndex] = instance;
             }
             else
             {
