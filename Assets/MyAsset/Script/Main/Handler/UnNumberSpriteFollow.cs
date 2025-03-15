@@ -96,7 +96,7 @@ namespace Main.Handler
                     bool? isNumber = Symbol.IsNumber(toSymbol);
                     if (!isNumber.HasValue || isNumber.Value)
                     {
-                        GameManager.Instance.PlaySelectSE(hasUnSelected: true);
+                        GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
                         return;
                     }
                     GameManager.Instance.PlaySelectSE();
@@ -112,7 +112,7 @@ namespace Main.Handler
                 },
                 p =>
                 {
-                    GameManager.Instance.PlaySelectSE(hasUnSelected: true);
+                    GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
                 });
 
             Destroy(thisInstance.gameObject);

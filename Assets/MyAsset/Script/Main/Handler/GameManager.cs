@@ -67,6 +67,7 @@ namespace Main.Handler
         }
 
         internal bool IsHoldingSymbol { get; set; } = false;
+        internal bool IsPreviewNumberSameAsTargetThisFrame { get; private set; } = false;
 
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
@@ -98,6 +99,11 @@ namespace Main.Handler
                 _ => null
             };
             action?.Invoke();
+        }
+
+        private void LateUpdate()
+        {
+            IsPreviewNumberSameAsTargetThisFrame = false;
         }
 
         private void OnStay()
@@ -201,13 +207,18 @@ namespace Main.Handler
 
         private void ShowPreview()
         {
+            IsPreviewNumberSameAsTargetThisFrame = false;
+
             float? r = Formula.Calcurate();
             if (r.HasValue)
             {
                 SetPreviewText(text: $"= {(int)r.Value}");
 
                 float diff = Mathf.Abs(target - r.Value);
-                Color32 color = diff < SO_Handler.DiffLimit ? Color.yellow : Color.red;
+                bool isSame = diff < SO_Handler.DiffLimit;
+
+                IsPreviewNumberSameAsTargetThisFrame = isSame;
+                Color32 color = isSame ? Color.yellow : Color.red;
                 SetPreviewText(color: color);
             }
             else
@@ -270,11 +281,10 @@ namespace Main.Handler
 
         private void OnAttackFailed()
         {
-            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.5f);
+            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.2f);
         }
 
-        internal void PlaySelectSE(bool hasUnSelected = false)
-            => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: hasUnSelected ? 1.5f : 1.0f);
+        internal void PlaySelectSE(float pitch = 1.0f) => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
