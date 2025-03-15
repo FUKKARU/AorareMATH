@@ -141,7 +141,7 @@ namespace Main.Handler
             System.Action<Vector2> actionIfAttachable, System.Action<Vector2> actionIfNotAttachable)
         {
             (Vector2 p, _, bool isFound) = GameManager.Instance.SymbolPositions.Find
-                (e => position.IsIn(-0.52f, 0.52f, -1.22f, 1.22f, e));
+                (e => position.IsIn(-0.54f, 0.54f, -1.40f, 1.40f, e));
 
             if (isFound) actionIfAttachable(p);
             else actionIfNotAttachable(p);
