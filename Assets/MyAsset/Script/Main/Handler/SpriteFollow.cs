@@ -22,7 +22,16 @@ namespace Main.Handler
 
         internal Vector3 InitPosition { get; set; }
 
-        private bool isFollowingMouse = false;
+        private bool _isFollowingMouse = false;
+        private bool isFollowingMouse
+        {
+            get => _isFollowingMouse;
+            set
+            {
+                _isFollowingMouse = value;
+                GameManager.Instance.IsHoldingSymbol = value; // 掴んでいるものは1つだけのはずなので
+            }
+        }
 
         private void OnEnable()
         {
@@ -55,6 +64,8 @@ namespace Main.Handler
         private void OnPointerDown()
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
+
+            GameManager.Instance.PlaySelectSE();
 
             isFollowingMouse = true;
         }
@@ -103,6 +114,8 @@ namespace Main.Handler
                 },
                 p =>
                 {
+                    GameManager.Instance.PlaySelectSE(hasUnSelected: true);
+
                     if (Symbol.IsNumber(Type.GetSymbol()) == true)
                     {
                         // 元の位置に戻す

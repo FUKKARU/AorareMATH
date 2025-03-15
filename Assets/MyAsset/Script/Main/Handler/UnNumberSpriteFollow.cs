@@ -23,7 +23,16 @@ namespace Main.Handler
         internal float Z => z;
         [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
 
-        private bool isFollowingMouse = false;
+        private bool _isFollowingMouse = false;
+        private bool isFollowingMouse
+        {
+            get => _isFollowingMouse;
+            set
+            {
+                _isFollowingMouse = value;
+                GameManager.Instance.IsHoldingSymbol = value; // 掴んでいるものは1つだけのはずなので
+            }
+        }
 
         private void OnEnable()
         {
@@ -80,14 +89,17 @@ namespace Main.Handler
             thisInstance.transform.position.ToVector2().JudgeAttachable
                 (p =>
                 {
-                    GameManager.Instance.PlaySelectSE();
-
                     Vector3 toPos = p.ToVector3(z);
                     int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
                     IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
 
                     bool? isNumber = Symbol.IsNumber(toSymbol);
-                    if (!isNumber.HasValue || isNumber.Value) return;
+                    if (!isNumber.HasValue || isNumber.Value)
+                    {
+                        GameManager.Instance.PlaySelectSE(hasUnSelected: true);
+                        return;
+                    }
+                    GameManager.Instance.PlaySelectSE();
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
                     instance.transform.localScale =
@@ -100,23 +112,11 @@ namespace Main.Handler
                 },
                 p =>
                 {
-                    Extension.Pass();
+                    GameManager.Instance.PlaySelectSE(hasUnSelected: true);
                 });
 
             Destroy(thisInstance.gameObject);
             thisInstance = null;
-        }
-
-        internal void ForciblyInstantiateSpriteFollowHere(IntStr symbol, int index)
-        {
-            if (Symbol.IsNumber(symbol) != false) return;
-
-            Vector3 toPos = GameManager.Instance.SymbolPositions[index].ToVector3(z);
-            SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-            // 演算子orかっこの前提
-            instance.transform.localScale =
-            Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
-            GameManager.Instance.FormulaInstances[index] = instance;
         }
     }
 }
