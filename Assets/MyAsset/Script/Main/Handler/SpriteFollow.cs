@@ -20,6 +20,8 @@ namespace Main.Handler
         internal float Z => _z;
         [SerializeField, Header("持ち上げた際のインスタンスのz座標")] private float followZ;
 
+        internal static readonly float UnSelectSePitch = 1.5f;
+
         internal Vector3 InitPosition { get; set; }
 
         private bool _isFollowingMouse = false;
@@ -114,7 +116,7 @@ namespace Main.Handler
                 },
                 p =>
                 {
-                    GameManager.Instance.PlaySelectSE(hasUnSelected: true);
+                    GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
 
                     if (Symbol.IsNumber(Type.GetSymbol()) == true)
                     {

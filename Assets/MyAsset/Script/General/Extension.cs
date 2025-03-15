@@ -78,6 +78,18 @@ namespace General.Extension
             pos.y = y;
             tf.position = pos;
         }
+        internal static void SetLocalPositionX(this Transform tf, float x)
+        {
+            Vector3 pos = tf.localPosition;
+            pos.x = x;
+            tf.localPosition = pos;
+        }
+        internal static void SetLocalPositionY(this Transform tf, float y)
+        {
+            Vector3 pos = tf.localPosition;
+            pos.y = y;
+            tf.localPosition = pos;
+        }
 
         internal static UniTask ConvertToUniTask(this Tween tween, MonoBehaviour targetObject, Ct ct)
         {
