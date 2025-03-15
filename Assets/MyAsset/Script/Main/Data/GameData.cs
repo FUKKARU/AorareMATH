@@ -21,33 +21,33 @@ namespace Main.Data
 
         internal GameData()
         {
-            //クイックセーブのインスタンスの作成
-            var settings = new QuickSaveSettings()
-            {
-                //暗号化の方法
-                SecurityMode = SecurityMode.Aes,
-                //Aesの暗号化キー
-                Password = AesKey,
-                //圧縮方法
-                CompressionMode = CompressionMode.Gzip
-            };
- 
-            reader = QuickSaveReader.Create(RootPath, settings);
-            writer = QuickSaveWriter.Create(RootPath, settings);
-            correctAmoutRanking = new List<int>();
-            for(int i = 0; i < CorrectAmountRankingMax; i++)
-            {
-                correctAmoutRanking.Add(0);
-            }
+            // //クイックセーブのインスタンスの作成
+            // var settings = new QuickSaveSettings()
+            // {
+            //     //暗号化の方法
+            //     SecurityMode = SecurityMode.Aes,
+            //     //Aesの暗号化キー
+            //     Password = AesKey,
+            //     //圧縮方法
+            //     CompressionMode = CompressionMode.Gzip
+            // };
 
-            if (reader.Exists(RootPath))
-            {
-                correctAmoutRanking = reader.Read<List<int>>(CorrectAmountRankingKey);
-            }
-            foreach(int i in correctAmoutRanking)
-            {
-                UnityEngine.Debug.Log(i);
-            }
+            // reader = QuickSaveReader.Create(RootPath, settings);
+            // writer = QuickSaveWriter.Create(RootPath, settings);
+            // correctAmoutRanking = new List<int>();
+            // for(int i = 0; i < CorrectAmountRankingMax; i++)
+            // {
+            //     correctAmoutRanking.Add(0);
+            // }
+
+            // if (reader.Exists(RootPath))
+            // {
+            //     correctAmoutRanking = reader.Read<List<int>>(CorrectAmountRankingKey);
+            // }
+            // foreach(int i in correctAmoutRanking)
+            // {
+            //     UnityEngine.Debug.Log(i);
+            // }
         }
 
         internal void Save()
@@ -61,7 +61,7 @@ namespace Main.Data
         internal int CorrectAmount
         {
             get { return _correctAmount; }
-            set {_correctAmount = Mathf.Clamp(value, 0, 999);}
+            set { _correctAmount = Mathf.Clamp(value, 0, 999); }
         }
 
         internal void Reset() => _correctAmount = 0;

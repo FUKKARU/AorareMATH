@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using SO;
+using UnityEngine.EventSystems;
 
 namespace General
 {
@@ -9,36 +10,23 @@ namespace General
     {
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;
+        [SerializeField] private EventTrigger seSampleEventTrigger;
+        [SerializeField] private AudioSource seSampleAudioSource;
 
         private void OnEnable()
         {
             if (bgmSlider == null) return;
             if (seSlider == null) return;
 
-            bgmSlider.value = UpdateValueFromVolume(SoundType.BGM);
-            seSlider.value = UpdateValueFromVolume(SoundType.SE);
+            bgmSlider.value = SoundManager.GetVolume(SoundType.BGM).ConvertToSliderValue();
+            seSlider.value = SoundManager.GetVolume(SoundType.SE).ConvertToSliderValue();
+
+            bgmSlider.onValueChanged.AddListener(value => SoundManager.SetVolume(SoundType.BGM, value.ConvertToVolume()));
+            seSlider.onValueChanged.AddListener(value => SoundManager.SetVolume(SoundType.SE, value.ConvertToVolume()));
+
+            seSampleEventTrigger.Bind(EventTriggerType.PointerClick, () => seSampleAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE));
+            seSampleEventTrigger.Bind(EventTriggerType.PointerUp, () => seSampleAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE));
         }
-
-        private void OnDisable()
-        {
-            bgmSlider = null;
-            seSlider = null;
-        }
-
-        private void Update()
-        {
-            if (bgmSlider == null) return;
-            if (seSlider == null) return;
-
-            UpdateVolumeFromValue(bgmSlider.value, SoundType.BGM);
-            UpdateVolumeFromValue(seSlider.value, SoundType.SE);
-        }
-
-        private void UpdateVolumeFromValue(float sliderValue, SoundType type)
-            => SoundManager.SetVolume(type, sliderValue.ConvertToVolume());
-
-        private float UpdateValueFromVolume(SoundType type)
-            => SoundManager.GetVolume(type).ConvertToSliderValue();
     }
 
     internal static class SoundVolumeChangerEx

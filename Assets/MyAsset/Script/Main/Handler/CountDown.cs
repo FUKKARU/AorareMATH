@@ -4,22 +4,14 @@ using General;
 using General.Extension;
 using SO;
 using System;
-using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
+using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
     [Serializable]
-    internal struct Base
-    {
-        [SerializeField] internal Transform Tf;
-        [SerializeField] internal float StartY;
-        [SerializeField] internal float EndY;
-        [SerializeField] internal float Duration;
-    }
-
-    [Serializable]
-    internal struct Sr
+    internal struct SpriteRenderers
     {
         [SerializeField] internal SpriteRenderer Green;
         [SerializeField] internal SpriteRenderer Yellow;
@@ -27,7 +19,7 @@ namespace Main.Handler
     }
 
     [Serializable]
-    internal struct Sp
+    internal struct Sprites
     {
         [SerializeField] internal Sprite Green;
         [SerializeField] internal Sprite Yellow;
@@ -36,48 +28,47 @@ namespace Main.Handler
 
     internal sealed class CountDown : MonoBehaviour
     {
-        [SerializeField] private Base base_;
-        [SerializeField] private Sr sr;
-        [SerializeField] private Sp sp;
-        [SerializeField] private AudioSource as_;
+        [SerializeField] private Image onBeginBlockingImage;
+        [SerializeField] private RectTransform beginDescriptionTransform;
+        [SerializeField] private Transform counterTransform;
+        [SerializeField] private SpriteRenderers spriteRenderers;
+        [SerializeField] private Sprites sprites;
+        [SerializeField] private AudioSource audioSource;
         [SerializeField, Range(0.1f, 3.0f)] private float oneCountDuration;
 
         private void OnEnable()
         {
-            sr.Green.sprite = sp.Green;
-            sr.Yellow.sprite = sp.Yellow;
-            sr.Red.sprite = sp.Red;
+            onBeginBlockingImage.enabled = true;
 
-            sr.Green.enabled = false;
-            sr.Yellow.enabled = false;
-            sr.Red.enabled = false;
-
-            Vector3 pos = base_.Tf.position;
-            pos.y = base_.StartY;
-            base_.Tf.position = pos;
+            spriteRenderers.Green.enabled = false;
+            spriteRenderers.Yellow.enabled = false;
+            spriteRenderers.Red.enabled = false;
         }
 
-        internal async UniTask Play(CancellationToken ct)
+        internal async UniTask Play(Ct ct)
         {
-            if (as_ != null) as_.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1 / oneCountDuration);
+            // 音も鳴らしたい
+            await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).ConvertToUniTask(beginDescriptionTransform, ct);
+            await UniTask.WaitForSeconds(3, cancellationToken: ct);
+            beginDescriptionTransform.gameObject.SetActive(false);
 
-            sr.Red.enabled = true;
+            await counterTransform.DOLocalMoveY(1.4f, 0.3f).ConvertToUniTask(counterTransform, ct);
+            if (audioSource != null) audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountDuration);
+            spriteRenderers.Red.enabled = true;
+            await WaitForOneCount(ct);
+            spriteRenderers.Yellow.enabled = true;
+            await WaitForOneCount(ct);
+            spriteRenderers.Green.enabled = true;
+            await WaitForOneCount(ct);
+            spriteRenderers.Red.sprite = spriteRenderers.Green.sprite;
+            spriteRenderers.Yellow.sprite = spriteRenderers.Green.sprite;
             await WaitForOneCount(ct);
 
-            sr.Yellow.enabled = true;
-            await WaitForOneCount(ct);
-
-            sr.Green.enabled = true;
-            await WaitForOneCount(ct);
-
-            sr.Red.sprite = sr.Green.sprite;
-            sr.Yellow.sprite = sr.Green.sprite;
-            await WaitForOneCount(ct);
-
-            await base_.Tf.DOLocalMoveY(base_.EndY, base_.Duration).ConvertToUniTask(base_.Tf, ct);
+            await counterTransform.DOLocalMoveY(8.75f, 0.3f).ConvertToUniTask(counterTransform, ct);
+            onBeginBlockingImage.enabled = false;
         }
 
-        private async UniTask WaitForOneCount(CancellationToken ct)
+        private async UniTask WaitForOneCount(Ct ct)
         {
             await UniTask.WaitForSeconds(oneCountDuration, cancellationToken: ct);
         }
