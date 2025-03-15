@@ -97,6 +97,15 @@ namespace General.Extension
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
 
+        internal static void Bind(this EventTrigger eventTrigger, EventTriggerType eventTriggerType, Action action)
+        {
+            if (eventTrigger == null) return;
+
+            var entry = new EventTrigger.Entry { eventID = eventTriggerType };
+            entry.callback.AddListener(_ => action?.Invoke());
+            eventTrigger.triggers.Add(entry);
+        }
+
         /// <summary>
         /// キャンセル不可
         /// </summary>
