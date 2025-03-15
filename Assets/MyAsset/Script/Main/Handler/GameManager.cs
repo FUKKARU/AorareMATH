@@ -30,6 +30,7 @@ namespace Main.Handler
         [SerializeField] private Transform loadImageTf;
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
+        [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private HandleManager handleManager;
@@ -60,7 +61,7 @@ namespace Main.Handler
             get { return _time; }
             set
             {
-                _time = Mathf.Clamp(value, byte.MinValue, byte.MaxValue);
+                _time = Mathf.Clamp(value, 0, SO_Handler.Entity.InitTimeLimt);
                 timeShower.UpdateTimeUI(_time);
             }
         }
@@ -113,7 +114,7 @@ namespace Main.Handler
 
             if (time > 0)
             {
-                time -= UnityEngine.Time.deltaTime;
+                time -= Time.deltaTime;
                 time = Mathf.Max(0, time);
 
                 ShowPreview();
@@ -247,15 +248,13 @@ namespace Main.Handler
 
         private void OnAttackSucceeded(float diff)
         {
-            if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE);
-            if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE);
+            if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
+            if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
             if (justEffectLeft != null) justEffectLeft.Play();
             if (justEffectRight != null) justEffectRight.Play();
 
             float timeDiff = SO_Handler.Entity.TimeIncreaseAmount;
             time += timeDiff;
-
-            timeShower.PlayTimeIncreaseAnimation();
 
             if (++GameData.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
             {
@@ -269,7 +268,7 @@ namespace Main.Handler
 
         private void OnAttackFailed()
         {
-            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE);
+            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.5f);
         }
 
         internal void PlaySelectSE() => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
@@ -305,12 +304,13 @@ namespace Main.Handler
 
             isAttackable = true;
             CreateQuestion();
+            bgmPlayer.Play();
             State = GameState.OnGoing;
         }
 
         private async UniTask OnResult(CancellationToken ct)
         {
-            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE);
+            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
 
             await resultShower.Play(GameData.CorrectAmount, hasForciblyCleared, ct);
 
@@ -322,6 +322,12 @@ namespace Main.Handler
 
                 await UniTask.NextFrame(ct);
             }
+
+            bgmPlayer.Fade();
+            await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
+            loadImageTf.SetPositionX(-18.5f);
+            await loadImageTf.DOLocalMoveX(0, 0.5f).ConvertToUniTask(loadImageTf, ct);
+            await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
             sceneName.LoadAsync().Forget();
         }
     }

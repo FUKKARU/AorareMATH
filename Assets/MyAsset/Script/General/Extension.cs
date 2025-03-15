@@ -97,15 +97,6 @@ namespace General.Extension
             return tween.ToUniTask(cancellationToken: cts.Token);
         }
 
-        internal static void Bind(this EventTrigger eventTrigger, EventTriggerType eventTriggerType, Action action)
-        {
-            if (eventTrigger == null) return;
-
-            var entry = new EventTrigger.Entry { eventID = eventTriggerType };
-            entry.callback.AddListener(_ => action?.Invoke());
-            eventTrigger.triggers.Add(entry);
-        }
-
         /// <summary>
         /// キャンセル不可
         /// </summary>
@@ -123,6 +114,14 @@ namespace General.Extension
             isSceneLoading = false;
         }
         private static bool isSceneLoading = false;
+
+        internal static Vector3 MousePositionToWorldPosition(this Camera camera, float z)
+        {
+            if (camera == null) return Vector3.zero;
+            Vector3 pos = camera.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = z;
+            return pos;
+        }
     }
 
     internal static class IteratorExtension

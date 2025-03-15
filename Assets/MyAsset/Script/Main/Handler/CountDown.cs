@@ -53,7 +53,7 @@ namespace Main.Handler
             beginDescriptionTransform.gameObject.SetActive(false);
 
             await counterTransform.DOLocalMoveY(1.4f, 0.3f).ConvertToUniTask(counterTransform, ct);
-            if (audioSource != null) audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountDuration);
+            if (audioSource != null) audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountDuration, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
             await WaitForOneCount(ct);
             spriteRenderers.Yellow.enabled = true;

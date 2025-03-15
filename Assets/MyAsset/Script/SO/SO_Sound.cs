@@ -23,6 +23,8 @@ namespace SO
         internal AudioClip MainBGM => _mainBGM;
         [Space(25)]
         [Header("SE")]
+        [SerializeField] private AudioClip _clickSE;
+        internal AudioClip ClickSE => _clickSE;
         [SerializeField] private AudioClip _countDownSE;
         internal AudioClip CountDownSE => _countDownSE;
         [SerializeField] private AudioClip _symbolSE;
