@@ -66,6 +66,8 @@ namespace Main.Handler
             }
         }
 
+        internal bool IsHoldingSymbol { get; set; } = false;
+
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
         private bool isAttackable = false;
@@ -271,7 +273,8 @@ namespace Main.Handler
             attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.5f);
         }
 
-        internal void PlaySelectSE() => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
+        internal void PlaySelectSE(bool hasUnSelected = false)
+            => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: hasUnSelected ? 1.5f : 1.0f);
 
         private SpriteFollow ToInstance(IntStr symbol)
         {

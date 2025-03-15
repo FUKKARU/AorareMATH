@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,9 +25,15 @@ namespace Main.Handler
         }
         private void LateUpdate() => clicked = false;
 
-        public void OnPointerEnter(PointerEventData _) => SetSprite(hoverSprite);
-        public void OnPointerExit(PointerEventData _) => SetSprite(normalSprite);
-        public void OnPointerClick(PointerEventData _) => clicked = true;
+        public void OnPointerEnter(PointerEventData _) => DoThisAction(() => SetSprite(hoverSprite));
+        public void OnPointerExit(PointerEventData _) => DoThisAction(() => SetSprite(normalSprite));
+        public void OnPointerClick(PointerEventData _) => DoThisAction(() => clicked = true);
+
+        private void DoThisAction(Action action)
+        {
+            if (GameManager.Instance.IsHoldingSymbol) return;
+            action?.Invoke();
+        }
 
         private void SetSprite(Sprite sprite)
         {
