@@ -125,11 +125,7 @@ namespace Main.Handler
                     GameManager.Instance.PlaySelectSE();
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    instance.transform.localScale =
-                        Symbol.IsOperator(Type.GetSymbol()) == true ? new(0.4f, 0.4f, 1) : Vector3.one;
-
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-
                     if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
                     GameManager.Instance.FormulaInstances[toIndex] = instance;
                 }
