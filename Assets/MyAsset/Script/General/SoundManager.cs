@@ -23,14 +23,22 @@ namespace General
             };
         }
 
-        internal static float GetVolume(SoundType soundType)
+        internal static float GetVolume(SoundType soundType, out bool muted)
         {
             SO_Sound.Entity.AudioMixer.GetFloat(GetAMGroupString(soundType), out float volume);
+            muted = volume <= SO_Handler.Entity.MinVolume;
             return volume;
         }
 
-        internal static void SetVolume(SoundType soundType, float newVolume)
+        internal static void SetVolume(SoundType soundType, float newVolume, out bool muted)
         {
+            muted = false;
+            if (newVolume <= SO_Handler.Entity.MinVolume)
+            {
+                newVolume = -80;
+                muted = true;
+            }
+
             SO_Sound.Entity.AudioMixer.SetFloat(GetAMGroupString(soundType), newVolume);
         }
 

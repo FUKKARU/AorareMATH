@@ -3055,10 +3055,6 @@ PrefabInstance:
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
       objectReference: {fileID: 0}
-    - target: {fileID: 6961022633943070675, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
     - target: {fileID: 7172348106100753188, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
