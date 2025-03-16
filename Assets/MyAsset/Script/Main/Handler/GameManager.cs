@@ -229,7 +229,8 @@ namespace Main.Handler
             }
             else
             {
-                SetPreviewText(text: string.Empty);
+                SetPreviewText(text: "= <size=120>計算不可</size>");
+                SetPreviewText(color: Color.red);
             }
         }
 
