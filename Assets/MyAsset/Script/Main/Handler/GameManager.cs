@@ -77,6 +77,9 @@ namespace Main.Handler
         private bool isAttackable = false;
         private bool hasForciblyCleared = false;
 
+        private static readonly float selectSeInterval = 0.1f;
+        private bool canPlaySelectSe = false;
+
         private void OnEnable()
         {
             State = GameState.Stay;
@@ -287,7 +290,13 @@ namespace Main.Handler
             attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.2f);
         }
 
-        internal void PlaySelectSE(float pitch = 1.0f) => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
+        internal void PlaySelectSE(float pitch = 1.0f)
+        {
+            if (canPlaySelectSe) return;
+            canPlaySelectSe = true;
+            selectSeInterval.SecondsWaitAndDo(() => canPlaySelectSe = false, destroyCancellationToken).Forget();
+            selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
+        }
 
         private SpriteFollow ToInstance(IntStr symbol)
         {

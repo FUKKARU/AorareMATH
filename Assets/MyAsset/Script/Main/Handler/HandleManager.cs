@@ -1,5 +1,6 @@
 using DG.Tweening;
 using General.Extension;
+using Main.Data;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,7 +25,6 @@ namespace Main.Handler
         private Tween submitTextTween = null;
 
         private static readonly float clickInterval = 0.8f;
-        private static readonly float selectSePitch = 1.2f;
 
         private void OnEnable() => SetSprite(normalSprite);
 
@@ -68,7 +68,7 @@ namespace Main.Handler
         public void OnPointerEnter(PointerEventData _)
         {
             if (GameManager.Instance.IsHoldingSymbol) return;
-            GameManager.Instance.PlaySelectSE(selectSePitch);
+            GameManager.Instance.PlaySelectSE(Pitch.Hover);
             SetSprite(hoverSprite);
             UpdateHandleSize(true);
         }
@@ -76,7 +76,6 @@ namespace Main.Handler
         public void OnPointerExit(PointerEventData _)
         {
             if (GameManager.Instance.IsHoldingSymbol) return;
-            GameManager.Instance.PlaySelectSE(selectSePitch);
             SetSprite(normalSprite);
             UpdateHandleSize(false);
         }

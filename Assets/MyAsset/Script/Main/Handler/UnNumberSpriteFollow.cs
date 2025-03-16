@@ -78,6 +78,7 @@ namespace Main.Handler
             if (isFollowingMouse) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
 
+            GameManager.Instance.PlaySelectSE(Pitch.Hover);
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
         }
 
@@ -131,12 +132,12 @@ namespace Main.Handler
                 }
                 else
                 {
-                    GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
+                    GameManager.Instance.PlaySelectSE(Pitch.DisposeSymbol);
                 }
             }
             else
             {
-                GameManager.Instance.PlaySelectSE(SpriteFollow.UnSelectSePitch);
+                GameManager.Instance.PlaySelectSE(Pitch.DisposeSymbol);
             }
 
             Destroy(thisInstance.gameObject);
