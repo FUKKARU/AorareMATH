@@ -5672,7 +5672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalSprite: {fileID: 21300000, guid: d70d80809c998b4468bbb885f9c87558, type: 3}
-  hoverSprite: {fileID: 21300000, guid: 2f4c51d61b15d479b9cd8d9710c7b0d3, type: 3}
+  hoverSprite: {fileID: 21300000, guid: b1ad0f6e121304ef386a289f00d8fab3, type: 3}
   symbolFrames:
   - {fileID: 1657465658}
   - {fileID: 1794098568}
