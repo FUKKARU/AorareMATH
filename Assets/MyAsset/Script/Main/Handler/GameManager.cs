@@ -337,24 +337,7 @@ namespace Main.Handler
         private async UniTask OnResult(CancellationToken ct)
         {
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
-
             await resultShower.Play(GameData.CorrectAmount, hasForciblyCleared, ct);
-
-            string sceneName;
-            while (true)
-            {
-                if (Input.GetKeyDown(KeyCode.R)) { sceneName = SO_SceneName.Entity.Main; break; }
-                else if (Input.GetKeyDown(KeyCode.Space)) { sceneName = SO_SceneName.Entity.Title; break; }
-
-                await UniTask.NextFrame(ct);
-            }
-
-            bgmPlayer.Fade();
-            await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
-            loadImageTf.SetPositionX(-18.5f);
-            await loadImageTf.DOLocalMoveX(0, 0.5f).ConvertToUniTask(loadImageTf, ct);
-            await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
-            sceneName.LoadAsync().Forget();
         }
 
         internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)

@@ -1,10 +1,13 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using General.Extension;
 using Main.Data;
 using SO;
-using UnityEngine;
-using UnityEngine.EventSystems;
 using Image = UnityEngine.UI.Image;
 using Text = TMPro.TextMeshProUGUI;
+using Ct = System.Threading.CancellationToken;
 
 namespace General
 {
@@ -29,7 +32,8 @@ namespace General
         [SerializeField] private Color normalColor;
         [SerializeField] private Color hoverColor;
 
-        private bool hasClicked = false;
+        // 1回しかクリックできなくするためのフラグ
+        private bool _hasClicked = false;
 
         private void OnEnable()
         {
@@ -69,8 +73,6 @@ namespace General
             if (hasClicked) return;
             hasClicked = true;
             PlayClickSE();
-            UpdateAppearences(false);
-
 
             OnClickImpl();
         }
@@ -92,10 +94,63 @@ namespace General
         }
 
         protected void PlayClickSE(float pitch = 1.0f) => seAudioSource.Raise(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
-        protected void ReEnableClick() => hasClicked = false;
+        protected bool hasClicked
+        {
+            get => _hasClicked;
+            set
+            {
+                _hasClicked = value;
+                if (value) UpdateAppearences(false);
+            }
+        }
 
         protected virtual void OnEnterImpl() { }
         protected virtual void OnExitImpl() { }
         protected virtual void OnClickImpl() { }
+    }
+
+    internal abstract class ASceneChangeButtonManager : AButtonManager
+    {
+        [SerializeField] private Transform loadImage;
+        [SerializeField] private AFadeableBgmPlayer bgmPlayer;
+
+        // どれか一つが押されたら、他のボタンも押せなくなる
+        [SerializeField] private ASceneChangeButtonManager[] linkedButtons;
+
+        protected abstract string toSceneName { get; }
+
+        protected override void OnClickImpl()
+        {
+            SetLinkedButtonsClicked();
+            Load(destroyCancellationToken).Forget();
+        }
+
+        private void SetLinkedButtonsClicked()
+        {
+            if (linkedButtons == null) return;
+
+            foreach (var linkedButton in linkedButtons)
+            {
+                if (linkedButton == null) continue;
+                linkedButton.hasClicked = true;
+            }
+        }
+
+        private async UniTaskVoid Load(Ct ct)
+        {
+            if (bgmPlayer != null) bgmPlayer.Fade();
+
+            await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
+
+            if (loadImage != null)
+            {
+                loadImage.SetPositionX(-18.5f);
+                await loadImage.DOLocalMoveX(0, 0.5f).WithCancellation(ct);
+            }
+
+            await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
+
+            toSceneName.LoadAsync().Forget();
+        }
     }
 }
