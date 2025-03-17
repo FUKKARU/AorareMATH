@@ -1,81 +1,53 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using General.Extension;
-using Main.Handler.ResultShowerNameSpace;
-using System;
-using System.Threading;
-using TMPro;
 using UnityEngine;
+using General;
+using General.Extension;
+using Text = TMPro.TextMeshProUGUI;
+using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
-    namespace ResultShowerNameSpace
-    {
-        [Serializable]
-        internal struct Value
-        {
-            [SerializeField] internal float BaseImageStartY;
-            [SerializeField] internal float BaseImageEndY;
-        }
-
-        [Serializable]
-        internal struct Duration
-        {
-            [SerializeField] internal float BeforeBaseImageMove;
-            [SerializeField] internal float BaseImageMove;
-            [SerializeField] internal float AfterBaseImageMoved;
-            [SerializeField] internal float CorrectAmountTextCount;
-            [SerializeField] internal float AfterCorrectAmountTextCounted;
-            [SerializeField] internal float AfterGuideTextAppeared;
-        }
-    }
-
     internal sealed class ResultShower : MonoBehaviour
     {
         [SerializeField] private RectTransform baseImageRt;
-        [SerializeField] private TextMeshProUGUI correctAmountText;
-        [SerializeField] private GameObject guideText;
-        [SerializeField] private Value value;
-        [SerializeField] private Duration duration;
+        [SerializeField] private Text correctAmountText;
+        [SerializeField] private ASceneChangeButtonManager[] buttons;
 
         private void OnEnable()
         {
-            baseImageRt.localPosition = new(0, value.BaseImageStartY, 0);
+            baseImageRt.localPosition = new(0, 900, 0);
             correctAmountText.text = string.Empty;
-            guideText.SetActive(false);
+            SetButtonsEnabled(false);
         }
 
-        internal async UniTask Play(int correctAmount, bool hasForciblyCleared, CancellationToken ct)
+        internal async UniTask Play(int correctAmount, bool hasForciblyCleared, Ct ct)
         {
             if (hasForciblyCleared) correctAmountText.color = Color.yellow;
 
-            await duration.BeforeBaseImageMove.SecondsWait(ct);
+            await 0.1f.SecondsWait(ct);
+            await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
+            await 0.1f.SecondsWait(ct);
 
-            await baseImageRt.DOAnchorPosY(value.BaseImageEndY, duration.BaseImageMove).ConvertToUniTask(baseImageRt, ct);
-            await duration.AfterBaseImageMoved.SecondsWait(ct);
+            await DOTween.To(
+                () => 0,
+                x => correctAmountText.text = x.ToString(),
+                correctAmount,
+                1.0f
+            ).WithCancellation(ct);
 
-            await ShowText(correctAmountText, correctAmount, duration.CorrectAmountTextCount, ct);
-            await duration.AfterCorrectAmountTextCounted.SecondsWait(ct);
-
-            guideText.SetActive(true);
-            await duration.AfterGuideTextAppeared.SecondsWait(ct);
+            await 0.2f.SecondsWait(ct);
+            SetButtonsEnabled(true);
         }
 
-        private async UniTask ShowText(TextMeshProUGUI tmpro, int num, float duration, CancellationToken ct)
+        private void SetButtonsEnabled(bool enabled)
         {
-            float t = 0;
-            while (true)
-            {
-                int n = (int)t.Remap(0, duration, 0, num);
-                tmpro.text = n.ToString();
+            if (buttons == null) return;
 
-                await UniTask.Yield(cancellationToken: ct);
-                t += Time.deltaTime;
-                if (duration <= t)
-                {
-                    tmpro.text = num.ToString();
-                    break;
-                }
+            foreach (var button in buttons)
+            {
+                if (button == null) continue;
+                button.gameObject.SetActive(enabled);
             }
         }
     }

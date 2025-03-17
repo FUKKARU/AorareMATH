@@ -7790,7 +7790,7 @@ MonoBehaviour:
   displayText: "\u30B9\u30BF\u30FC\u30C8"
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   hoverColor: {r: 1, g: 0.19607843, b: 0, a: 1}
-  loadImageTf: {fileID: 748255308}
+  loadImage: {fileID: 748255308}
   bgmPlayer: {fileID: 2028660838}
 --- !u!1 &1836752606
 GameObject:
