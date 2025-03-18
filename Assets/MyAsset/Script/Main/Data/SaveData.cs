@@ -19,7 +19,10 @@ namespace Main.Data
         {
             this.key = key;
             Data = initValue;
+        }
 
+        internal void Load()
+        {
             var settings = new QuickSaveSettings()
             {
                 SecurityMode = SecurityMode.Aes,
@@ -27,17 +30,19 @@ namespace Main.Data
                 CompressionMode = CompressionMode.Gzip
             };
             reader = QuickSaveReader.Create(root, settings);
-            writer = QuickSaveWriter.Create(root, settings);
-        }
-
-        internal void Load()
-        {
             if (!reader.Exists(root)) return;
             Data = reader.Read<T>(key);
         }
 
         internal void Save()
         {
+            var settings = new QuickSaveSettings()
+            {
+                SecurityMode = SecurityMode.Aes,
+                Password = password,
+                CompressionMode = CompressionMode.Gzip
+            };
+            writer = QuickSaveWriter.Create(root, settings);
             writer.Write(key, Data);
             writer.Commit();
         }

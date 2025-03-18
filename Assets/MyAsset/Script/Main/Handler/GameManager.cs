@@ -7,6 +7,7 @@ using Main.Data;
 using Main.Data.Formula;
 using SO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -58,6 +59,9 @@ namespace Main.Handler
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
         private int target = 0; // 出題中の問題の答え
 
+        internal SaveData<List<int>> saveData;
+        private readonly string rankingList = "scoreRanking";
+
         private float _time = 0;
         private float time
         {
@@ -83,6 +87,7 @@ namespace Main.Handler
         private void OnEnable()
         {
             State = GameState.Stay;
+            saveData = new SaveData<List<int>>(rankingList, new List<int>());
 
             Formula.Init();
 
@@ -112,13 +117,16 @@ namespace Main.Handler
             IsPreviewNumberSameAsTargetThisFrame = false;
         }
 
+        private void OnDestroy()
+        {
+            saveData.Dispose();
+        }
         private void OnStay()
         {
             if (!isFirstOnStay) return;
             else isFirstOnStay = false;
 
             // 以降は1回だけ実行される
-
             OnLoadFinished(destroyCancellationToken).Forget();
         }
 
@@ -147,7 +155,34 @@ namespace Main.Handler
 
             // 以降は1回だけ実行される
 
+            var ranking = LoadRanking(); 
+            ranking.Add(GameData.CorrectAmount);
+            ranking.Sort((a, b) => b - a);
+            SaveRanking(ranking);
+            ShowRanking();
+
             OnResult(destroyCancellationToken).Forget();
+        }
+
+        private void SaveRanking(List<int> ranking)
+        {
+            saveData.Data = ranking;
+            saveData.Save();
+        }
+
+        private List<int> LoadRanking()
+        {
+            saveData.Load();
+            return saveData.Data;
+        }
+
+        private void ShowRanking()
+        {
+            var rankingList = LoadRanking();
+            for (int i = 0; i < rankingList.Count; i++)
+            {
+                UnityEngine.Debug.Log($"順位 {i + 1}: スコア {rankingList[i]}");
+            }
         }
 
         private void CreateQuestion()
