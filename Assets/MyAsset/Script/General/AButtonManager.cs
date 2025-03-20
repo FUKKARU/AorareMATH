@@ -113,6 +113,7 @@ namespace General
     {
         [SerializeField] private Transform loadImage;
         [SerializeField] private AFadeableBgmPlayer bgmPlayer;
+        [SerializeField] private ShaderTransitionController transitionController;
 
         // どれか一つが押されたら、他のボタンも押せなくなる
         [SerializeField] private ASceneChangeButtonManager[] linkedButtons;
@@ -141,7 +142,11 @@ namespace General
             if (bgmPlayer != null) bgmPlayer.Fade();
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
-
+            if (transitionController != null)
+            {
+                await transitionController.StartTransition();
+            }
+            await UniTask.WaitForSeconds(0.8f, cancellationToken: ct);
             if (loadImage != null)
             {
                 loadImage.SetPositionX(-18.5f);
@@ -151,6 +156,10 @@ namespace General
             await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
 
             toSceneName.LoadAsync().Forget();
+            if (transitionController != null)
+            {
+                await transitionController.EndTransition();
+            }
         }
-    }
+    } 
 }
