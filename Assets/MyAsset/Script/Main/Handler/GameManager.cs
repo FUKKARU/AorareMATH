@@ -60,7 +60,6 @@ namespace Main.Handler
         private int target = 0; // 出題中の問題の答え
 
         internal SaveData<List<int>> saveData;
-        private readonly string rankingList = "scoreRanking";
 
         private float _time = 0;
         private float time
@@ -87,7 +86,8 @@ namespace Main.Handler
         private void OnEnable()
         {
             State = GameState.Stay;
-            saveData = new SaveData<List<int>>(rankingList, new List<int>());
+            saveData = new SaveData<List<int>>("userScoreRanking", new List<int>());
+
 
             Formula.Init();
 
@@ -150,40 +150,20 @@ namespace Main.Handler
 
         private void OnOver()
         {
+            saveData.Load();
+            saveData.Data.Add(GameData.CorrectAmount);
+            saveData.Data.Sort((a, b) => b - a);
+            saveData.Save();
+            foreach (int data in saveData.Data) UnityEngine.Debug.Log(data);
+
             if (!isFirstOnOver) return;
             else isFirstOnOver = false;
 
             // 以降は1回だけ実行される
 
-            var ranking = LoadRanking(); 
-            ranking.Add(GameData.CorrectAmount);
-            ranking.Sort((a, b) => b - a);
-            SaveRanking(ranking);
-            ShowRanking();
-
             OnResult(destroyCancellationToken).Forget();
         }
 
-        private void SaveRanking(List<int> ranking)
-        {
-            saveData.Data = ranking;
-            saveData.Save();
-        }
-
-        private List<int> LoadRanking()
-        {
-            saveData.Load();
-            return saveData.Data;
-        }
-
-        private void ShowRanking()
-        {
-            var rankingList = LoadRanking();
-            for (int i = 0; i < rankingList.Count; i++)
-            {
-                UnityEngine.Debug.Log($"順位 {i + 1}: スコア {rankingList[i]}");
-            }
-        }
 
         private void CreateQuestion()
         {
