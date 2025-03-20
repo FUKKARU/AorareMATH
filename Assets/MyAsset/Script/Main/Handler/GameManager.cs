@@ -351,7 +351,7 @@ namespace Main.Handler
             $"順位 {rank}".Show();
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
-            await resultShower.Play(GameData.CorrectAmount, hasForciblyCleared, ct);
+            await resultShower.Play(GameDataHolder.CorrectAmount, hasForciblyCleared, ct);
         }
 
         internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)
