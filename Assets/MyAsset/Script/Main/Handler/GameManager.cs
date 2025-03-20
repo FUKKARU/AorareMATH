@@ -58,6 +58,8 @@ namespace Main.Handler
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
         private int target = 0; // 出題中の問題の答え
 
+        internal GameDataHolder GameDataHolder { get; private set; } = new();
+
         private float _time = 0;
         private float time
         {
@@ -84,6 +86,7 @@ namespace Main.Handler
         {
             State = GameState.Stay;
 
+            GameDataHolder?.Init();
             Formula.Init();
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
@@ -112,13 +115,17 @@ namespace Main.Handler
             IsPreviewNumberSameAsTargetThisFrame = false;
         }
 
+        private void OnDestroy()
+        {
+            GameDataHolder?.Dispose();
+        }
+
         private void OnStay()
         {
             if (!isFirstOnStay) return;
             else isFirstOnStay = false;
 
             // 以降は1回だけ実行される
-
             OnLoadFinished(destroyCancellationToken).Forget();
         }
 
@@ -152,7 +159,7 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-            bool result = GameData.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
+            bool result = GameDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
 #if UNITY_EDITOR
@@ -275,13 +282,13 @@ namespace Main.Handler
             float timeDiff = SO_Handler.Entity.TimeIncreaseAmount;
             time += timeDiff;
 
-            if (++GameData.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+            if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
             {
                 State = GameState.Over;
                 hasForciblyCleared = true;
                 return;
             }
-            if (GameData.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+            if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
 
             CreateQuestion();
         }
@@ -336,6 +343,13 @@ namespace Main.Handler
 
         private async UniTask OnResult(CancellationToken ct)
         {
+            // TODO: 未完成
+            "未完成".Show();
+            GameDataHolder?.SaveRanking();
+            int rank = GameDataHolder?.GetRank() ?? 0;
+            bool onRanking = rank > 0;
+            $"順位 {rank}".Show();
+
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
             await resultShower.Play(GameData.CorrectAmount, hasForciblyCleared, ct);
         }
