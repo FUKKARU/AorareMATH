@@ -142,7 +142,7 @@ namespace General
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
-            await SceneTransitionShaderController.Instance.Play(true, ct);
+            await SceneTransitionShaderController.Instance.Play(ct);
             await UniTask.WaitForSeconds(0.8f, cancellationToken: ct);
 
             if (loadImage != null)
@@ -154,8 +154,6 @@ namespace General
             await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
 
             toSceneName.LoadAsync().Forget();
-
-            await SceneTransitionShaderController.Instance.Play(false, ct);
         }
     }
 }
