@@ -12,19 +12,24 @@ namespace Main.Handler
     {
         [SerializeField] private RectTransform baseImageRt;
         [SerializeField] private Text correctAmountText;
+        [SerializeField] private Text userscoreRankText;
         [SerializeField] private ASceneChangeButtonManager[] buttons;
 
         private void OnEnable()
         {
             baseImageRt.localPosition = new(0, 900, 0);
             correctAmountText.text = string.Empty;
+            userscoreRankText.text = string.Empty;
             SetButtonsEnabled(false);
         }
 
-        internal async UniTask Play(int correctAmount, bool hasForciblyCleared, Ct ct)
+        internal async UniTask Play(int correctAmount,int rank, bool hasForciblyCleared, Ct ct)
         {
-            if (hasForciblyCleared) correctAmountText.color = Color.yellow;
-
+            if (hasForciblyCleared)
+            {
+                correctAmountText.color = Color.yellow;
+                userscoreRankText.color = Color.yellow;
+            }
             await 0.1f.SecondsWait(ct);
             await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
             await 0.1f.SecondsWait(ct);
@@ -35,6 +40,14 @@ namespace Main.Handler
                 correctAmount,
                 1.0f
             ).WithCancellation(ct);
+
+            await DOTween.To(
+                () => 0,
+                x => userscoreRankText.text = $"{rank}位",
+                rank,
+                1.0f
+            ).WithCancellation(ct);
+            
 
             await 0.2f.SecondsWait(ct);
             SetButtonsEnabled(true);

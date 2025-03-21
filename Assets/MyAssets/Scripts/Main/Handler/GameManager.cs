@@ -70,7 +70,9 @@ namespace Main.Handler
                 timeShower.UpdateTimeUI(_time);
             }
         }
-
+        /// <summary>
+        /// Rank
+        /// </summary>
         internal bool IsHoldingSymbol { get; set; } = false;
         internal bool IsPreviewNumberSameAsTargetThisFrame { get; private set; } = false;
 
@@ -351,7 +353,7 @@ namespace Main.Handler
             $"順位 {rank}".Show();
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
-            await resultShower.Play(GameDataHolder.CorrectAmount, hasForciblyCleared, ct);
+            await resultShower.Play(GameDataHolder.CorrectAmount,rank, hasForciblyCleared, ct);
         }
 
         internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)
