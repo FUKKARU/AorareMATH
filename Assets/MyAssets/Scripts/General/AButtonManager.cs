@@ -142,6 +142,9 @@ namespace General
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
+            await SceneTransitionShaderController.Instance.Play(ct);
+            await UniTask.WaitForSeconds(0.8f, cancellationToken: ct);
+
             if (loadImage != null)
             {
                 loadImage.SetPositionX(-18.5f);
