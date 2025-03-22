@@ -111,11 +111,9 @@ namespace General
 
     internal abstract class ASceneChangeButtonManager : AButtonManager
     {
-        [SerializeField] private Transform loadImage;
         [SerializeField] private AFadeableBgmPlayer bgmPlayer;
-
-        // どれか一つが押されたら、他のボタンも押せなくなる
-        [SerializeField] private ASceneChangeButtonManager[] linkedButtons;
+        [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
+        [SerializeField] private ASceneChangeButtonManager[] linkedButtons; // どれか一つが押されたら、他のボタンも押せなくなる
 
         protected abstract string toSceneName { get; }
 
@@ -141,16 +139,8 @@ namespace General
             if (bgmPlayer != null) bgmPlayer.Fade();
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
-
-            await SceneTransitionShaderController.Instance.Play(ct);
-            await UniTask.WaitForSeconds(0.8f, cancellationToken: ct);
-
-            if (loadImage != null)
-            {
-                loadImage.SetPositionX(-18.5f);
-                await loadImage.DOLocalMoveX(0, 0.5f).WithCancellation(ct);
-            }
-
+            if (sceneTransitionShaderController != null)
+                await sceneTransitionShaderController.Play(true, ct);
             await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
 
             toSceneName.LoadAsync().Forget();
