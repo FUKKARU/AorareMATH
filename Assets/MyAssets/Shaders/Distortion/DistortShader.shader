@@ -13,19 +13,20 @@ Shader "Custom/DistortShader"
         _DistortTex("UVDistort Texture", 2D) = "white" {}
         _Offset("Offset Gradient A/B", Range(-2,2)) = 1
         _Hard("Hard Cutoff", Range(1,40)) = 30
-        _Width("Width", Range(-2,2)) = 1
+        _FillAmount("Fill Amount", Range(0,1)) = 0
         _Edge("Edge", Range(0,2)) = 1
         _Distort("Distort", Range(0,1)) = 0.2
         [MaterialToggle] SHAPE("Use Mask Texture", Float) = 0
         [MaterialToggle] SHAPEX("Multiply Noise", Float) = 0
         _ShapeTex("Mask", 2D) = "white" {}
+        [Toggle] _FlipX("Flip X", Float) = 0
     }
     SubShader
     {
         Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
         LOD 100
         ZWrite Off
-        Blend One One
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -57,7 +58,7 @@ Shader "Custom/DistortShader"
             float4 _MainTex_ST, _DistortTex_ST, _ShapeTex_ST, _NoiseTex_ST;
             float4 _ColorA, _ColorB, _TintA, _TintB;
             float _Offset, _ScrollX, _ScrollY;
-            float _Width, _Edge, _Distort, _Hard;
+            float _FillAmount, _Edge, _Distort, _Hard, _FlipX;
 
             v2f vert(appdata v)
             {
@@ -65,7 +66,9 @@ Shader "Custom/DistortShader"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _NoiseTex);
                 o.uv2 = TRANSFORM_TEX(v.uv, _ShapeTex);
+                o.uv2.x = lerp(o.uv2.x, 1 - o.uv2.x, _FlipX);
                 o.uv3 = TRANSFORM_TEX(v.uv, _DistortTex);
+                o.uv3.x = lerp(o.uv3.x, 1 - o.uv3.x, _FlipX);
                 UNITY_TRANSFER_FOG(o, o.vertex);
                 return o;
             }
@@ -75,14 +78,14 @@ Shader "Custom/DistortShader"
                 fixed4 mainTexColor = tex2D(_MainTex, i.uv);
                 float4 gradientMain = lerp(_ColorB, _ColorA, (i.uv3.x + _Offset)) * mainTexColor;
                 float4 gradientTint = lerp(_TintB, _TintA, (i.uv3.x + _Offset));
-                float4 gradientBlend = lerp(float4(2,2,2,2), float4(0,0,0,0), (i.uv3.x + _Width));
+                float4 gradientBlend = lerp(float4(2,2,2,2), float4(0,0,0,0), (i.uv3.x + (1 - _FillAmount) * 2));
 
                 fixed4 uvdistort = tex2D(_DistortTex, i.uv3) * _Distort;
                 fixed4 noise = tex2D(_NoiseTex, fixed2((i.uv.x + _Time.x * _ScrollX) + uvdistort.g, (i.uv.y + _Time.y * _ScrollY) + uvdistort.r));
                 fixed4 shapetex = tex2D(_ShapeTex, i.uv2);
 
                 #ifdef SHAPE_ON
-                noise = 1 - (noise * _Width + (1 - (shapetex * _Hard)));
+                noise = 1 - (noise * (1 - _FillAmount) * 2 + (1 - (shapetex * _Hard)));
                 #else
                 noise += gradientBlend;
                 #endif

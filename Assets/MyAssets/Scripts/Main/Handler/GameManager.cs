@@ -27,9 +27,9 @@ namespace Main.Handler
         [SerializeField, Header("OA, OS, OM, OD, PL, PR の順番\nアシストありの時だけ使用")] private UnNumberSpriteFollow[] assistSymbolSprites;
         [SerializeField, Header("E_1 - E_12 の順番")] private Transform[] symbolFrames;
 
-        [SerializeField] private Transform loadImageTf;
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
+        [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
@@ -91,7 +91,6 @@ namespace Main.Handler
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
-            loadImageTf.SetPositionX(0);
             SetTargetText(string.Empty);
             SetPreviewText(text: string.Empty);
 
@@ -329,8 +328,8 @@ namespace Main.Handler
 
         private async UniTask OnLoadFinished(CancellationToken ct)
         {
-            await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
-            await loadImageTf.DOLocalMoveX(18.5f, 0.5f).ConvertToUniTask(loadImageTf, ct);
+            if (sceneTransitionShaderController != null)
+                await sceneTransitionShaderController.Play(false, ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
             await countDown.Play(ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
