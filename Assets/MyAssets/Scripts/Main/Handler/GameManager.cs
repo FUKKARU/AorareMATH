@@ -344,15 +344,11 @@ namespace Main.Handler
 
         private async UniTask OnResult(CancellationToken ct)
         {
-            // TODO: 未完成
-            "未完成".Show();
             GameDataHolder?.SaveRanking();
             int rank = GameDataHolder?.GetRank() ?? 0;
-            bool onRanking = rank > 0;
-            $"順位 {rank}".Show();
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
-            await resultShower.Play(GameDataHolder.CorrectAmount,rank, hasForciblyCleared, ct);
+            await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
         }
 
         internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)
