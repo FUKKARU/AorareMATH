@@ -11,45 +11,57 @@ namespace Main.Handler
     internal sealed class ResultShower : MonoBehaviour
     {
         [SerializeField] private RectTransform baseImageRt;
-        [SerializeField] private Text correctAmountText;
-        [SerializeField] private Text userscoreRankText;
+        [SerializeField] private Text scoreText;
+        [SerializeField] private Text rankingText;
         [SerializeField] private ASceneChangeButtonManager[] buttons;
 
         private void OnEnable()
         {
-            baseImageRt.localPosition = new(0, 900, 0);
-            correctAmountText.text = string.Empty;
-            userscoreRankText.text = string.Empty;
+            baseImageRt.localPosition = new(0, 1000, 0);
+            scoreText.text = string.Empty;
+            rankingText.text = string.Empty;
             SetButtonsEnabled(false);
         }
 
-        internal async UniTask Play(int correctAmount,int rank, bool hasForciblyCleared, Ct ct)
+        internal async UniTask Play(int correctAmount, int rank, bool hasForciblyCleared, Ct ct)
         {
             if (hasForciblyCleared)
             {
-                correctAmountText.color = Color.yellow;
-                userscoreRankText.color = Color.yellow;
+                scoreText.color = Color.yellow;
             }
+
             await 0.1f.SecondsWait(ct);
-            await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
+            await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
             await 0.1f.SecondsWait(ct);
 
             await DOTween.To(
                 () => 0,
-                x => correctAmountText.text = x.ToString(),
+                x => scoreText.text = x.ToString(),
                 correctAmount,
                 1.0f
             ).WithCancellation(ct);
 
-            await DOTween.To(
-                () => 0,
-                x => userscoreRankText.text = $"{rank}位",
-                rank,
-                1.0f
-            ).WithCancellation(ct);
-            
-
             await 0.2f.SecondsWait(ct);
+
+            if (rankingText.text != null)
+            {
+                if (rank <= 0)
+                {
+                    rankingText.text = "圏外";
+                }
+                else
+                {
+                    rankingText.text = $"{rank}位";
+
+                    if (rank <= 3)
+                    {
+                        rankingText.color = Color.yellow;
+                    }
+                }
+            }
+
+            await 0.5f.SecondsWait(ct);
+
             SetButtonsEnabled(true);
         }
 

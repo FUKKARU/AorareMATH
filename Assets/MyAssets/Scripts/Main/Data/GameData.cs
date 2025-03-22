@@ -19,9 +19,6 @@ namespace Main.Data
             string json = JsonUtility.ToJson(gameData);
             using StreamWriter writer = new(Path.Combine(Application.persistentDataPath, savePath), false);
             writer.WriteLine(json);
-
-            "Saved".Show();
-            gameData.CorrectAmountRanking.Look();
         }
 
         public static void Load(out GameData gameData)
@@ -31,9 +28,6 @@ namespace Main.Data
                 using StreamReader reader = new(Path.Combine(Application.persistentDataPath, savePath));
                 string json = reader.ReadToEnd();
                 gameData = JsonUtility.FromJson<GameData>(json);
-
-                "Loaded".Show();
-                gameData.CorrectAmountRanking.Look();
             }
             catch (Exception)
             {
