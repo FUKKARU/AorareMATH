@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using General;
 using General.Debug;
 using General.Extension;
@@ -8,9 +7,10 @@ using Main.Data.Formula;
 using SO;
 using System;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using Text = TMPro.TextMeshProUGUI;
+using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
@@ -29,11 +29,11 @@ namespace Main.Handler
 
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
+        [SerializeField] private Image everythingBlockingImage;
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
-        [SerializeField] private HandleManager handleManager;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
@@ -78,7 +78,7 @@ namespace Main.Handler
 
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
-        private bool isAttackable = false;
+        private bool isDoingAttack = false;
         private bool hasForciblyCleared = false;
 
         private static readonly float selectSeInterval = 0.1f;
@@ -132,7 +132,7 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            if (isAttackable && handleManager.Clicked) Attack();
+            CheckFormula();
 
             if (time > 0)
             {
@@ -256,25 +256,22 @@ namespace Main.Handler
             }
         }
 
-        private void Attack()
+        // 式を計算し、ピッタリならアタックする
+        private void CheckFormula()
         {
-            float? r = Formula.Calcurate();
+            float? r = Formula?.Calcurate();
+            if (!r.HasValue) return;
 
-            if (r.HasValue)
-            {
-                if (Mathf.Abs(target - r.Value) <= SO_Handler.DiffLimit)
-                    OnAttackSucceeded();
-                else
-                    OnAttackFailed();
-            }
-            else
-            {
-                OnAttackFailed();
-            }
+            if (Mathf.Abs(target - r.Value) <= SO_Handler.DiffLimit)
+                Attack(destroyCancellationToken).Forget();
         }
 
-        private void OnAttackSucceeded()
+        private async UniTaskVoid Attack(Ct ct)
         {
+            if (isDoingAttack) return;
+            isDoingAttack = true;
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
+
             if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
             if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
             if (justEffectLeft != null) justEffectLeft.Play();
@@ -291,12 +288,11 @@ namespace Main.Handler
             }
             if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
 
+            await 1.0f.SecondsWait(ct);
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+            isDoingAttack = false;
+            if (State != GameState.OnGoing) return;
             CreateQuestion();
-        }
-
-        private void OnAttackFailed()
-        {
-            attackFailedSEAudioSource.Raise(SO_Sound.Entity.AttackFailedSE, SoundType.SE, volume: 0.2f);
         }
 
         internal void PlaySelectSE(float pitch = 1.0f)
@@ -328,7 +324,7 @@ namespace Main.Handler
             else throw new Exception("見つかりませんでした");
         }
 
-        private async UniTask OnLoadFinished(CancellationToken ct)
+        private async UniTask OnLoadFinished(Ct ct)
         {
             if (sceneTransitionShaderController != null)
                 await sceneTransitionShaderController.Play(false, ct);
@@ -336,13 +332,12 @@ namespace Main.Handler
             await countDown.Play(ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
-            isAttackable = true;
             CreateQuestion();
             bgmPlayer.Play();
             State = GameState.OnGoing;
         }
 
-        private async UniTask OnResult(CancellationToken ct)
+        private async UniTask OnResult(Ct ct)
         {
             GameDataHolder?.SaveRanking();
             int rank = GameDataHolder?.GetRank() ?? 0;
