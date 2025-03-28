@@ -11,7 +11,8 @@ namespace Main.Handler
     internal sealed class TimeShower : MonoBehaviour
     {
         [SerializeField] private Volume volume;
-        [SerializeField] private Image fillImage;
+        [SerializeField] private Image timerImage;
+        [SerializeField] private RectTransform needleTransform;
         [SerializeField] private Color normalColor;
         [SerializeField] private Color dangerColor;
         [SerializeField, Range(0.01f, 0.99f)] private float timerRedThresholdRatio;
@@ -51,11 +52,24 @@ namespace Main.Handler
 
         internal void UpdateTimeUI(float remainTime)
         {
-            if (fillImage != null)
+            float fillAmount = remainTime.Remap(SO_Handler.Entity.InitTimeLimt, 0, 1, 0);
+
+            if (timerImage != null)
             {
-                float fillAmount = remainTime.Remap(SO_Handler.Entity.InitTimeLimt, 0, 1, 0);
-                fillImage.fillAmount = fillAmount;
-                fillImage.color = fillAmount < timerRedThresholdRatio ? dangerColor : normalColor;
+                timerImage.fillAmount = fillAmount.Remap(0.0f, 1.0f, 0.5f, 1.0f);
+                timerImage.color = fillAmount < timerRedThresholdRatio ? dangerColor : normalColor;
+            }
+
+            if (needleTransform != null)
+            {
+                Vector3 rot = needleTransform.localEulerAngles;
+                rot.z = fillAmount.Remap(0.0f, 1.0f, 90.0f, -90.0f);
+                needleTransform.localEulerAngles = rot;
+
+                float th = fillAmount.Remap(0.0f, 1.0f, Mathf.PI, 0.0f);
+                float x = 253 * Mathf.Cos(th) + 456;
+                float y = 140 * Mathf.Sin(th) - 505;
+                needleTransform.localPosition = new Vector3(x, y, 0.0f);
             }
 
             isVignetteActiveThisFrame =
