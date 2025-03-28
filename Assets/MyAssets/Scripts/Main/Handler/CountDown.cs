@@ -47,9 +47,10 @@ namespace Main.Handler
 
         internal async UniTask Play(Ct ct)
         {
-            // 音も鳴らしたい
             await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).ConvertToUniTask(beginDescriptionTransform, ct);
-            await UniTask.WaitForSeconds(3, cancellationToken: ct);
+            await 1.0f.SecondsWait(ct);
+            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: ct);
+            await 0.1f.SecondsWait(ct);
             beginDescriptionTransform.gameObject.SetActive(false);
 
             await counterTransform.DOLocalMoveY(1.4f, 0.3f).ConvertToUniTask(counterTransform, ct);

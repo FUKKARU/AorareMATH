@@ -78,6 +78,7 @@ namespace Main.Handler
 
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
+        private bool canTimeDecrease = true; // Attackの演出時、時間が減らないようにする
         private bool isDoingAttack = false;
         private bool hasForciblyCleared = false;
 
@@ -136,8 +137,11 @@ namespace Main.Handler
 
             if (time > 0)
             {
-                time -= Time.deltaTime;
-                time = Mathf.Max(0, time);
+                if (canTimeDecrease)
+                {
+                    time -= Time.deltaTime;
+                    time = Mathf.Max(0, time);
+                }
 
                 ShowPreview();
             }
@@ -269,6 +273,7 @@ namespace Main.Handler
         private async UniTaskVoid Attack(Ct ct)
         {
             if (isDoingAttack) return;
+            canTimeDecrease = false;
             isDoingAttack = true;
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
 
@@ -291,6 +296,7 @@ namespace Main.Handler
             await 1.0f.SecondsWait(ct);
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
             isDoingAttack = false;
+            canTimeDecrease = true;
             if (State != GameState.OnGoing) return;
             CreateQuestion();
         }
