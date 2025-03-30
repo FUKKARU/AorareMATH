@@ -27,7 +27,7 @@ namespace Main.Handler
             if (correctAmount <= 0) return;
 
             if (text == null) return;
-            text.text = $"{GameManager.Instance.GameDataHolder.CorrectAmount}<size=60><color=black>問正解中</color></size>";
+            text.text = $"{GameManager.Instance.GameDataHolder.CorrectAmount}<size=45><color=black>問正解中</color></size>";
         }
 
         internal async UniTaskVoid Appear(Ct ct)
