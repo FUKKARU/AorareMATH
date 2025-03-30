@@ -33,15 +33,15 @@ MonoBehaviour:
     VelocityCoefficient: 15
     ScaleCoefficient: 0.7
   _buildingsRightProperty:
-    Interval: 0.4
-    Duration: 1.5
-    TimeOffset: 0.5
+    Interval: 0.2
+    Duration: 10
+    TimeOffset: 0
     Sprite: {fileID: 21300000, guid: 98207d961a7f84572baaf0a613197d87, type: 3}
     StartVelocity: {x: 1, y: -0.09, z: 0}
     StartPosition: {x: 0.425, y: 0.8, z: 90}
     StartLocalScale: 0.2
-    VelocityCoefficient: 15
-    ScaleCoefficient: 0.7
+    VelocityCoefficient: 2
+    ScaleCoefficient: 0.3
   _lampLeftProperty:
     Interval: 0.5
     Duration: 1.5

@@ -14,9 +14,9 @@ namespace Main.Handler
         [SerializeField] private Transform parent;
 
         private SceneryMoverImpl whiteLineImpl;
+        private SceneryMoverImpl buildingsRightImpl;
 #if false
         private SceneryMoverImpl buildingsLeftImpl;
-        private SceneryMoverImpl buildingsRightImpl;
         private SceneryMoverImpl lampLeftImpl;
         private SceneryMoverImpl lampRightImpl;
 #endif
@@ -24,9 +24,9 @@ namespace Main.Handler
         private void OnEnable()
         {
             InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
+            InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
 #if false
             InstantiateThis(ref buildingsLeftImpl, SO_Scenery.Entity.BuildingsLeftProperty);
-            InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
             InstantiateThis(ref lampLeftImpl, SO_Scenery.Entity.LampLeftProperty);
             InstantiateThis(ref lampRightImpl, SO_Scenery.Entity.LampRightProperty);
 #endif
@@ -38,7 +38,7 @@ namespace Main.Handler
 
                 LinkedList<SceneryElement> elements = new();
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     SpriteRenderer instance = Instantiate(elementPrefab, parent);
                     if (instance == null) continue;
@@ -54,17 +54,17 @@ namespace Main.Handler
         private void OnDisable()
         {
             whiteLineImpl?.Dispose();
+            buildingsRightImpl?.Dispose();
 #if false
             buildingsLeftImpl?.Dispose();
-            buildingsRightImpl?.Dispose();
             lampLeftImpl?.Dispose();
             lampRightImpl?.Dispose();
 #endif
 
             whiteLineImpl = null;
+            buildingsRightImpl = null;
 #if false
             buildingsLeftImpl = null;
-            buildingsRightImpl = null;
             lampLeftImpl = null;
             lampRightImpl = null;
 #endif
@@ -73,9 +73,9 @@ namespace Main.Handler
         private void Update()
         {
             whiteLineImpl?.Update();
+            buildingsRightImpl?.Update();
 #if false
             buildingsLeftImpl?.Update();
-            buildingsRightImpl?.Update();
             lampLeftImpl?.Update();
             lampRightImpl?.Update();
 #endif
