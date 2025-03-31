@@ -34,7 +34,7 @@ with open("1d1-2d1-md1.txt", "w", encoding="utf-8") as f:
         tens = number_2d // 10
         ones = number_2d %  10
         f.write(
-            f"{ones}, {tens},{number_1d}, {target}, {ret.replace(' ', '')}\n"
+            f"{ones}, {tens}, {number_1d}, {target}, {ret.replace(' ', '')}\n"
         )
         i += 1
         if i >= NUM:
