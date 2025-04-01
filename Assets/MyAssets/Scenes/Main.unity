@@ -336,7 +336,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7B54\u3048\u3092\u3000\u3000\u3000\u306B\u3057\u3088\u3046\uFF01"
+  m_text: "\u7B54\u3048\u3092\u3000\u3000\u3000\u3000\u306B\u3057\u3088\u3046\uFF01"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2579c72018a7ddc459d7e9a7d5e11c63, type: 2}
   m_sharedMaterial: {fileID: -280950021208164664, guid: 2579c72018a7ddc459d7e9a7d5e11c63, type: 2}
@@ -2941,7 +2941,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 99
+  m_text: 999
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2579c72018a7ddc459d7e9a7d5e11c63, type: 2}
   m_sharedMaterial: {fileID: -280950021208164664, guid: 2579c72018a7ddc459d7e9a7d5e11c63, type: 2}
@@ -2978,7 +2978,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: -8
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

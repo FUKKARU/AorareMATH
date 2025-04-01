@@ -289,6 +289,9 @@ namespace Main.Handler
             {
                 State = GameState.Over;
                 hasForciblyCleared = true;
+                if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+                isDoingAttack = false;
+                canTimeDecrease = true;
                 return;
             }
             if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
