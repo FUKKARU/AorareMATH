@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using General.Extension;
 using UnityEngine;
+using General.Extension;
+using Random = UnityEngine.Random;
 
 namespace Main.Data
 {
@@ -56,6 +57,11 @@ namespace Main.Data
         * 11-15 問目 4-3-0 数字４個、演算子３個(+,- ３個)
         * 16-20 問目 4-2-1 数字４個、演算子３個(+,- 2個、*,/ 1個)
         * 21-   問目 4-3   数字４個、演算子３個
+        * 【低確率で、以下の問題が出現】
+        * 16問目以降5%の出現率, 21問目以降10%の出現率 1-2-1-0 数字3個(1桁と2桁)、演算子1個(+,- 1個)
+        * 16問目以降5%の出現率, 21問目以降10%の出現率 1-3-1-0 数字4個(1桁と3桁)、演算子1個(+,- 1個)
+        * 31問目以降5%の出現率, 41問目以降10%の出現率 1-2-0-1 数字3個(1桁と2桁)、演算子1個(*,/ 1個)
+        * 31問目以降5%の出現率, 41問目以降10%の出現率 2-2-1-0 数字4個(2桁と2桁)、演算子1個(+,- 1個)
         */
         private static Dictionary<string, ReadOnlyCollection<(int[] Numbers, int Target, string Answer)>> data = new();
 
@@ -88,6 +94,10 @@ namespace Main.Data
             _4_3_0,
             _4_2_1,
             _4_3,
+            _1_2_1_0,
+            _1_3_1_0,
+            _1_2_0_1,
+            _2_2_1_0,
             Invalid,
         }
 
@@ -99,6 +109,10 @@ namespace Main.Data
             Type._4_3_0 => "4-3-0",
             Type._4_2_1 => "4-2-1",
             Type._4_3 => "4-3",
+            Type._1_2_1_0 => "1d1-2d1-as1",
+            Type._1_3_1_0 => "1d1-3d1-as1",
+            Type._1_2_0_1 => "1d1-2d1-md1",
+            Type._2_2_1_0 => "2d2-as1",
             Type.Invalid => string.Empty,
             _ => string.Empty,
         };
@@ -106,16 +120,57 @@ namespace Main.Data
         /// <summary>
         /// 問題のインデックスは、0始まり
         /// </summary>
-        internal static Type ToQuestionType(this int preparingQuestionIndex) => preparingQuestionIndex switch
+        internal static Type ToQuestionType(this int preparingQuestionIndex)
         {
-            < 0 => Type.Invalid,
-            < 1 => Type._2_1,
-            < 5 => Type._3_2_0,
-            < 10 => Type._3_2,
-            < 15 => Type._4_3_0,
-            < 20 => Type._4_2_1,
-            _ => Type._4_3,
-        };
+            int i = preparingQuestionIndex;
+            float rand = Random.value;
+
+            return i switch
+            {
+                >= 40 => rand switch
+                {
+                    < 0.10f => Type._1_2_1_0,
+                    < 0.20f => Type._1_3_1_0,
+                    < 0.30f => Type._1_2_0_1,
+                    < 0.40f => Type._2_2_1_0,
+                    _ => ByOnlyIndex(i),
+                },
+                >= 30 => rand switch
+                {
+                    < 0.10f => Type._1_2_1_0,
+                    < 0.20f => Type._1_3_1_0,
+                    < 0.25f => Type._1_2_0_1,
+                    < 0.30f => Type._2_2_1_0,
+                    _ => ByOnlyIndex(i),
+                },
+                >= 20 => rand switch
+                {
+                    < 0.10f => Type._1_2_1_0,
+                    < 0.20f => Type._1_3_1_0,
+                    _ => ByOnlyIndex(i),
+                },
+                >= 15 => rand switch
+                {
+                    < 0.05f => Type._1_2_1_0,
+                    < 0.10f => Type._1_3_1_0,
+                    _ => ByOnlyIndex(i),
+                },
+                _ => ByOnlyIndex(i),
+            };
+
+
+
+            static Type ByOnlyIndex(int i) => i switch
+            {
+                < 0 => Type.Invalid,
+                < 1 => Type._2_1,
+                < 5 => Type._3_2_0,
+                < 10 => Type._3_2,
+                < 15 => Type._4_3_0,
+                < 20 => Type._4_2_1,
+                _ => Type._4_3,
+            };
+        }
 
         /// <summary>
         /// 取得に成功したらtrue、失敗したらfalseを返す
