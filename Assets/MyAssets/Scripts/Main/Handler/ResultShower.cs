@@ -10,6 +10,7 @@ namespace Main.Handler
 {
     internal sealed class ResultShower : MonoBehaviour
     {
+        [SerializeField] private ResultBackgroundShaderController shaderController;
         [SerializeField] private RectTransform baseImageRt;
         [SerializeField] private Text scoreText;
         [SerializeField] private Text rankingText;
@@ -63,6 +64,9 @@ namespace Main.Handler
             await 0.5f.SecondsWait(ct);
 
             SetButtonsEnabled(true);
+
+            if (shaderController != null)
+                shaderController.Enabled = true;
         }
 
         private void SetButtonsEnabled(bool enabled)
