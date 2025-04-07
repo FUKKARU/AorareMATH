@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SO_Handler
   m_EditorClassIdentifier: 
   _soundVolumeRange: {x: -20, y: 20}
-  _questionAmount: 50
+  _questionAmount: 100
   _initTimeLimit: 90
   _timeIncreaseAmount: 10
