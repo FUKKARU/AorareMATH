@@ -13,6 +13,9 @@ namespace SO
         [SerializeField, Header("問題数（最大まで行くと、強制クリア）")] private int _questionAmount;
         internal int QuestionAmount => _questionAmount;
 
+        [SerializeField, Header("スキップ可能数")] private int _skipAmount;
+        internal int SkipAmount => _skipAmount;
+
         [SerializeField, Header("ゲームの初期制限時間(秒)")] private float _initTimeLimit;
         internal float InitTimeLimt => _initTimeLimit;
 

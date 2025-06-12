@@ -299,9 +299,8 @@ namespace Main.Handler
                 isPreviewTextOverriding = true;
 
                 {
-                    //TODO: 回数制限をつける
                     //TODO: ゲーム終了時も、今出ている問題の答えを出せるといいかも
-                    SetPreviewText(text: $"<size=90>答え:</size> {this.answer}", color: Color.red);
+                    SetPreviewText(text: $"<size=90>答え:</size> {this.answer}", color: Color.black);
 
                     await UniTask.NextFrame(ct);
                     await UniTask.WaitUntil(() => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
