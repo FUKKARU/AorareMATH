@@ -35,6 +35,7 @@ namespace Main.Handler
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
+        [SerializeField] private SkipButtonObserver skipButtonHandler;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -133,7 +134,8 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            CheckFormula();
+            CheckSkip();  // スキップボタンが押されたかを監視し、押されたなら次の問題にするよう非同期に発火する
+            CheckFormula();  // 入力欄を監視し、ピッタリなら正解演出を非同期に発火する
 
             if (time > 0)
             {
@@ -260,6 +262,12 @@ namespace Main.Handler
             }
         }
 
+        private void CheckSkip()
+        {
+            if (skipButtonHandler == null || !skipButtonHandler.IsClickedThisFrame) return;
+            Skip(destroyCancellationToken).Forget();
+        }
+
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
@@ -270,36 +278,82 @@ namespace Main.Handler
                 Attack(destroyCancellationToken).Forget();
         }
 
-        private async UniTaskVoid Attack(Ct ct)
+        // 問題数は進まない仕様
+        private async UniTaskVoid Skip(Ct ct)
         {
             if (isDoingAttack) return;
+
+            // フラグON
             canTimeDecrease = false;
             isDoingAttack = true;
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
 
-            if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
-            if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
-            if (justEffectLeft != null) justEffectLeft.Play();
-            if (justEffectRight != null) justEffectRight.Play();
-
-            float timeDiff = SO_Handler.Entity.TimeIncreaseAmount;
-            time += timeDiff;
-
-            if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+            // この中以外は、Attackと同じ！
             {
-                State = GameState.Over;
-                hasForciblyCleared = true;
-                if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
-                isDoingAttack = false;
-                canTimeDecrease = true;
-                return;
-            }
-            if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+                // TODO: 正解を見せたい
 
-            await 1.0f.SecondsWait(ct);
+                await 1.0f.SecondsWait(ct);
+            }
+
+            // フラグOFF
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
             isDoingAttack = false;
             canTimeDecrease = true;
+
+            // 新しく問題を作成
+            if (State != GameState.OnGoing) return;
+            CreateQuestion();
+        }
+
+        private async UniTaskVoid Attack(Ct ct)
+        {
+            if (isDoingAttack) return;
+
+            // フラグON
+            canTimeDecrease = false;
+            isDoingAttack = true;
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
+
+            {
+                // 演出部
+                {
+                    if (attackSEAudioSource != null)
+                        attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
+                    if (justAttackedSEAudioSource != null)
+                        justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
+                    if (justEffectLeft != null)
+                        justEffectLeft.Play();
+                    if (justEffectRight != null)
+                        justEffectRight.Play();
+                }
+
+                // スコア更新部
+                {
+                    time += SO_Handler.Entity.TimeIncreaseAmount;
+                    if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+                    {
+                        State = GameState.Over;
+                        hasForciblyCleared = true;
+                        // フラグOFF
+                        {
+                            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+                            isDoingAttack = false;
+                            canTimeDecrease = true;
+                        }
+                        return;
+                    }
+                    if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+                }
+
+                await 1.0f.SecondsWait(ct);
+            }
+
+            // フラグOFF
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+            isDoingAttack = false;
+            canTimeDecrease = true;
+
+            // 新しく問題を作成
             if (State != GameState.OnGoing) return;
             CreateQuestion();
         }
