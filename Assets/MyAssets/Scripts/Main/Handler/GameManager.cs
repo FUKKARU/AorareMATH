@@ -29,13 +29,13 @@ namespace Main.Handler
 
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
-        [SerializeField] private Image everythingBlockingImage;
+        [SerializeField] private Image everythingBlockingImage;  // SkipButton などがある画面の右側は、ブロックしていない
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
-        [SerializeField] private SkipButtonObserver skipButtonHandler;
+        [SerializeField] private SkipButtonObserver skipButtonObserver;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -57,7 +57,8 @@ namespace Main.Handler
         internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
         internal GameData GameData { get; private set; } = new(); // セーブデータ（正解数を格納）
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
-        private int target = 0; // 出題中の問題の答え
+        private int target = 0; // 出題中の問題のターゲット数
+        private string answer = string.Empty; // 出題中の問題の答え
 
         internal GameDataHolder GameDataHolder { get; private set; } = new();
 
@@ -81,6 +82,7 @@ namespace Main.Handler
         private bool isFirstOnOver = true;
         private bool canTimeDecrease = true; // Attackの演出時、時間が減らないようにする
         private bool isDoingAttack = false;
+        private bool isPreviewTextOverriding = false; // PreviewTextが上書きされているかどうか (問題の答えを見せるときなどに使う)
         private bool hasForciblyCleared = false;
 
         private static readonly float selectSeInterval = 0.1f;
@@ -169,6 +171,7 @@ namespace Main.Handler
             bool result = GameDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
+            this.answer = answer;
 #if UNITY_EDITOR
             answer.Show();
 #endif
@@ -227,6 +230,8 @@ namespace Main.Handler
 
         private void ShowPreview()
         {
+            if (isPreviewTextOverriding) return;
+
             IsPreviewNumberSameAsTargetThisFrame = false;
 
             float? r = Formula.Calcurate();
@@ -264,7 +269,7 @@ namespace Main.Handler
 
         private void CheckSkip()
         {
-            if (skipButtonHandler == null || !skipButtonHandler.IsClickedThisFrame) return;
+            if (skipButtonObserver == null || !skipButtonObserver.IsClickedThisFrame) return;
             Skip(destroyCancellationToken).Forget();
         }
 
@@ -288,11 +293,22 @@ namespace Main.Handler
             isDoingAttack = true;
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
 
-            // この中以外は、Attackと同じ！
+            // この中のみ、Attack 処理と異なる
             {
-                // TODO: 正解を見せたい
+                // フラグON
+                isPreviewTextOverriding = true;
 
-                await 1.0f.SecondsWait(ct);
+                {
+                    //TODO: 回数制限をつける
+                    //TODO: ゲーム終了時も、今出ている問題の答えを出せるといいかも
+                    SetPreviewText(text: $"<size=90>答え:</size> {this.answer}", color: Color.red);
+
+                    await UniTask.NextFrame(ct);
+                    await UniTask.WaitUntil(() => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
+                }
+
+                // フラグOFF
+                isPreviewTextOverriding = false;
             }
 
             // フラグOFF
