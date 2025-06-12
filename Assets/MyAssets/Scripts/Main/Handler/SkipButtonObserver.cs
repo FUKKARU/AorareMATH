@@ -55,6 +55,7 @@ namespace Main.Handler
 
         private void OnPointerEnter()
         {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
 
             GameManager.Instance.PlaySelectSE(Pitch.Hover);
@@ -63,6 +64,7 @@ namespace Main.Handler
 
         private void OnPointerExit()
         {
+            if (GameManager.Instance.State != GameState.OnGoing) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
 
             transform.localScale = initScale;
@@ -70,8 +72,9 @@ namespace Main.Handler
 
         private void OnPointerClick()
         {
-            if (onInterval) return;
+            if (GameManager.Instance.State != GameState.OnGoing) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
+            if (onInterval) return;
 
             GameManager.Instance.PlaySelectSE();
             IsClickedThisFrame = true;

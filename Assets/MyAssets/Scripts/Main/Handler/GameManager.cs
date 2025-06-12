@@ -36,6 +36,7 @@ namespace Main.Handler
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
         [SerializeField] private SkipButtonObserver skipButtonObserver;
+        [SerializeField] private UntilResultCountDown untilResultCountDown;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -267,6 +268,10 @@ namespace Main.Handler
             }
         }
 
+        // PreviewText の上書きフラグがONの間に、呼ばれる想定
+        private void SetAnswerToPreviewText(string answer)
+          => SetPreviewText(text: $"<size=90>答え:</size> {answer}", color: Color.black);
+
         private void CheckSkip()
         {
             if (skipButtonObserver == null || !skipButtonObserver.IsClickedThisFrame) return;
@@ -298,13 +303,11 @@ namespace Main.Handler
                 // フラグON
                 isPreviewTextOverriding = true;
 
-                {
-                    //TODO: ゲーム終了時も、今出ている問題の答えを出せるといいかも
-                    SetPreviewText(text: $"<size=90>答え:</size> {this.answer}", color: Color.black);
-
-                    await UniTask.NextFrame(ct);
-                    await UniTask.WaitUntil(() => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
-                }
+                // 問題の答えを見せる
+                SetAnswerToPreviewText(answer);
+                await UniTask.NextFrame(ct);
+                await UniTask.WaitUntil(
+                    () => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
 
                 // フラグOFF
                 isPreviewTextOverriding = false;
@@ -419,6 +422,14 @@ namespace Main.Handler
         {
             GameDataHolder?.SaveRanking();
             int rank = GameDataHolder?.GetRank() ?? 0;
+
+            // 最後の問題の答えを見せる
+            if (!hasForciblyCleared)
+            {
+                SetAnswerToPreviewText(answer);
+                if (untilResultCountDown != null)
+                    await untilResultCountDown.BeginCountDown(ct);
+            }
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
             await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
