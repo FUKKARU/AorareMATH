@@ -10,7 +10,10 @@ namespace Main.Handler
     internal sealed class SkipButtonObserver : MonoBehaviour
     {
         [SerializeField] private new Transform transform;
+        [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private EventTrigger eventTrigger;
+        [SerializeField] private Sprite skipSprite;
+        [SerializeField] private Sprite continueSprite;
         [SerializeField] private Text skipLeftAmountText;
         [SerializeField, Range(1.0f, 2.0f)] private float hoverScale;
         [SerializeField, Range(0.01f, 5.0f)] private float clickInterval;
@@ -88,6 +91,8 @@ namespace Main.Handler
                 return;
             }
             canDecreaseSkipAmount = !canDecreaseSkipAmount;
+            if (spriteRenderer != null)
+                spriteRenderer.sprite = canDecreaseSkipAmount ? skipSprite : continueSprite;
 
             onInterval = true;
             clickInterval.SecondsWaitAndDo(() => onInterval = false, destroyCancellationToken).Forget();
