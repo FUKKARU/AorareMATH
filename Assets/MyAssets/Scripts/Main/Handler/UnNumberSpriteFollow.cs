@@ -36,21 +36,13 @@ namespace Main.Handler
             }
         }
 
-        private void OnEnable()
+        private void Start()
         {
             eventTrigger.AddListener(EventTriggerType.PointerEnter, OnPointerEnter);
             eventTrigger.AddListener(EventTriggerType.PointerExit, OnPointerExit);
             eventTrigger.AddListener(EventTriggerType.PointerDown, OnPointerDown);
             eventTrigger.AddListener(EventTriggerType.PointerUp, OnPointerUp);
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
-        }
-
-        private void OnDisable()
-        {
-            eventTrigger = null;
-            prefab = null;
-            thisSpriteRenderer = null;
-            thisInstance = null;
         }
 
         private void Update()
