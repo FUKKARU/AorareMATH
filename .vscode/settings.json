@@ -56,5 +56,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "AorareMATH.sln"
+    "dotnet.defaultSolution": "AorareMATH.sln",
+    "todo-tree.tree.showBadges": true,
+    "todo-tree.tree.scanMode": "workspace"
 }

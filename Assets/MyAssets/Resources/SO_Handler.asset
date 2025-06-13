@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _soundVolumeRange: {x: -20, y: 20}
   _questionAmount: 100
+  _skipAmount: 3
   _initTimeLimit: 90
   _timeIncreaseAmount: 10

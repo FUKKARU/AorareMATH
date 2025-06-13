@@ -29,12 +29,15 @@ namespace Main.Handler
 
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
-        [SerializeField] private Image everythingBlockingImage;
+        [SerializeField] private Image everythingBlockingImage;  // SkipButton などがある画面の右側は、ブロックしていない
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
+        [SerializeField] private UnNumberSpritesAnimator unNumberSpritesAnimator;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
+        [SerializeField] private SkipButtonObserver skipButtonObserver;
+        [SerializeField] private UntilResultCountDown untilResultCountDown;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
@@ -56,7 +59,8 @@ namespace Main.Handler
         internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
         internal GameData GameData { get; private set; } = new(); // セーブデータ（正解数を格納）
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
-        private int target = 0; // 出題中の問題の答え
+        private int target = 0; // 出題中の問題のターゲット数
+        private string answer = string.Empty; // 出題中の問題の答え
 
         internal GameDataHolder GameDataHolder { get; private set; } = new();
 
@@ -80,6 +84,7 @@ namespace Main.Handler
         private bool isFirstOnOver = true;
         private bool canTimeDecrease = true; // Attackの演出時、時間が減らないようにする
         private bool isDoingAttack = false;
+        private bool isPreviewTextOverriding = false; // PreviewTextが上書きされているかどうか (問題の答えを見せるときなどに使う)
         private bool hasForciblyCleared = false;
 
         private static readonly float selectSeInterval = 0.1f;
@@ -133,7 +138,8 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            CheckFormula();
+            CheckSkip();  // スキップボタンが押されたかを監視し、押されたなら次の問題にするよう非同期に発火する
+            CheckFormula();  // 入力欄を監視し、ピッタリなら正解演出を非同期に発火する
 
             if (time > 0)
             {
@@ -167,6 +173,7 @@ namespace Main.Handler
             bool result = GameDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
+            this.answer = answer;
 #if UNITY_EDITOR
             answer.Show();
 #endif
@@ -225,6 +232,8 @@ namespace Main.Handler
 
         private void ShowPreview()
         {
+            if (isPreviewTextOverriding) return;
+
             IsPreviewNumberSameAsTargetThisFrame = false;
 
             float? r = Formula.Calcurate();
@@ -260,6 +269,16 @@ namespace Main.Handler
             }
         }
 
+        // PreviewText の上書きフラグがONの間に、呼ばれる想定
+        private void SetAnswerToPreviewText(string answer)
+          => SetPreviewText(text: $"<size=90>答え:</size> {answer}", color: Color.black);
+
+        private void CheckSkip()
+        {
+            if (skipButtonObserver == null || !skipButtonObserver.IsClickedThisFrame) return;
+            Skip(destroyCancellationToken).Forget();
+        }
+
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
@@ -270,36 +289,90 @@ namespace Main.Handler
                 Attack(destroyCancellationToken).Forget();
         }
 
-        private async UniTaskVoid Attack(Ct ct)
+        // 問題数は進まない仕様
+        private async UniTaskVoid Skip(Ct ct)
         {
             if (isDoingAttack) return;
+
+            // フラグON
             canTimeDecrease = false;
             isDoingAttack = true;
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
 
-            if (attackSEAudioSource != null) attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
-            if (justAttackedSEAudioSource != null) justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
-            if (justEffectLeft != null) justEffectLeft.Play();
-            if (justEffectRight != null) justEffectRight.Play();
-
-            float timeDiff = SO_Handler.Entity.TimeIncreaseAmount;
-            time += timeDiff;
-
-            if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+            // この中のみ、Attack 処理と異なる
             {
-                State = GameState.Over;
-                hasForciblyCleared = true;
-                if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
-                isDoingAttack = false;
-                canTimeDecrease = true;
-                return;
-            }
-            if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+                // フラグON
+                isPreviewTextOverriding = true;
 
-            await 1.0f.SecondsWait(ct);
+                // 問題の答えを見せる
+                SetAnswerToPreviewText(answer);
+                await UniTask.NextFrame(ct);
+                await UniTask.WaitUntil(
+                    () => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
+
+                // フラグOFF
+                isPreviewTextOverriding = false;
+            }
+
+            // フラグOFF
             if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
             isDoingAttack = false;
             canTimeDecrease = true;
+
+            // 新しく問題を作成
+            if (State != GameState.OnGoing) return;
+            CreateQuestion();
+        }
+
+        private async UniTaskVoid Attack(Ct ct)
+        {
+            if (isDoingAttack) return;
+
+            // フラグON
+            canTimeDecrease = false;
+            isDoingAttack = true;
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
+
+            {
+                // 演出部
+                {
+                    if (attackSEAudioSource != null)
+                        attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
+                    if (justAttackedSEAudioSource != null)
+                        justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
+                    if (justEffectLeft != null)
+                        justEffectLeft.Play();
+                    if (justEffectRight != null)
+                        justEffectRight.Play();
+                }
+
+                // スコア更新部
+                {
+                    time += SO_Handler.Entity.TimeIncreaseAmount;
+                    if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+                    {
+                        State = GameState.Over;
+                        hasForciblyCleared = true;
+                        // フラグOFF
+                        {
+                            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+                            isDoingAttack = false;
+                            canTimeDecrease = true;
+                        }
+                        return;
+                    }
+                    if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+                }
+
+                await 1.0f.SecondsWait(ct);
+            }
+
+            // フラグOFF
+            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+            isDoingAttack = false;
+            canTimeDecrease = true;
+
+            // 新しく問題を作成
             if (State != GameState.OnGoing) return;
             CreateQuestion();
         }
@@ -342,6 +415,7 @@ namespace Main.Handler
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
             CreateQuestion();
+            if (unNumberSpritesAnimator != null) unNumberSpritesAnimator.BeginAnimation(ct).Forget();
             bgmPlayer.Play();
             State = GameState.OnGoing;
         }
@@ -350,6 +424,14 @@ namespace Main.Handler
         {
             GameDataHolder?.SaveRanking();
             int rank = GameDataHolder?.GetRank() ?? 0;
+
+            // 最後の問題の答えを見せる
+            if (!hasForciblyCleared)
+            {
+                SetAnswerToPreviewText(answer);
+                if (untilResultCountDown != null)
+                    await untilResultCountDown.BeginCountDown(ct);
+            }
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
             await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
