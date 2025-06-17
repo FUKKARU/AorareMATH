@@ -29,7 +29,8 @@ namespace Main.Handler
 
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
-        [SerializeField] private Image everythingBlockingImage;  // SkipButton などがある画面の右側は、ブロックしていない
+        [SerializeField] private Image everythingBlockingImage;
+        [SerializeField] private Image everythingButRightSideBlockingImage;  // スキップボタンとサウンドスライダーは、ブロックされていない
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
@@ -290,6 +291,7 @@ namespace Main.Handler
         }
 
         // 問題数は進まない仕様
+        // everythingButRightSideBlockingImage : サウンドスライダーはクリック可能
         private async UniTaskVoid Skip(Ct ct)
         {
             if (isDoingAttack) return;
@@ -297,9 +299,9 @@ namespace Main.Handler
             // フラグON
             canTimeDecrease = false;
             isDoingAttack = true;
-            if (everythingBlockingImage != null) everythingBlockingImage.enabled = true;
+            if (everythingButRightSideBlockingImage != null) everythingButRightSideBlockingImage.enabled = true;
 
-            // この中のみ、Attack 処理と異なる
+            // この中・及び BlockingImage のみ、Attack 処理と異なる
             {
                 // フラグON
                 isPreviewTextOverriding = true;
@@ -315,7 +317,7 @@ namespace Main.Handler
             }
 
             // フラグOFF
-            if (everythingBlockingImage != null) everythingBlockingImage.enabled = false;
+            if (everythingButRightSideBlockingImage != null) everythingButRightSideBlockingImage.enabled = false;
             isDoingAttack = false;
             canTimeDecrease = true;
 
@@ -324,6 +326,7 @@ namespace Main.Handler
             CreateQuestion();
         }
 
+        // everythingBlockingImage : サウンドスライダーはクリック不可 (演出時間が短いので、許容する)
         private async UniTaskVoid Attack(Ct ct)
         {
             if (isDoingAttack) return;
