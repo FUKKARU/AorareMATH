@@ -49,7 +49,7 @@ namespace Main.Handler
         {
             await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).ConvertToUniTask(beginDescriptionTransform, ct);
             await 1.0f.SecondsWait(ct);
-            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: ct);
+            await UniTask.WaitUntil(() => IsTouchedThisFrame(), cancellationToken: ct);
             await 0.1f.SecondsWait(ct);
             beginDescriptionTransform.gameObject.SetActive(false);
 
@@ -72,6 +72,23 @@ namespace Main.Handler
         private async UniTask WaitForOneCount(Ct ct)
         {
             await UniTask.WaitForSeconds(oneCountDuration, cancellationToken: ct);
+        }
+
+        // ちょうどこのフレームでタッチされたかどうか
+        private bool IsTouchedThisFrame()
+        {
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
+            return Input.GetMouseButtonDown(0);
+#elif UNITY_IOS || UNITY_ANDROID
+            for (int i = 0; i < Input.touchCount; ++i)
+            {
+                if (Input.GetTouch(i).phase == TouchPhase.Began)
+                    return true;
+            }
+            return false;
+#else
+            return false;  // 他のプラットフォームはサポートしていない
+#endif
         }
     }
 }

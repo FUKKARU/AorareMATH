@@ -20,6 +20,9 @@ namespace Main.Handler
         internal float Z => _z;
         [SerializeField, Header("持ち上げた際のインスタンスのz座標")] private float followZ;
 
+        // キャッシュ用
+        private new Camera camera = null;
+
         internal Vector3 InitPosition { get; set; }
 
         private bool _isFollowingMouse = false;
@@ -33,17 +36,21 @@ namespace Main.Handler
             }
         }
 
-        private void OnEnable()
+        // Down/Upの所では、最初にDownされたポインターのみを追跡するようにする
+        // DownされてからUpされたら、追跡状態はリセット(-1)される
+        private int trackingPointerId = -1;
+
+        private void Awake()
+        {
+            camera = Camera.main;
+        }
+
+        private void Start()
         {
             InitPosition = transform.position;
 
             eventTrigger.AddListener(EventTriggerType.PointerDown, OnPointerDown);
             eventTrigger.AddListener(EventTriggerType.PointerUp, OnPointerUp);
-        }
-
-        private void OnDisable()
-        {
-            eventTrigger = null;
         }
 
         private void Update()
@@ -57,22 +64,35 @@ namespace Main.Handler
                     return;
                 }
 
-                transform.position = Camera.main.MousePositionToWorldPosition(followZ);
+                if (camera != null)
+                    transform.position = camera.MousePositionToWorldPosition(followZ);
             }
         }
 
-        private void OnPointerDown()
+        // 範囲内でボタンを押す(タップ)した時
+        private void OnPointerDown(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
+
+            // モバイルのみ
+            // IDを追跡開始
+            if (trackingPointerId != -1) return;
+            trackingPointerId = data.pointerId;
 
             GameManager.Instance.PlaySelectSE();
 
             isFollowingMouse = true;
         }
 
-        private void OnPointerUp()
+        // PointerDown後にボタン(指)を放した時
+        private void OnPointerUp(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
+
+            // モバイルのみ
+            // IDを追跡終了
+            if (trackingPointerId != data.pointerId) return;
+            trackingPointerId = -1;
 
             isFollowingMouse = false;
 
