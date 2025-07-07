@@ -81,6 +81,11 @@ namespace Main.Handler
         internal bool IsHoldingSymbol { get; set; } = false;
         internal bool IsPreviewNumberSameAsTargetThisFrame { get; private set; } = false;
 
+        // IsHoldingSymbolがfalseになってから、ホバー音が再生不可になっている時間
+        private static readonly float hoverSeInterval = 0.1f;
+        // IsHoldingSymbolがfalseになってから少しの間だけ、ホバー音を再生不可にするためのフラグ
+        internal bool IsHoverSeAvailable { get; private set; } = true;
+
         private bool isFirstOnStay = true;
         private bool isFirstOnOver = true;
         private bool canTimeDecrease = true; // Attackの演出時、時間が減らないようにする
@@ -101,6 +106,9 @@ namespace Main.Handler
             SetPreviewText(text: string.Empty);
 
             time = SO_Handler.Entity.InitTimeLimt;
+
+            // ずっと実行させとくので十分だと思う
+            UpdateHoverSeCooltime(destroyCancellationToken).Forget();
         }
 
         private void Update()
@@ -379,6 +387,21 @@ namespace Main.Handler
 
         internal void PlaySelectSE(float pitch = 1.0f)
             => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
+
+        private async UniTaskVoid UpdateHoverSeCooltime(Ct ct)
+        {
+            while (true)
+            {
+                await UniTask.WaitUntil(() => IsHoldingSymbol == true, cancellationToken: ct);
+                await UniTask.WaitUntil(() => IsHoldingSymbol == false, cancellationToken: ct);
+                IsHoverSeAvailable = false;
+                await UniTask.WhenAny(
+                    UniTask.WaitForSeconds(hoverSeInterval, cancellationToken: ct),
+                    UniTask.WaitUntil(() => IsHoldingSymbol == true, cancellationToken: ct)
+                );
+                IsHoverSeAvailable = true;
+            }
+        }
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
