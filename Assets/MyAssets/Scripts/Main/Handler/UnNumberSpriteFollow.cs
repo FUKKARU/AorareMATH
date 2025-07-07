@@ -39,6 +39,12 @@ namespace Main.Handler
             }
         }
 
+        // IsHoldingSymbolがfalseになってから、ホバー音が再生不可になっている時間
+        private static readonly float hoverSeInterval = 0.1f;
+        // IsHoldingSymbolがfalseになってから少しの間だけ、ホバー音を再生不可にするためのフラグ
+        private bool isHoverSeAvailable = true;
+        private float hoverSeTimer = 0f;
+
         // Down/Upの所では、最初にDownされたポインターのみを追跡するようにする
         // DownされてからUpされたら、追跡状態はリセット(-1)される
         private int trackingPointerId = -1;
@@ -74,6 +80,25 @@ namespace Main.Handler
 
                 thisInstance.transform.position = camera.PointerPositionToWorldPosition(thisZ, trackingPointerId);
             }
+
+            // ホバーオンのクールタイム管理
+            if (GameManager.Instance.IsHoldingSymbol == false)
+            {
+                if (isHoverSeAvailable == false)
+                {
+                    hoverSeTimer += Time.deltaTime;
+                    if (hoverSeTimer >= hoverSeInterval)
+                    {
+                        isHoverSeAvailable = true;
+                        hoverSeTimer = 0f;
+                    }
+                }
+            }
+            else
+            {
+                isHoverSeAvailable = true;
+                hoverSeTimer = 0f;
+            }
         }
 
         private void OnPointerEnter(PointerEventData data)
@@ -87,7 +112,9 @@ namespace Main.Handler
             if (trackingPointerId != -1 && trackingPointerId != data.pointerId)
                 return;
 
-            GameManager.Instance.PlaySelectSE(Pitch.Hover);
+            if (isHoverSeAvailable)
+                GameManager.Instance.PlaySelectSE(Pitch.Hover);
+
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
         }
 

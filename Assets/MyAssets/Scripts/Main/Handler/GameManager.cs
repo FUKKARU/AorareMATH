@@ -88,9 +88,6 @@ namespace Main.Handler
         private bool isPreviewTextOverriding = false; // PreviewTextが上書きされているかどうか (問題の答えを見せるときなどに使う)
         private bool hasForciblyCleared = false;
 
-        private static readonly float selectSeInterval = 0.1f;
-        private bool canPlaySelectSe = false;
-
         private void OnEnable()
         {
             State = GameState.Stay;
@@ -381,12 +378,7 @@ namespace Main.Handler
         }
 
         internal void PlaySelectSE(float pitch = 1.0f)
-        {
-            if (canPlaySelectSe) return;
-            canPlaySelectSe = true;
-            selectSeInterval.SecondsWaitAndDo(() => canPlaySelectSe = false, destroyCancellationToken).Forget();
-            selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
-        }
+            => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
 
         private SpriteFollow ToInstance(IntStr symbol)
         {
