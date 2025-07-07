@@ -93,9 +93,9 @@ Shader "Custom/DistortShader"
                 noise += gradientBlend;
                 #endif
 
-                float4 flame = saturate(noise.a * _Hard);
+                float4 flame = saturate(noise.r * _Hard);
                 float4 flamecolored = flame * gradientMain;
-                float4 flamerim = saturate((noise.a + _Edge) * _Hard) - flame;
+                float4 flamerim = saturate((noise.r + _Edge) * _Hard) - flame;
                 float4 flamecolored2 = flamerim * gradientTint;
                 float4 finalcolor = flamecolored + flamecolored2;
                 return finalcolor;
