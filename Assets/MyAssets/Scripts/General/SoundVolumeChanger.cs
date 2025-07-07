@@ -63,7 +63,7 @@ namespace General
             sliderText.text = text;
         }
 
-        private void PlaySeSample() => seSampleAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
+        private void PlaySeSample(PointerEventData data) => seSampleAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
     }
 
     internal static class SoundVolumeChangerEx

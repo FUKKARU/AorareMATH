@@ -25,6 +25,9 @@ namespace Main.Handler
         internal float Z => z;
         [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
 
+        // キャッシュ用
+        private new Camera camera = null;
+
         private bool _isFollowingMouse = false;
         private bool isFollowingMouse
         {
@@ -34,6 +37,15 @@ namespace Main.Handler
                 _isFollowingMouse = value;
                 GameManager.Instance.IsHoldingSymbol = value; // 掴んでいるものは1つだけのはずなので
             }
+        }
+
+        // Down/Upの所では、最初にDownされたポインターのみを追跡するようにする
+        // DownされてからUpされたら、追跡状態はリセット(-1)される
+        private int trackingPointerId = -1;
+
+        private void Awake()
+        {
+            camera = Camera.main;
         }
 
         private void Start()
@@ -60,45 +72,65 @@ namespace Main.Handler
                     return;
                 }
 
-                thisInstance.transform.position = Camera.main.MousePositionToWorldPosition(thisZ);
+                thisInstance.transform.position = camera.MousePositionToWorldPosition(thisZ);
             }
         }
 
-        private void OnPointerEnter()
+        private void OnPointerEnter(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
             if (isFollowingMouse) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
+
+            // モバイルのみ
+            // 他の指からのEnterは無視
+            if (trackingPointerId != -1 && trackingPointerId != data.pointerId)
+                return;
 
             GameManager.Instance.PlaySelectSE(Pitch.Hover);
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
         }
 
-        private void OnPointerExit()
+        private void OnPointerExit(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
             if (isFollowingMouse) return;
             if (GameManager.Instance.IsHoldingSymbol) return;
 
+            // モバイルのみ
+            // 他の指からのExitは無視
+            if (trackingPointerId != -1 && trackingPointerId != data.pointerId)
+                return;
+
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
         }
 
-        private void OnPointerDown()
+        private void OnPointerDown(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
+
+            // モバイルのみ
+            // IDを追跡開始
+            if (trackingPointerId != -1) return;
+            trackingPointerId = data.pointerId;
 
             if (thisInstance != null) return;
 
             isFollowingMouse = true;
             GameManager.Instance.PlaySelectSE();
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
-            thisInstance = Instantiate(thisSpriteRenderer, Camera.main.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
+            thisInstance = Instantiate(thisSpriteRenderer, camera.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
 
-        private void OnPointerUp()
+        private void OnPointerUp(PointerEventData data)
         {
             if (GameManager.Instance.State != GameState.OnGoing) return;
+
+            // モバイルのみ
+            // IDを追跡終了
+            if (trackingPointerId != data.pointerId) return;
+            trackingPointerId = -1;
 
             if (thisInstance == null) return;
 

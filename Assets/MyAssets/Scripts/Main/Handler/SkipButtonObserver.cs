@@ -1,24 +1,19 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using General.Extension;
-using Main.Data;
 using Cysharp.Threading.Tasks;
 using Text = TMPro.TextMeshProUGUI;
+using General.Button;
 
 namespace Main.Handler
 {
-    internal sealed class SkipButtonObserver : MonoBehaviour
+
+    internal sealed class SkipButtonObserver : ASimpleButtonManager
     {
-        [SerializeField] private new Transform transform;
-        [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private Sprite skipSprite;
         [SerializeField] private Sprite continueSprite;
         [SerializeField] private Text skipLeftAmountText;
-        [SerializeField, Range(1.0f, 2.0f)] private float hoverScale;
         [SerializeField, Range(0.01f, 5.0f)] private float clickInterval;
 
-        private Vector3 initScale = Vector3.one;
         private bool onInterval = false;  // クリックのクールタイム中かどうか
 
         private int _skipLeftAmount = 0;
@@ -41,14 +36,6 @@ namespace Main.Handler
         private void Start()
         {
             skipLeftAmount = SO.SO_Handler.Entity.SkipAmount;
-            initScale = transform.localScale;
-
-            if (eventTrigger != null)
-            {
-                eventTrigger.AddListener(EventTriggerType.PointerEnter, OnPointerEnter);
-                eventTrigger.AddListener(EventTriggerType.PointerExit, OnPointerExit);
-                eventTrigger.AddListener(EventTriggerType.PointerClick, OnPointerClick);
-            }
         }
 
         private void LateUpdate()
@@ -56,29 +43,22 @@ namespace Main.Handler
             IsClickedThisFrame = false;
         }
 
-        private void OnPointerEnter()
-        {
-            if (GameManager.Instance.State != GameState.OnGoing) return;
-            if (GameManager.Instance.IsHoldingSymbol) return;
+        protected sealed override bool CanEnter() => CanFirePointerEvent();
+        protected sealed override bool CanExit() => CanFirePointerEvent();
+        protected sealed override bool CanDown() => CanFirePointerEvent();
+        protected sealed override bool CanUp() => CanFirePointerEvent();
 
-            GameManager.Instance.PlaySelectSE(Pitch.Hover);
-            transform.localScale = initScale * hoverScale;
+        private bool CanFirePointerEvent()
+        {
+            if (GameManager.Instance.State != GameState.OnGoing) return false;
+            if (GameManager.Instance.IsHoldingSymbol) return false;
+            if (onInterval) return false;
+
+            return true;
         }
 
-        private void OnPointerExit()
+        protected sealed override void OnClickSucceeded()
         {
-            if (GameManager.Instance.State != GameState.OnGoing) return;
-            if (GameManager.Instance.IsHoldingSymbol) return;
-
-            transform.localScale = initScale;
-        }
-
-        private void OnPointerClick()
-        {
-            if (GameManager.Instance.State != GameState.OnGoing) return;
-            if (GameManager.Instance.IsHoldingSymbol) return;
-            if (onInterval) return;
-
             GameManager.Instance.PlaySelectSE();
             IsClickedThisFrame = true;
 
@@ -86,13 +66,13 @@ namespace Main.Handler
                 --skipLeftAmount;
             else if (skipLeftAmount <= 0)
             {
-                if (transform != null) transform.gameObject.SetActive(false);
+                if (Image != null) Image.gameObject.SetActive(false);
                 if (skipLeftAmountText != null) skipLeftAmountText.gameObject.SetActive(false);
                 return;
             }
             canDecreaseSkipAmount = !canDecreaseSkipAmount;
-            if (spriteRenderer != null)
-                spriteRenderer.sprite = canDecreaseSkipAmount ? skipSprite : continueSprite;
+            if (Image != null)
+                Image.sprite = canDecreaseSkipAmount ? skipSprite : continueSprite;
 
             onInterval = true;
             clickInterval.SecondsWaitAndDo(() => onInterval = false, destroyCancellationToken).Forget();

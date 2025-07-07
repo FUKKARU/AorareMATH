@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
-using General;
+using General.Button;
 using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;

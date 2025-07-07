@@ -1,10 +1,10 @@
-using General;
+using General.Button;
 using SO;
 
 namespace Title.Handler
 {
     internal sealed class BackButtonManager : ASceneChangeButtonManager
     {
-        protected override string toSceneName => SO_SceneName.Entity.Title;
+        protected sealed override string toSceneName => SO_SceneName.Entity.Title;
     }
 }

@@ -43,10 +43,14 @@ namespace General.Extension
         /// <summary>
         /// EventTriggerにイベントを登録する
         /// </summary>
-        internal static void AddListener(this EventTrigger eventTrigger, EventTriggerType type, Action action)
+        internal static void AddListener(this EventTrigger eventTrigger, EventTriggerType type, Action<PointerEventData> action)
         {
             EventTrigger.Entry entry = new() { eventID = type };
-            entry.callback.AddListener(_ => action?.Invoke());
+            entry.callback.AddListener(data =>
+            {
+                if (data is PointerEventData pointerData)
+                    action?.Invoke(pointerData);
+            });
             eventTrigger.triggers.Add(entry);
         }
 
