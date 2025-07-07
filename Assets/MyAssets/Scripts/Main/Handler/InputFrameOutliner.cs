@@ -9,6 +9,15 @@ namespace Main.Handler
 
         [SerializeField, Header("E_1 - E_12 の順番")] private SpriteRenderer[] symbolFrames;
 
+        // 各個のシンボルフレームで、アウトラインがアクティブになっているかどうか
+        private bool[] isActives = null;
+
+        private void Start()
+        {
+            isActives = new bool[symbolFrames.Length];
+            ResetFlags();
+        }
+
         private void Update()
         {
             UpdateInputFrameOutline();
@@ -16,19 +25,35 @@ namespace Main.Handler
 
         private void UpdateInputFrameOutline()
         {
-            int i = -1;
             if (GameManager.Instance.State == GameState.OnGoing)
             {
-                GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
-                if (hovering) i = index;
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
+                GameManager.Instance.CheckPointerHoverSymbolFrame(out bool hovering, out int index);
+                if (hovering) isActives[index] |= true;
+#elif UNITY_ANDROID || UNITY_IOS
+                for (int i = 0; i < Input.touchCount; ++i)
+                {
+                    GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index, i);
+                    if (hovering) isActives[index] |= true;
+                }
+#else
+#endif
             }
 
-            for (int j = 0; j < symbolFrames.Length; j++)
+            for (int i = 0; i < symbolFrames.Length; ++i)
             {
-                SpriteRenderer symbolFrame = symbolFrames[j];
+                SpriteRenderer symbolFrame = symbolFrames[i];
                 if (symbolFrame == null) continue;
-                symbolFrame.sprite = j == i ? hoverSprite : normalSprite;
+                symbolFrame.sprite = isActives[i] ? hoverSprite : normalSprite;
             }
+
+            ResetFlags();
+        }
+
+        private void ResetFlags()
+        {
+            for (int i = 0; i < isActives.Length; ++i)
+                isActives[i] &= false;
         }
     }
 }
