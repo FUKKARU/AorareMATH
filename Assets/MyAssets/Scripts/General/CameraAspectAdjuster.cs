@@ -8,8 +8,6 @@ namespace General
     {
         [SerializeField] private new Camera camera;
 
-#if UNITY_IOS || UNITY_ANDROID
-
         private Vector2Int lastResolution = Vector2Int.zero;
 
         private void Start()
@@ -58,7 +56,5 @@ namespace General
                 camera.rect = new Rect(inset, 0, scaleWidth, 1.0f);
             }
         }
-
-#endif
     }
 }
