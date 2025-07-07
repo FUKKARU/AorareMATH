@@ -81,10 +81,13 @@ namespace General.Button
 
             isPointerInside = true;
 
+            if (!CanEnter) return;
+
             if (appearanceState != AppearanceState.Default) return;
             appearanceState = AppearanceState.BeingHovered;
 
-            PlayClickSE(Pitch.Hover);
+            if (CanPlaySeOnEnter)
+                PlayClickSE(Pitch.Hover);
             UpdateAppearences();
 
             OnEnterImpl();
@@ -102,6 +105,8 @@ namespace General.Button
 
             isPointerInside = false;
 
+            if (!CanExit) return;
+
             if (appearanceState != AppearanceState.BeingHovered) return;
             appearanceState = AppearanceState.Default;
 
@@ -118,10 +123,13 @@ namespace General.Button
             if (trackingPointerId != -1) return;
             trackingPointerId = data.pointerId;
 
+            if (!CanDown) return;
+
             if (appearanceState != AppearanceState.BeingHovered) return;
             appearanceState = AppearanceState.BeingClicked;
 
-            PlayClickSE();
+            if (CanPlaySeOnDown)
+                PlayClickSE();
             UpdateAppearences();
 
             OnDownImpl();
@@ -134,6 +142,8 @@ namespace General.Button
             // IDを追跡終了
             if (trackingPointerId != data.pointerId) return;
             trackingPointerId = -1;
+
+            if (!CanUp) return;
 
             if (appearanceState != AppearanceState.BeingClicked) return;
             appearanceState = isPointerInside ? AppearanceState.BeingHovered : AppearanceState.Default;
@@ -171,12 +181,22 @@ namespace General.Button
         private void PlayClickSE(float pitch = 1.0f) => seAudioSource.Raise(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
 
         protected void MakeClickEventDisabled() => isClickEnabled &= false;
+        protected virtual void OnClickSucceeded() { }
+
+        // 各コールバック時、このプロパティがfalseを返すなら実行されない
+        // ただし、フラグの管理などは行われる
+        protected virtual bool CanEnter => true;
+        protected virtual bool CanExit => true;
+        protected virtual bool CanDown => true;
+        protected virtual bool CanUp => true;
 
         protected virtual void OnEnterImpl() { }
         protected virtual void OnExitImpl() { }
         protected virtual void OnDownImpl() { }
         protected virtual void OnUpImpl() { }
-        protected virtual void OnClickSucceeded() { }
+
+        protected virtual bool CanPlaySeOnEnter => true;
+        protected virtual bool CanPlaySeOnDown => true;
 
         // このスクリプトでやっていないプロパティ操作を行いたい場合に限る.
         protected Image BackgroundImage => backgroundImage;

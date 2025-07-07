@@ -1,8 +1,8 @@
-﻿using General.Extension;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Main.Handler
 {
@@ -87,7 +87,9 @@ namespace Main.Handler
             if (trackingPointerId != -1 && trackingPointerId != data.pointerId)
                 return;
 
-            GameManager.Instance.PlaySelectSE(Pitch.Hover);
+            if (GameManager.Instance.IsHoverSeAvailable)
+                GameManager.Instance.PlaySelectSE(Pitch.Hover);
+
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = hoverSprite;
         }
 

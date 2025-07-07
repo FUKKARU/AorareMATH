@@ -43,10 +43,12 @@ namespace Main.Handler
             IsClickedThisFrame = false;
         }
 
-        protected sealed override bool CanEnter() => CanFirePointerEvent();
-        protected sealed override bool CanExit() => CanFirePointerEvent();
-        protected sealed override bool CanDown() => CanFirePointerEvent();
-        protected sealed override bool CanUp() => CanFirePointerEvent();
+        protected sealed override bool CanEnter => CanFirePointerEvent();
+        protected sealed override bool CanExit => CanFirePointerEvent();
+        protected sealed override bool CanDown => CanFirePointerEvent();
+        protected sealed override bool CanUp => CanFirePointerEvent();
+
+        protected sealed override bool CanPlaySeOnEnter => GameManager.Instance.IsHoverSeAvailable;
 
         private bool CanFirePointerEvent()
         {
