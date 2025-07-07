@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Resolution: {x: 1920, y: 1080}
   IsFullScreen: 1
-  IsVsyncOn: 1
-  TargetFrameRate: 0
+  TargetFrameRate: 60
