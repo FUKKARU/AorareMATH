@@ -33,7 +33,7 @@ namespace Main.Handler
 #elif UNITY_ANDROID || UNITY_IOS
                 for (int i = 0; i < Input.touchCount; ++i)
                 {
-                    GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index, i);
+                    GameManager.Instance.CheckPointerHoverSymbolFrame(out bool hovering, out int index, i);
                     if (hovering) isActives[index] |= true;
                 }
 #else
