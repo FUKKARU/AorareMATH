@@ -131,12 +131,30 @@ namespace General.Extension
         }
         private static bool isSceneLoading = false;
 
-        internal static Vector3 MousePositionToWorldPosition(this Camera camera, float z)
+        // PCの場合、pointerIdは-1のままでOK(無視される). モバイルの場合、対象にしたい指のIDを指定する.
+        internal static Vector3 PointerPositionToWorldPosition(this Camera camera, float z, int pointerId = -1)
         {
             if (camera == null) return Vector3.zero;
-            Vector3 pos = camera.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = z;
-            return pos;
+
+            Vector3 pointerPosition = Vector3.zero;
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
+            pointerPosition = Input.mousePosition;
+#elif UNITY_IOS || UNITY_ANDROID
+            foreach (var touch in Input.touches)
+            {
+                if (touch.fingerId == pointerId)
+                {
+                    pointerPosition = touch.position;
+                    break;
+                }
+            }
+#else
+            return Vector3.zero;  // 対応していないプラットフォーム
+#endif
+
+            Vector3 screenPos = camera.ScreenToWorldPoint(pointerPosition);
+            screenPos.z = z;
+            return screenPos;
         }
     }
 

@@ -65,7 +65,7 @@ namespace Main.Handler
                 }
 
                 if (camera != null)
-                    transform.position = camera.MousePositionToWorldPosition(followZ);
+                    transform.position = camera.PointerPositionToWorldPosition(followZ, trackingPointerId);
             }
         }
 
@@ -91,12 +91,13 @@ namespace Main.Handler
 
             // モバイルのみ
             // IDを追跡終了
+            int wasTrackingPointerId = trackingPointerId;  // この後使うため、コピーしておく
             if (trackingPointerId != data.pointerId) return;
             trackingPointerId = -1;
 
             isFollowingMouse = false;
 
-            GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
+            GameManager.Instance.CheckPointerHoverSymbolFrame(out bool hovering, out int index, wasTrackingPointerId);
             if (hovering)
             {
                 Vector2 symbolPosition = GameManager.Instance.SymbolPositions[index];

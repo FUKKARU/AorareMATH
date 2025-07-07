@@ -440,11 +440,12 @@ namespace Main.Handler
             await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
         }
 
-        internal void CheckMouseHoverSymbolFrame(out bool hovering, out int index)
+        // PCの場合、pointerIdは-1のままでOK(無視される). モバイルの場合、対象にしたい指のIDを指定する.
+        internal void CheckPointerHoverSymbolFrame(out bool hovering, out int index, int pointerId = -1)
         {
             float lw = mouseHoverSymbolFrameLimitWidth;
             float lh = mouseHoverSymbolFrameLimitHeight;
-            Vector2 mousePosition = Extension.MousePositionToWorldPosition(Camera.main, 0).ToVector2();
+            Vector2 mousePosition = Extension.PointerPositionToWorldPosition(Camera.main, 0, pointerId).ToVector2();
 
             for (int i = 0; i < SymbolPositions.Length; i++)
             {

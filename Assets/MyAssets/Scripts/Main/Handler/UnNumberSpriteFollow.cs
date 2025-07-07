@@ -72,7 +72,7 @@ namespace Main.Handler
                     return;
                 }
 
-                thisInstance.transform.position = camera.MousePositionToWorldPosition(thisZ);
+                thisInstance.transform.position = camera.PointerPositionToWorldPosition(thisZ, trackingPointerId);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Main.Handler
             isFollowingMouse = true;
             GameManager.Instance.PlaySelectSE();
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
-            thisInstance = Instantiate(thisSpriteRenderer, camera.MousePositionToWorldPosition(thisZ), Quaternion.identity, transform);
+            thisInstance = Instantiate(thisSpriteRenderer, camera.PointerPositionToWorldPosition(thisZ, trackingPointerId), Quaternion.identity, transform);
             thisInstance.transform.localScale = Vector3.one;
         }
 
@@ -129,6 +129,7 @@ namespace Main.Handler
 
             // モバイルのみ
             // IDを追跡終了
+            int wasTrackingPointerId = trackingPointerId;  // この後使うため、コピーしておく
             if (trackingPointerId != data.pointerId) return;
             trackingPointerId = -1;
 
@@ -136,7 +137,7 @@ namespace Main.Handler
 
             isFollowingMouse = false;
 
-            GameManager.Instance.CheckMouseHoverSymbolFrame(out bool hovering, out int index);
+            GameManager.Instance.CheckPointerHoverSymbolFrame(out bool hovering, out int index, wasTrackingPointerId);
             if (hovering)
             {
                 Vector2 symbolPosition = GameManager.Instance.SymbolPositions[index];
