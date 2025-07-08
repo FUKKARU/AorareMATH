@@ -15,6 +15,23 @@ namespace General.Shaders
         private float grayscaleEnabledInitialValue = 0.0f;
         private float grayscaleStrengthInitialValue = 1.0f;
 
+        private bool isEnabled = false;
+        internal bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                if (isEnabled == value) return;
+                isEnabled = value;
+
+                if (materialAsset != null)
+                {
+                    materialAsset.SetFloat(GrayScaleEnabledID, isEnabled ? 1.0f : 0.0f);
+                    // materialAsset.SetFloat(GrayScaleStrengthID, grayscaleStrength);  // 今のところは、無くて大丈夫
+                }
+            }
+        }
+
         private void Awake()
         {
             if (materialAsset != null)
@@ -35,16 +52,6 @@ namespace General.Shaders
                 materialAsset.SetFloat(GrayScaleStrengthID, grayscaleStrengthInitialValue);
             }
             materialAsset = null;
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.G) && materialAsset != null)
-            {
-                // Gキーでグレースケールのオンオフを切り替える
-                float currentValue = materialAsset.GetFloat(GrayScaleEnabledID);
-                materialAsset.SetFloat(GrayScaleEnabledID, currentValue == 0.0f ? 1.0f : 0.0f);
-            }
         }
     }
 }

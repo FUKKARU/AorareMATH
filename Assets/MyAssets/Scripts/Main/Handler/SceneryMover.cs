@@ -21,6 +21,25 @@ namespace Main.Handler
         private SceneryMoverImpl lampRightImpl;
 #endif
 
+        private bool isPaused = false;
+        internal bool IsPaused
+        {
+            get => isPaused;
+            set
+            {
+                if (isPaused == value) return;
+                isPaused = value;
+
+                if (whiteLineImpl != null) whiteLineImpl.IsPaused = value;
+                if (buildingsRightImpl != null) buildingsRightImpl.IsPaused = value;
+#if false
+                if (buildingsLeftImpl != null) buildingsLeftImpl.IsPaused = value;
+                if (lampLeftImpl != null) lampLeftImpl.IsPaused = value;
+                if (lampRightImpl != null) lampRightImpl.IsPaused = value;
+#endif
+            }
+        }
+
         private void OnEnable()
         {
             InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
@@ -88,6 +107,20 @@ namespace Main.Handler
         private SceneryElement[] elements;
         private bool isFirstUpdate = true;
 
+        private bool isPaused = false;
+        internal bool IsPaused
+        {
+            get => isPaused;
+            set
+            {
+                if (isPaused == value) return;
+                isPaused = value;
+
+                foreach (var e in elements)
+                    e.IsPaused = value;
+            }
+        }
+
         internal SceneryMoverImpl(SceneryElement[] elements) => this.elements = elements;
 
         public void Dispose()
@@ -148,6 +181,8 @@ namespace Main.Handler
         internal float Interval => property.Interval;
         internal float TimeOffset => property.TimeOffset;
 
+        internal bool IsPaused { get; set; } = false;
+
         private bool isActive = false;
         internal bool IsActive
         {
@@ -185,6 +220,7 @@ namespace Main.Handler
         internal void Update()
         {
             if (!IsActive) return;
+            if (IsPaused) return;
 
             reference.Position += CalcVelocity(t) * Time.deltaTime;
             reference.LocalScale = CalcLocalScale(t);
