@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Ct = System.Threading.CancellationToken;
 
-namespace General
+namespace General.Shaders
 {
     internal sealed class SceneTransitionShaderController : MonoBehaviour
     {

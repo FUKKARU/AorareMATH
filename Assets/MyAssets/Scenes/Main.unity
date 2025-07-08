@@ -6707,7 +6707,7 @@ MonoBehaviour:
   continueSprite: {fileID: 21300000, guid: 47f89c3a10c324364b9e3731e477c77f, type: 3}
   skipLeftAmountText: {fileID: 1559983080}
   clickInterval: 0.8
-  skipButtonGrayscaler: {fileID: 244012527}
+  skipButtonGrayscaleController: {fileID: 0}
 --- !u!212 &1695417405 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 2582526814044089010, guid: a3da4d54cd1c1a54799f8ab10eaa3ae5, type: 3}
@@ -9092,6 +9092,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2123090073}
   m_CullTransparentMesh: 1
+--- !u!1001 &297648165469935235
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177131784183650154, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8484207091446090423, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
+      propertyPath: m_Name
+      value: PostProcessGrayscaleController
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8f74906e5aae84e75bb13506cd028d35, type: 3}
 --- !u!1001 &502619072920139841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9177,6 +9234,7 @@ SceneRoots:
   - {fileID: 1617782787}
   - {fileID: 576191330}
   - {fileID: 1233942925}
+  - {fileID: 297648165469935235}
   - {fileID: 1870115866}
   - {fileID: 1128846295}
   - {fileID: 395587042}
