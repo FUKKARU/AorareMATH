@@ -6764,7 +6764,7 @@ MonoBehaviour:
   continueSprite: {fileID: 21300000, guid: 47f89c3a10c324364b9e3731e477c77f, type: 3}
   skipLeftAmountText: {fileID: 1559983080}
   clickInterval: 0.8
-  skipButtonGrayscaleController: {fileID: 0}
+  skipButtonGrayscaleController: {fileID: 244012527}
 --- !u!212 &1695417405 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 2582526814044089010, guid: a3da4d54cd1c1a54799f8ab10eaa3ae5, type: 3}

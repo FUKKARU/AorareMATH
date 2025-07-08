@@ -12,12 +12,6 @@ namespace Main.Handler
         [SerializeField] private PostProcessGrayscaleController grayscaleController;
         [SerializeField] private SceneryMover sceneryMover;
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.G)) UpdateVisual(true);
-            if (Input.GetKeyDown(KeyCode.H)) UpdateVisual(false);
-        }
-
         private void UpdateVisual(bool becamePaused)
         {
             if (grayscaleController != null)
