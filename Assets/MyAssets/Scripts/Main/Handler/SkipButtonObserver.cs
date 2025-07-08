@@ -3,6 +3,7 @@ using General.Extension;
 using Cysharp.Threading.Tasks;
 using Text = TMPro.TextMeshProUGUI;
 using General.Button;
+using General.Shaders;
 
 namespace Main.Handler
 {
@@ -13,7 +14,7 @@ namespace Main.Handler
         [SerializeField] private Sprite continueSprite;
         [SerializeField] private Text skipLeftAmountText;
         [SerializeField, Range(0.01f, 5.0f)] private float clickInterval;
-        [SerializeField] private SpriteRendererGrayscaler skipButtonGrayscaler;
+        [SerializeField] private SpriteRendererGrayscaleController skipButtonGrayscaleController;
 
         private bool onInterval = false;  // クリックのクールタイム中かどうか
         private bool hasExhausted = false;  // 使い切ったかどうか
@@ -72,7 +73,7 @@ namespace Main.Handler
             else if (skipLeftAmount <= 0)
             {
                 hasExhausted = true;
-                if (skipButtonGrayscaler != null) skipButtonGrayscaler.SetEnabled(true);
+                if (skipButtonGrayscaleController != null) skipButtonGrayscaleController.SetEnabled(true);
                 if (skipLeftAmountText != null) skipLeftAmountText.gameObject.SetActive(false);
                 return;
             }

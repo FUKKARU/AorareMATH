@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Main.Handler
+namespace General.Shaders
 {
-    internal sealed class SpriteRendererGrayscaler : MonoBehaviour
+    internal sealed class SpriteRendererGrayscaleController : MonoBehaviour
     {
         [SerializeField] private Shader shader;
         [SerializeField] private SpriteRenderer target;
