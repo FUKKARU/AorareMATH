@@ -455,6 +455,32 @@ namespace Main.Handler
             await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
         }
 
+#if UNITY_IOS || UNITY_ANDROID
+        // アプリがバックグラウンドに行って戻った時、不正を防止するために、その分残り時間を減らす
+        private DateTime bgPauseTime;  // バックグラウンドに行った瞬間の時間を保存
+
+        private void OnApplicationPause(bool pause)
+        {
+            if (pause)
+            {
+                bgPauseTime = DateTime.Now;
+            }
+            else
+            {
+                TimeSpan delta = DateTime.Now - bgPauseTime;
+
+                if (State == GameState.OnGoing && canTimeDecrease)
+                {
+                    time -= (float)delta.TotalSeconds;
+                    if (time <= 0)
+                    {
+                        State = GameState.Over;
+                    }
+                }
+            }
+        }
+#endif
+
         // PCの場合、pointerIdは-1のままでOK(無視される). モバイルの場合、対象にしたい指のIDを指定する.
         internal void CheckPointerHoverSymbolFrame(out bool hovering, out int index, int pointerId = -1)
         {
