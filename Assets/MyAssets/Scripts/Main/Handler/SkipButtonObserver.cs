@@ -13,8 +13,10 @@ namespace Main.Handler
         [SerializeField] private Sprite continueSprite;
         [SerializeField] private Text skipLeftAmountText;
         [SerializeField, Range(0.01f, 5.0f)] private float clickInterval;
+        [SerializeField] private SpriteRendererGrayscaler skipButtonGrayscaler;
 
         private bool onInterval = false;  // クリックのクールタイム中かどうか
+        private bool hasExhausted = false;  // 使い切ったかどうか
 
         private int _skipLeftAmount = 0;
         private int skipLeftAmount
@@ -48,13 +50,14 @@ namespace Main.Handler
         protected sealed override bool CanDown => CanFirePointerEvent();
         protected sealed override bool CanUp => CanFirePointerEvent();
 
-        protected sealed override bool CanPlaySeOnEnter => GameManager.Instance.IsHoverSeAvailable;
+        protected sealed override bool CanPlaySeOnEnter => CanFirePointerEvent() && GameManager.Instance.IsHoverSeAvailable;
 
         private bool CanFirePointerEvent()
         {
             if (GameManager.Instance.State != GameState.OnGoing) return false;
             if (GameManager.Instance.IsHoldingSymbol) return false;
             if (onInterval) return false;
+            if (hasExhausted) return false;
 
             return true;
         }
@@ -68,7 +71,8 @@ namespace Main.Handler
                 --skipLeftAmount;
             else if (skipLeftAmount <= 0)
             {
-                if (Image != null) Image.gameObject.SetActive(false);
+                hasExhausted = true;
+                if (skipButtonGrayscaler != null) skipButtonGrayscaler.SetEnabled(true);
                 if (skipLeftAmountText != null) skipLeftAmountText.gameObject.SetActive(false);
                 return;
             }

@@ -1041,6 +1041,7 @@ GameObject:
   - component: {fileID: 244012524}
   - component: {fileID: 244012523}
   - component: {fileID: 244012526}
+  - component: {fileID: 244012527}
   m_Layer: 0
   m_Name: SkipButton
   m_TagString: Untagged
@@ -1274,6 +1275,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &244012527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244012520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30330901834bc4fa4968bdc805d8a063, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: abb2141b690df4e488d16d5ab568db70, type: 3}
+  target: {fileID: 244012525}
+  grayscaleStrength: 1.5
 --- !u!1 &245710201
 GameObject:
   m_ObjectHideFlags: 0
@@ -6691,6 +6707,7 @@ MonoBehaviour:
   continueSprite: {fileID: 21300000, guid: 47f89c3a10c324364b9e3731e477c77f, type: 3}
   skipLeftAmountText: {fileID: 1559983080}
   clickInterval: 0.8
+  skipButtonGrayscaler: {fileID: 244012527}
 --- !u!212 &1695417405 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 2582526814044089010, guid: a3da4d54cd1c1a54799f8ab10eaa3ae5, type: 3}
@@ -7842,8 +7859,8 @@ Camera:
   m_GameObject: {fileID: 1883157274}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -7861,9 +7878,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.00012499094
     width: 1
-    height: 1
+    height: 0.99975
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
