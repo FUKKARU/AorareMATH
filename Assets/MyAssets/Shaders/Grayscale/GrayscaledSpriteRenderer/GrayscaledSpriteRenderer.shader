@@ -121,16 +121,15 @@ Shader "Custom/GrayscaledSpriteRenderer"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             // 追加
-            #include "Assets/MyAssets/Shaders/GrayscaledSpriteRenderer/RGB2Gray.hlsl"
+            #include "Assets/MyAssets/Shaders/Grayscale/MyLib_RGB2Gray.hlsl"
 
             half4 CombinedShapeLightFragment(Varyings i) : SV_Target
             {
-                const half4 mainTex = i.color * SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                const half4 mainTexColor = i.color * SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
 
                 // 追加
-                half3 grayscaleColor = RGB2Gray(mainTex.rgb, _GrayscaleStrength);
-                half3 finalColor = lerp(mainTex.rgb, grayscaleColor, _GrayscaleEnabled);
-                half4 main = half4(finalColor, mainTex.a);
+                half3 grayColor = MyLib_RGB2Gray(mainTexColor.rgb, _GrayscaleEnabled, _GrayscaleStrength);
+                half4 main = half4(grayColor, mainTexColor.a);
 
                 const half4 mask = SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, i.uv);
                 SurfaceData2D surfaceData;
