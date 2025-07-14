@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e0c6fa6209f084938b97cadcfd598ff9
+guid: 89b12e1c5990149cc8e83f7e1fbf3780
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -929422661803730817
-    second: App_icon_0
+      213: -8539512985286847456
+    second: icon_android_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: App_icon_0
+      name: icon_android_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 4096
-        height: 4096
+        width: 540
+        height: 540
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f789dfc63070a13f0800000000000000
-      internalID: -929422661803730817
+      spriteID: 02454252f2e8d7980800000000000000
+      internalID: -8539512985286847456
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      App_icon_0: -929422661803730817
+      icon_android_0: -8539512985286847456
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
