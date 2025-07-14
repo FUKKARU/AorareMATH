@@ -43,33 +43,32 @@ namespace General
         }
 
         internal static void Raise
-            (this AudioSource source, AudioClip clip, SoundType type, float volume = 1, float pitch = 1)
+            (this AudioSource source, AudioClip clip, SoundType type, float volume = 1, float pitch = 1, float time = 0)
         {
             if (source == null) return;
             if (clip == null) return;
 
+            source.playOnAwake = false;
+
+            source.clip = clip;
             source.volume = volume;
             source.pitch = pitch;
+            source.time = time;
 
             if (type == SoundType.BGM)
             {
-                source.clip = clip;
                 source.outputAudioMixerGroup = SO_Sound.Entity.AMGroupBGM;
-                source.playOnAwake = false;
                 source.loop = true;
-                source.Play();
             }
             else if (type == SoundType.SE)
             {
                 source.outputAudioMixerGroup = SO_Sound.Entity.AMGroupSE;
-                source.playOnAwake = false;
                 source.loop = false;
-                source.PlayOneShot(clip);
             }
             else
-            {
-                throw new System.Exception("Masterは使えません");
-            }
+                return;
+
+            source.Play();
         }
     }
 }

@@ -31,9 +31,9 @@ namespace Main.Handler
                 scoreText.color = Color.yellow;
             }
 
-            await 0.1f.SecondsWait(ct);
+            await 0.1f.SecAwait(ct);
             await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
-            await 0.1f.SecondsWait(ct);
+            await 0.1f.SecAwait(ct);
 
             await DOTween.To(
                 () => 0,
@@ -42,7 +42,7 @@ namespace Main.Handler
                 1.0f
             ).WithCancellation(ct);
 
-            await 0.2f.SecondsWait(ct);
+            await 0.2f.SecAwait(ct);
 
             if (rankingText.text != null)
             {
@@ -61,7 +61,7 @@ namespace Main.Handler
                 }
             }
 
-            await 0.5f.SecondsWait(ct);
+            await 0.5f.SecAwait(ct);
 
             SetButtonsEnabled(true);
 

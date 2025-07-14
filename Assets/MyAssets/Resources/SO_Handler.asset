@@ -17,3 +17,4 @@ MonoBehaviour:
   _skipAmount: 3
   _initTimeLimit: 90
   _timeIncreaseAmount: 10
+  _doFastenDirections: 1
