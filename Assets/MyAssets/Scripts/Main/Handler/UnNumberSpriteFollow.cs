@@ -150,12 +150,16 @@ namespace Main.Handler
 
                 if (Symbol.IsNumber(toSymbol) == false)
                 {
+                    // はめ込める
+
                     GameManager.Instance.PlaySelectSE();
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
                     if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
                     GameManager.Instance.FormulaInstances[toIndex] = instance;
+
+                    GameManager.Instance.HasFormulaChanged |= true;
                 }
                 else
                 {

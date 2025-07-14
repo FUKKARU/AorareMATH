@@ -82,6 +82,10 @@ namespace Main.Handler
         internal bool IsHoldingSymbol { get; set; } = false;
         internal bool IsPreviewNumberSameAsTargetThisFrame { get; private set; } = false;
 
+        // 操作されて、式の状態が変化したかどうかを監視する (Followスクリプト、スキップボタンから書き換えて合図を送る)
+        // true なら、PreviewTextを更新する必要がある
+        internal bool HasFormulaChanged { get; set; } = false;
+
         // IsHoldingSymbolがfalseになってから、ホバー音が再生不可になっている時間
         private static readonly float hoverSeInterval = 0.1f;
         // IsHoldingSymbolがfalseになってから少しの間だけ、ホバー音を再生不可にするためのフラグ
@@ -104,7 +108,7 @@ namespace Main.Handler
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
             SetTargetText(string.Empty);
-            SetPreviewText(text: string.Empty);
+            SetPreviewText(text: "= ???", color: Color.red);  // 操作されていない最初の時は、プレビューを見せないようにする (混乱させないため)
 
             time = SO_Handler.Entity.InitTimeLimt;
 
@@ -240,6 +244,7 @@ namespace Main.Handler
         private void ShowPreview()
         {
             if (isPreviewTextOverriding) return;
+            if (!HasFormulaChanged) return;
 
             IsPreviewNumberSameAsTargetThisFrame = false;
 
