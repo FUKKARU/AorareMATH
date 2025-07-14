@@ -1,5 +1,9 @@
-using DG.Tweening;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using SO;
+using General.Extension;
+using Ct = System.Threading.CancellationToken;
 
 namespace Title.Handler
 {
@@ -15,20 +19,24 @@ namespace Title.Handler
 
         [SerializeField] private AnimationCurve _customEasing;
 
-
-        internal void Play()
+        internal async UniTaskVoid Play(Ct ct)
         {
-            try
-            {
-                DOVirtual.DelayedCall(2.6f, () => billTf.DOLocalMoveY(49.2403f, duration: 0.6f).SetEase(_customEasing), false);
-                DOVirtual.DelayedCall(2.6f, () => billTf_2.DOLocalMoveY(50.0f, duration: 0.6f).SetEase(_customEasing), false);
-                DOVirtual.DelayedCall(2.6f, () => billTf_3.DOLocalMoveY(49.2403f, duration: 0.6f).SetEase(_customEasing), false);
-                DOVirtual.DelayedCall(2.6f, () => billTf_4.DOLocalMoveY(49.8097f, duration: 0.6f).SetEase(_customEasing), false);
-                DOVirtual.DelayedCall(2.6f, () => billTf_5.DOLocalMoveY(49.8097f, duration: 0.6f).SetEase(_customEasing), false);
+            float billMoveDelay = SO_Handler.Entity.DoFastenDirections ? 0.0f : 2.6f;
+            float billMoveDuration = SO_Handler.Entity.DoFastenDirections ? 0.0f : 0.6f;
+            float billRotateDelay = SO_Handler.Entity.DoFastenDirections ? 0.0f : 3.4f;
 
-                DOVirtual.DelayedCall(3.4f, () => centerTf.DOLocalRotate(new Vector3(0, 0, -60.0f), duration: 7.5f).SetLoops(-1, LoopType.Incremental).SetEase(_customEasing), false);
-            }
-            catch { }
+            await billMoveDelay.SecAwait(ct);
+            await UniTask.WhenAll(
+                billTf.DOLocalMoveY(49.2403f, duration: billMoveDuration).SetEase(_customEasing).WithCancellation(ct),
+                billTf_2.DOLocalMoveY(50.0f, duration: billMoveDuration).SetEase(_customEasing).WithCancellation(ct),
+                billTf_3.DOLocalMoveY(49.8097f, duration: billMoveDuration).SetEase(_customEasing).WithCancellation(ct),
+                billTf_4.DOLocalMoveY(49.8097f, duration: billMoveDuration).SetEase(_customEasing).WithCancellation(ct),
+                billTf_5.DOLocalMoveY(49.8097f, duration: billMoveDuration).SetEase(_customEasing).WithCancellation(ct)
+            );
+            await billRotateDelay.SecAwait(ct);
+            await centerTf.DOLocalRotate(new Vector3(0, 0, -60.0f), duration: 7.5f)
+                .SetLoops(-1, LoopType.Incremental).SetEase(_customEasing)
+                .WithCancellation(ct);
         }
     }
 }

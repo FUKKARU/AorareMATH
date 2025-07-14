@@ -84,7 +84,7 @@ namespace Main.Handler
                 Image.sprite = canDecreaseSkipAmount ? skipSprite : continueSprite;
 
             onInterval = true;
-            clickInterval.SecondsWaitAndDo(() => onInterval = false, destroyCancellationToken).Forget();
+            clickInterval.SecAwaitThenDo(() => onInterval = false, destroyCancellationToken).Forget();
         }
     }
 }

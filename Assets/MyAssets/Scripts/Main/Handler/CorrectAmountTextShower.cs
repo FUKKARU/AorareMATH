@@ -1,7 +1,6 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;
 
@@ -34,7 +33,7 @@ namespace Main.Handler
         {
             if (hasAppeared) return;
             if (text == null) return;
-            await text.DOFade(1, 0.5f).ConvertToUniTask(text, ct);
+            await text.DOFade(1, 0.5f).WithCancellation(ct);
             hasAppeared = true;
         }
     }

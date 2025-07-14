@@ -378,7 +378,7 @@ namespace Main.Handler
                     if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
                 }
 
-                await 1.0f.SecondsWait(ct);
+                await 1.0f.SecAwait(ct);
             }
 
             // フラグOFF

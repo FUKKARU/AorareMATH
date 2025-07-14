@@ -47,13 +47,13 @@ namespace Main.Handler
 
         internal async UniTask Play(Ct ct)
         {
-            await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).ConvertToUniTask(beginDescriptionTransform, ct);
-            await 1.0f.SecondsWait(ct);
+            await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).WithCancellation(ct);
+            await 1.0f.SecAwait(ct);
             await UniTask.WaitUntil(() => IsTouchedThisFrame(), cancellationToken: ct);
-            await 0.1f.SecondsWait(ct);
+            await 0.1f.SecAwait(ct);
             beginDescriptionTransform.gameObject.SetActive(false);
 
-            await counterTransform.DOLocalMoveY(1.4f, 0.3f).ConvertToUniTask(counterTransform, ct);
+            await counterTransform.DOLocalMoveY(1.4f, 0.3f).WithCancellation(ct);
             if (audioSource != null) audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountDuration, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
             await WaitForOneCount(ct);
@@ -65,7 +65,7 @@ namespace Main.Handler
             spriteRenderers.Yellow.sprite = spriteRenderers.Green.sprite;
             await WaitForOneCount(ct);
 
-            await counterTransform.DOLocalMoveY(8.75f, 0.3f).ConvertToUniTask(counterTransform, ct);
+            await counterTransform.DOLocalMoveY(8.75f, 0.3f).WithCancellation(ct);
             onBeginBlockingImage.enabled = false;
         }
 

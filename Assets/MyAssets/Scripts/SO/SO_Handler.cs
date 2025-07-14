@@ -22,6 +22,9 @@ namespace SO
         [SerializeField, Header("ピッタリ時の時間増加量")] private float _timeIncreaseAmount;
         internal float TimeIncreaseAmount => _timeIncreaseAmount;
 
+        [SerializeField, Header("演出を高速化するか (テスト機能)")] private bool _doFastenDirections;
+        internal bool DoFastenDirections => _doFastenDirections;
+
         internal static readonly float DiffLimit = 1e-8f;
     }
 }
