@@ -68,6 +68,8 @@ namespace Main.Handler
             GameManager.Instance.PlaySelectSE();
             IsClickedThisFrame = true;
 
+            GameManager.Instance.HasFormulaChanged |= true;
+
             if (canDecreaseSkipAmount)
                 --skipLeftAmount;
             else if (skipLeftAmount <= 0)

@@ -123,9 +123,13 @@ namespace Main.Handler
 
                     transform.position = toPos; InitPosition = toPos;
                     otherInstance.transform.position = fromPos; otherInstance.InitPosition = fromPos;
+
+                    GameManager.Instance.HasFormulaChanged |= true;
                 }
                 else
                 {
+                    // はめ込める
+
                     GameManager.Instance.Formula.Data[fromIndex] = Symbol.NONE;
                     GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
 
@@ -133,6 +137,8 @@ namespace Main.Handler
                     GameManager.Instance.FormulaInstances[toIndex] = this;
 
                     transform.position = toPos; InitPosition = toPos;
+
+                    GameManager.Instance.HasFormulaChanged |= true;
                 }
             }
             else
