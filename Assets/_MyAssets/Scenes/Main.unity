@@ -484,8 +484,8 @@ MonoBehaviour:
   attackFailedSEAudioSource: {fileID: 260918561}
   justAttackedSEAudioSource: {fileID: 1681386768}
   resultSEAudioSource: {fileID: 1110916619}
-  mouseHoverSymbolFrameLimitWidth: 0.6
-  mouseHoverSymbolFrameLimitHeight: 1.5
+  mouseHoverSymbolFrameLimitWidth: 0.7
+  mouseHoverSymbolFrameLimitHeight: 1.8
 --- !u!1 &81952754
 GameObject:
   m_ObjectHideFlags: 0
