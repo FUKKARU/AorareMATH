@@ -279,7 +279,7 @@ MonoBehaviour:
     Red: {fileID: 21300000, guid: 6cc16da5ebb56414b9e6708caae86856, type: 3}
   audioSource: {fileID: 568594374}
   oneCountDuration: 0.6
-  oneCountDurationOnFasten: 0.3
+  oneCountDurationOnFasten: 0.2
 --- !u!1 &36994648
 GameObject:
   m_ObjectHideFlags: 0
