@@ -970,6 +970,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: 4380221ea3b414eeaa2550d3e1a79ea9, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &225457590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2941,6 +2942,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: e6e0841c0c739411bbee9dd8d3d17a44, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &631247521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5302,6 +5304,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: 9e0475751132b4a57b087028c59fcc34, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &1282482856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6368,6 +6371,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: cb0809fc57a71472c831b18631facd62, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &1633680611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7190,6 +7194,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: 235944c3323b44906a00900fcd36e2c1, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &1776106835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7576,6 +7581,7 @@ MonoBehaviour:
   hoverSprite: {fileID: 21300000, guid: e8facee79200d478184f91ea7f5bbc12, type: 3}
   z: 19
   thisZ: 18
+  hoverScaleWhenMobile: 2
 --- !u!114 &1829669095
 MonoBehaviour:
   m_ObjectHideFlags: 0
