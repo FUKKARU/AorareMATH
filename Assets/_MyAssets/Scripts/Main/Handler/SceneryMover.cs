@@ -1,10 +1,11 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
-using System.Linq;
-using System.Threading;
-using UnityEngine;
-using SO;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Cysharp.Threading.Tasks;
+using SO;
+using Cts = System.Threading.CancellationTokenSource;
+using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
@@ -13,13 +14,7 @@ namespace Main.Handler
         [SerializeField] private SpriteRenderer elementPrefab;
         [SerializeField] private Transform parent;
 
-        private SceneryMoverImpl whiteLineImpl;
-        private SceneryMoverImpl buildingsRightImpl;
-#if false
-        private SceneryMoverImpl buildingsLeftImpl;
-        private SceneryMoverImpl lampLeftImpl;
-        private SceneryMoverImpl lampRightImpl;
-#endif
+        private List<SceneryMoverImpl> impls = new(5);
 
         private bool isPaused = false;
         internal bool IsPaused
@@ -30,29 +25,26 @@ namespace Main.Handler
                 if (isPaused == value) return;
                 isPaused = value;
 
-                if (whiteLineImpl != null) whiteLineImpl.IsPaused = value;
-                if (buildingsRightImpl != null) buildingsRightImpl.IsPaused = value;
-#if false
-                if (buildingsLeftImpl != null) buildingsLeftImpl.IsPaused = value;
-                if (lampLeftImpl != null) lampLeftImpl.IsPaused = value;
-                if (lampRightImpl != null) lampRightImpl.IsPaused = value;
-#endif
+                foreach (var impl in impls)
+                {
+                    if (impl == null) continue;
+                    impl.IsPaused = value;
+                }
             }
         }
 
         private void OnEnable()
         {
-            InstantiateThis(ref whiteLineImpl, SO_Scenery.Entity.WhitelineProperty);
-            InstantiateThis(ref buildingsRightImpl, SO_Scenery.Entity.BuildingsRightProperty);
+            InstantiateThis(SO_Scenery.Entity.WhitelineProperty);
+            InstantiateThis(SO_Scenery.Entity.BuildingsLeftProperty);
+            InstantiateThis(SO_Scenery.Entity.BuildingsRightProperty);
 #if false
-            InstantiateThis(ref buildingsLeftImpl, SO_Scenery.Entity.BuildingsLeftProperty);
-            InstantiateThis(ref lampLeftImpl, SO_Scenery.Entity.LampLeftProperty);
-            InstantiateThis(ref lampRightImpl, SO_Scenery.Entity.LampRightProperty);
+            InstantiateThis(SO_Scenery.Entity.LampLeftProperty);
+            InstantiateThis(SO_Scenery.Entity.LampRightProperty);
 #endif
 
-            void InstantiateThis(ref SceneryMoverImpl impl, SceneryElementProperty property)
+            void InstantiateThis(SceneryElementProperty property)
             {
-                if (impl != null) return;
                 if (property == null) return;
 
                 LinkedList<SceneryElement> elements = new();
@@ -66,44 +58,28 @@ namespace Main.Handler
                     elements.AddLast(element);
                 }
 
-                impl = new(elements.ToArray());
+                impls?.Add(new(elements.ToArray()));
             }
         }
 
         private void OnDisable()
         {
-            whiteLineImpl?.Dispose();
-            buildingsRightImpl?.Dispose();
-#if false
-            buildingsLeftImpl?.Dispose();
-            lampLeftImpl?.Dispose();
-            lampRightImpl?.Dispose();
-#endif
-
-            whiteLineImpl = null;
-            buildingsRightImpl = null;
-#if false
-            buildingsLeftImpl = null;
-            lampLeftImpl = null;
-            lampRightImpl = null;
-#endif
+            foreach (var impl in impls)
+                impl?.Dispose();
+            impls?.Clear();
+            impls = null;
         }
 
         private void Update()
         {
-            whiteLineImpl?.Update();
-            buildingsRightImpl?.Update();
-#if false
-            buildingsLeftImpl?.Update();
-            lampLeftImpl?.Update();
-            lampRightImpl?.Update();
-#endif
+            foreach (var impl in impls)
+                impl?.Update();
         }
     }
 
     internal sealed class SceneryMoverImpl : IDisposable
     {
-        private CancellationTokenSource cts = new();
+        private Cts cts = new();
         private SceneryElement[] elements;
         private bool isFirstUpdate = true;
 
@@ -145,7 +121,7 @@ namespace Main.Handler
             foreach (var e in elements) e.Update();
         }
 
-        private async UniTask CreateElements(SceneryElement[] elements, CancellationToken ct)
+        private async UniTask CreateElements(SceneryElement[] elements, Ct ct)
         {
             if (elements == null) return;
 
