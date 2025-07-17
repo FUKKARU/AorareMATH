@@ -11,8 +11,10 @@ namespace Main.Handler
     internal sealed class TimeShower : MonoBehaviour
     {
         [SerializeField] private Volume volume;
-        [SerializeField] private Image timerImage;
-        [SerializeField] private RectTransform needleTransform;
+        // 真ん中に向かって縮んでいくため、Image, Needle をそれぞれ2つ併用している
+        [SerializeField] private Image[] timerImages;
+        [SerializeField] private RectTransform needleLeftTransform;
+        [SerializeField] private RectTransform needleRightTransform;
         [SerializeField] private Color normalColor;
         [SerializeField] private Color dangerColor;
         [SerializeField, Range(0.01f, 0.99f)] private float timerRedThresholdRatio;
@@ -54,32 +56,24 @@ namespace Main.Handler
         {
             float fillAmount = remainTime.Remap(SO_Handler.Entity.InitTimeLimt, 0, 1, 0);
 
-            if (timerImage != null)
+            if (timerImages != null)
             {
-                // 手動で補正する
-                // 0.90-0.60 は少し増やし、
-                // 0.40-0.10 は少し減らす
-                // 少しずれているが、大体こんな感じの数値で良いと思う
-                float timerFillAmount = fillAmount;
-                if (timerFillAmount is (> 0.60f and < 0.90f))
-                    timerFillAmount += Mathf.Abs(timerFillAmount - 0.75f).Remap(0.0f, 0.15f, 0.01f, 0.0f);
-                else if (timerFillAmount is (> 0.10f and < 0.40f))
-                    timerFillAmount -= Mathf.Abs(timerFillAmount - 0.25f).Remap(0.0f, 0.15f, 0.016f, 0.0f);
+                foreach (Image timerImage in timerImages)
+                {
+                    if (timerImage == null) continue;
 
-                timerImage.fillAmount = timerFillAmount.Remap(0.0f, 1.0f, 0.5f, 1.0f);
-                timerImage.color = fillAmount < timerRedThresholdRatio ? dangerColor : normalColor;
+                    timerImage.fillAmount = fillAmount;
+                    timerImage.color = fillAmount < timerRedThresholdRatio ? dangerColor : normalColor;
+                }
             }
 
-            if (needleTransform != null)
+            if (needleLeftTransform != null && needleRightTransform != null)
             {
-                Vector3 rot = needleTransform.localEulerAngles;
-                rot.z = fillAmount.Remap(0.0f, 1.0f, 90.0f, -90.0f);
-                needleTransform.localEulerAngles = rot;
+                float leftX = fillAmount.Remap(0.0f, 1.0f, 0.0f, -900.0f);
+                float rightX = fillAmount.Remap(0.0f, 1.0f, 0.0f, 900.0f);
 
-                float th = fillAmount.Remap(0.0f, 1.0f, Mathf.PI, 0.0f);
-                float x = 257.0f * Mathf.Cos(th) + 453.5f;
-                float y = 140.0f * Mathf.Sin(th) - 505.0f;
-                needleTransform.localPosition = new Vector3(x, y, 0.0f);
+                needleLeftTransform.SetLocalPosX(leftX);
+                needleRightTransform.SetLocalPosX(rightX);
             }
 
             isVignetteActiveThisFrame =

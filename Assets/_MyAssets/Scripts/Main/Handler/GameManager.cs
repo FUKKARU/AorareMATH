@@ -31,14 +31,13 @@ namespace Main.Handler
         [SerializeField] private Text previewText;
         [SerializeField] private Text targetText;
         [SerializeField] private Image everythingBlockingImage;
-        [SerializeField] private Image everythingButRightSideBlockingImage;  // スキップボタンとサウンドスライダーは、ブロックされていない
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
         [SerializeField] private UnNumberSpritesAnimator unNumberSpritesAnimator;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
-        [SerializeField] private SkipButtonObserver skipButtonObserver;
+        [SerializeField] private SkipButtonManager skipButtonManager;
         [SerializeField] private UntilResultCountDown untilResultCountDown;
         [SerializeField] private ParticleSystem justEffectLeft;
         [SerializeField] private ParticleSystem justEffectRight;
@@ -287,8 +286,8 @@ namespace Main.Handler
 
         private void CheckSkip()
         {
-            if (skipButtonObserver == null || !skipButtonObserver.IsClickedThisFrame) return;
-            Skip(destroyCancellationToken).Forget();
+            if (skipButtonManager == null || !skipButtonManager.IsClickedThisFrame) return;
+            Skip();
         }
 
         // 式を計算し、ピッタリならアタックする
@@ -302,35 +301,9 @@ namespace Main.Handler
         }
 
         // 問題数は進まない仕様
-        // everythingButRightSideBlockingImage : サウンドスライダーはクリック可能
-        private async UniTaskVoid Skip(Ct ct)
+        private void Skip()
         {
             if (isDoingAttack) return;
-
-            // フラグON
-            canTimeDecrease = false;
-            isDoingAttack = true;
-            if (everythingButRightSideBlockingImage != null) everythingButRightSideBlockingImage.enabled = true;
-
-            // この中・及び BlockingImage のみ、Attack 処理と異なる
-            {
-                // フラグON
-                isPreviewTextOverriding = true;
-
-                // 問題の答えを見せる
-                SetAnswerToPreviewText(answer);
-                await UniTask.NextFrame(ct);
-                await UniTask.WaitUntil(
-                    () => skipButtonObserver.IsClickedThisFrame, timing: PlayerLoopTiming.PreLateUpdate, cancellationToken: ct);
-
-                // フラグOFF
-                isPreviewTextOverriding = false;
-            }
-
-            // フラグOFF
-            if (everythingButRightSideBlockingImage != null) everythingButRightSideBlockingImage.enabled = false;
-            isDoingAttack = false;
-            canTimeDecrease = true;
 
             // 新しく問題を作成
             if (State != GameState.OnGoing) return;

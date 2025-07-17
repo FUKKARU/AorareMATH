@@ -1,23 +1,17 @@
 using UnityEngine;
-using General.Extension;
 using Cysharp.Threading.Tasks;
-using Text = TMPro.TextMeshProUGUI;
 using General.Button;
-using General.Shaders;
+using General.Extension;
+using Text = TMPro.TextMeshProUGUI;
 
 namespace Main.Handler
 {
-
-    internal sealed class SkipButtonObserver : ASimpleButtonManager
+    internal sealed class SkipButtonManager : ATextButtonManager
     {
-        [SerializeField] private Sprite skipSprite;
-        [SerializeField] private Sprite continueSprite;
         [SerializeField] private Text skipLeftAmountText;
         [SerializeField, Range(0.01f, 5.0f)] private float clickInterval;
-        [SerializeField] private SpriteRendererGrayscaleController skipButtonGrayscaleController;
 
         private bool onInterval = false;  // クリックのクールタイム中かどうか
-        private bool hasExhausted = false;  // 使い切ったかどうか
 
         private int _skipLeftAmount = 0;
         private int skipLeftAmount
@@ -31,10 +25,7 @@ namespace Main.Handler
             }
         }
 
-        // 「問題をとばす」「次にすすむ」を交互に出すので、両方でこのフラグを共通で使用できる
         internal bool IsClickedThisFrame { get; private set; } = false;
-        // trueなら「問題をとばす」状態、falseなら「次にすすむ」状態
-        private bool canDecreaseSkipAmount = true;
 
         private void Start()
         {
@@ -57,8 +48,6 @@ namespace Main.Handler
         {
             if (GameManager.Instance.State != GameState.OnGoing) return false;
             if (GameManager.Instance.IsHoldingSymbol) return false;
-            if (onInterval) return false;
-            if (hasExhausted) return false;
 
             return true;
         }
@@ -66,22 +55,18 @@ namespace Main.Handler
         protected sealed override void OnClickSucceeded()
         {
             GameManager.Instance.PlaySelectSE();
-            IsClickedThisFrame = true;
 
+            if (onInterval) return;
+
+            IsClickedThisFrame = true;
             GameManager.Instance.HasFormulaChanged |= true;
 
-            if (canDecreaseSkipAmount)
-                --skipLeftAmount;
-            else if (skipLeftAmount <= 0)
+            if ((--skipLeftAmount) <= 0)
             {
-                hasExhausted = true;
-                if (skipButtonGrayscaleController != null) skipButtonGrayscaleController.SetEnabled(true);
-                if (skipLeftAmountText != null) skipLeftAmountText.gameObject.SetActive(false);
+                IsClickedThisFrame = false; // フラグをリセット
+                this.gameObject.SetActive(false); // このスクリプトが全てのルートに付いている想定
                 return;
             }
-            canDecreaseSkipAmount = !canDecreaseSkipAmount;
-            if (Image != null)
-                Image.sprite = canDecreaseSkipAmount ? skipSprite : continueSprite;
 
             onInterval = true;
             clickInterval.SecAwaitThenDo(() => onInterval = false, destroyCancellationToken).Forget();
