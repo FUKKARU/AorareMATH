@@ -2,12 +2,14 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Ct = System.Threading.CancellationToken;
+using SO;
 
 namespace General.Shaders
 {
     internal sealed class SceneTransitionShaderController : MonoBehaviour
     {
-        [SerializeField, Range(0.01f, 10.0f)] private float duration = 1.5f;
+        [SerializeField, Range(0.01f, 10.0f)] private float duration;
+        [SerializeField, Range(0.01f, 10.0f)] private float durationOnFasten;
 
         private Material copiedMaterial = null;
         private bool onTransition = false;
@@ -41,12 +43,14 @@ namespace General.Shaders
             float beginValue = beforeSceneChange ? 0 : 1;
             float endValue = beforeSceneChange ? 1 : 0;
 
+            float dur = SO_Handler.Entity.DoFastenDirections ? durationOnFasten : duration;
+
             await DOTween.To
             (
                 () => beginValue,
                 x => copiedMaterial.SetFloat("_FillAmount", x),
                 endValue,
-                duration
+                dur
             ).WithCancellation(ct);
 
             if (!beforeSceneChange)
