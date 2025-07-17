@@ -1341,6 +1341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 014e67304adcb5344b537f74b13dbd89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slidersRoot: {fileID: 1433193916584230857}
   bgmSlider: {fileID: 5989410580956231100}
   seSlider: {fileID: 8928330542029357883}
   bgmText: {fileID: 6961022633943070675}
