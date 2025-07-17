@@ -121,7 +121,7 @@ Shader "Custom/GrayscaledSpriteRenderer"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl"
 
             // 追加
-            #include "Assets/MyAssets/Shaders/Grayscale/MyLib_RGB2Gray.hlsl"
+            #include "Assets/_MyAssets/Shaders/Grayscale/MyLib_RGB2Gray.hlsl"
 
             half4 CombinedShapeLightFragment(Varyings i) : SV_Target
             {
