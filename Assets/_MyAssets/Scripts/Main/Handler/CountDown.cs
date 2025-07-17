@@ -35,6 +35,7 @@ namespace Main.Handler
         [SerializeField] private Sprites sprites;
         [SerializeField] private AudioSource audioSource;
         [SerializeField, Range(0.1f, 3.0f)] private float oneCountDuration;
+        [SerializeField, Range(0.1f, 3.0f)] private float oneCountDurationOnFasten;
 
         private void OnEnable()
         {
@@ -47,31 +48,39 @@ namespace Main.Handler
 
         internal async UniTask Play(Ct ct)
         {
-            await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).WithCancellation(ct);
-            await 1.0f.SecAwait(ct);
-            await UniTask.WaitUntil(() => IsTouchedThisFrame(), cancellationToken: ct);
-            await 0.1f.SecAwait(ct);
-            beginDescriptionTransform.gameObject.SetActive(false);
+            if (SO_Handler.Entity.DoFastenDirections == false)
+            {
+                await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).WithCancellation(ct);
+                await 1.0f.SecAwait(ct);
+                await UniTask.WaitUntil(() => IsTouchedThisFrame(), cancellationToken: ct);
+                await 0.1f.SecAwait(ct);
+                beginDescriptionTransform.gameObject.SetActive(false);
+            }
+            else
+            {
+                beginDescriptionTransform.SetLocalPosY(0); // 一応この処理も揃えておく
+                beginDescriptionTransform.gameObject.SetActive(false);
+            }
 
-            await counterTransform.DOLocalMoveY(1.4f, 0.3f).WithCancellation(ct);
-            if (audioSource != null) audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountDuration, volume: 0.5f);
+            float counterDuration = SO_Handler.Entity.DoFastenDirections ? 0.15f : 0.3f;
+            float oneCountSec = SO_Handler.Entity.DoFastenDirections ? oneCountDurationOnFasten : oneCountDuration;
+
+            await counterTransform.DOLocalMoveY(1.4f, counterDuration).WithCancellation(ct);
+            // 演出が速いと音が高くなり過ぎたので、むしろ鳴らさないようにした
+            if (SO_Handler.Entity.DoFastenDirections == false && audioSource != null)
+                audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountSec, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
-            await WaitForOneCount(ct);
+            await oneCountSec.SecAwait(ct);
             spriteRenderers.Yellow.enabled = true;
-            await WaitForOneCount(ct);
+            await oneCountSec.SecAwait(ct);
             spriteRenderers.Green.enabled = true;
-            await WaitForOneCount(ct);
+            await oneCountSec.SecAwait(ct);
             spriteRenderers.Red.sprite = spriteRenderers.Green.sprite;
             spriteRenderers.Yellow.sprite = spriteRenderers.Green.sprite;
-            await WaitForOneCount(ct);
+            await oneCountSec.SecAwait(ct);
 
-            await counterTransform.DOLocalMoveY(8.75f, 0.3f).WithCancellation(ct);
+            await counterTransform.DOLocalMoveY(8.75f, counterDuration).WithCancellation(ct);
             onBeginBlockingImage.enabled = false;
-        }
-
-        private async UniTask WaitForOneCount(Ct ct)
-        {
-            await UniTask.WaitForSeconds(oneCountDuration, cancellationToken: ct);
         }
 
         // ちょうどこのフレームでタッチされたかどうか
