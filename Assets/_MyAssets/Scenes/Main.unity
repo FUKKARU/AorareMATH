@@ -3967,14 +3967,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433193916584230857, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3874900200250890253, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
@@ -4023,23 +4027,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6703102664355909009, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6703102664355909009, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6705634755807412986, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -4047,11 +4051,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7172348106100753188, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7172348106100753188, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7334471133325101822, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_LocalScale.x

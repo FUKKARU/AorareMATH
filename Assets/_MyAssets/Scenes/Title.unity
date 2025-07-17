@@ -2684,7 +2684,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2701,9 +2701,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
+    x: 0.000041544437
     y: 0
-    width: 1
+    width: 0.9999169
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -7759,14 +7759,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 431435682682370438, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433193916584230857, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1702365244155524493, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
@@ -7783,23 +7787,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6148850516565051745, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6703102664355909009, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6703102664355909009, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6705634755807412986, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -7811,11 +7815,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7172348106100753188, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7172348106100753188, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7395007376879795475, guid: 2dda50f2115ee9a4a9e3895062be66d2, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
