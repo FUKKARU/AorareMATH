@@ -2,6 +2,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using General.Extension;
 using General.Shaders;
+using SO;
 using Ct = System.Threading.CancellationToken;
 
 namespace General.Button
@@ -35,10 +36,13 @@ namespace General.Button
         {
             if (bgmPlayer != null) bgmPlayer.Fade();
 
-            await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
+            float beforeDirectionDuration = SO_Handler.Entity.DoFastenDirections ? 0.1f : 0.2f;
+            float afterDirectionDuration = SO_Handler.Entity.DoFastenDirections ? 1.0f : 1.5f;
+
+            await beforeDirectionDuration.SecAwait(ct);
             if (sceneTransitionShaderController != null)
                 await sceneTransitionShaderController.Play(true, ct);
-            await UniTask.WaitForSeconds(1.5f, cancellationToken: ct);
+            await afterDirectionDuration.SecAwait(ct);
 
             toSceneName.LoadAsync().Forget();
         }
