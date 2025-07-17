@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;
 
@@ -11,6 +12,12 @@ namespace Main.Handler
         [SerializeField] private Text text;
 
         private bool hasAppeared = false;
+
+        private void Start()
+        {
+            if (text != null)
+                text.SetAlpha(0);
+        }
 
         private void Update()
         {
