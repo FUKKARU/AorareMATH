@@ -76,7 +76,7 @@ namespace Main.Data
         // 1始まり、ランキング外だったら0を返す
         public int GetRank()
         {
-            for (int i = 0; i < gameData.CorrectAmountRanking.Length; i++)
+            for (int i = 0; i < gameData.CorrectAmountRanking.Length - 1; i++)
             {
                 if (gameData.CorrectAmountRanking[i] == _correctAmount)
                 {
