@@ -34,7 +34,7 @@ namespace Main.Handler
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private CountDown countDown;
-        [SerializeField] private UnNumberSpritesAnimator unNumberSpritesAnimator;
+        [SerializeField] private UnNumberSpritesAnimator[] unNumberSpritesAnimators;
         [SerializeField] private TimeShower timeShower;
         [SerializeField] private CorrectAmountTextShower correctAmountTextShower;
         [SerializeField] private SkipButtonManager skipButtonManager;
@@ -412,7 +412,14 @@ namespace Main.Handler
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
             CreateQuestion();
-            if (unNumberSpritesAnimator != null) unNumberSpritesAnimator.BeginAnimation(ct).Forget();
+            if (unNumberSpritesAnimators != null)
+            {
+                foreach (var animator in unNumberSpritesAnimators)
+                {
+                    if (animator == null) continue;
+                    animator.BeginAnimation(ct).Forget();
+                }
+            }
             bgmPlayer.Play();
             State = GameState.OnGoing;
         }

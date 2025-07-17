@@ -7,7 +7,7 @@ namespace Main.Handler
 {
     internal sealed class UnNumberSpritesAnimator : MonoBehaviour
     {
-        [SerializeField, Tooltip("左のものから順にアタッチすること")] private UnNumberSpriteFollow[] sprites;
+        [SerializeField, Tooltip("先のものから順にアタッチすること")] private UnNumberSpriteFollow[] sprites;
 
         private Vector3[] initPositions = null; // local
         private Vector3[] initScales = null; // local
