@@ -5,6 +5,7 @@ using General.Button;
 using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;
+using SO;
 
 namespace Main.Handler
 {
@@ -31,18 +32,26 @@ namespace Main.Handler
                 scoreText.color = Color.yellow;
             }
 
-            await 0.1f.SecAwait(ct);
-            await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
-            await 0.1f.SecAwait(ct);
+            if (SO_Handler.Entity.DoFastenDirections == false)
+            {
+                await 0.1f.SecAwait(ct);
+                await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
+                await 0.1f.SecAwait(ct);
 
-            await DOTween.To(
-                () => 0,
-                x => scoreText.text = x.ToString(),
-                correctAmount,
-                1.0f
-            ).WithCancellation(ct);
+                await DOTween.To(
+                    () => 0,
+                    x => scoreText.text = x.ToString(),
+                    correctAmount,
+                    1.0f
+                ).WithCancellation(ct);
 
-            await 0.2f.SecAwait(ct);
+                await 0.2f.SecAwait(ct);
+            }
+            else
+            {
+                await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
+                scoreText.text = correctAmount.ToString();
+            }
 
             if (rankingText.text != null)
             {
@@ -61,7 +70,8 @@ namespace Main.Handler
                 }
             }
 
-            await 0.5f.SecAwait(ct);
+            if (SO_Handler.Entity.DoFastenDirections == false)
+                await 0.5f.SecAwait(ct);
 
             SetButtonsEnabled(true);
 
