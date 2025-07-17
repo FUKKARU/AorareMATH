@@ -31,7 +31,7 @@ namespace Main.Handler
                 // 初期位置とスケールを保存し、アニメーションの準備をする
                 initPositions[i] = sprite.transform.localPosition;
                 initScales[i] = sprite.transform.localScale;
-                sprite.transform.localPosition += new Vector3(0, 1, 0);
+                sprite.transform.localPosition += new Vector3(0, 3, 0);
                 sprite.transform.localScale = Vector3.zero;
             }
         }
