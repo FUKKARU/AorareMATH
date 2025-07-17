@@ -25,6 +25,8 @@ namespace Main.Handler
         internal float Z => z;
         [SerializeField, Header("コピーインスタンスのz座標")] private float thisZ;
 
+        [SerializeField, Range(1.0f, 5.0f), Header("モバイル時、ホバー中に何倍に拡大するか")] private float hoverScaleWhenMobile;
+
         // キャッシュ用
         private new Camera camera = null;
 
@@ -122,7 +124,14 @@ namespace Main.Handler
             GameManager.Instance.PlaySelectSE();
             if (thisSpriteRenderer != null) thisSpriteRenderer.sprite = normalSprite;
             thisInstance = Instantiate(thisSpriteRenderer, camera.PointerPositionToWorldPosition(thisZ, trackingPointerId), Quaternion.identity, transform);
+
+            // モバイルでは、指で隠れてしまうので、拡大する
+            // SpriteFollow 系統クラスでの共通処理
+#if UNITY_IOS || UNITY_ANDROID
+            thisInstance.transform.localScale = new(hoverScaleWhenMobile, hoverScaleWhenMobile, 1.0f);
+#else
             thisInstance.transform.localScale = Vector3.one;
+#endif
         }
 
         private void OnPointerUp(PointerEventData data)

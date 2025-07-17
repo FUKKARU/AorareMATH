@@ -20,6 +20,8 @@ namespace Main.Handler
         internal float Z => _z;
         [SerializeField, Header("持ち上げた際のインスタンスのz座標")] private float followZ;
 
+        [SerializeField, Range(1.0f, 5.0f), Header("モバイル時、ホバー中に何倍に拡大するか")] private float hoverScaleWhenMobile;
+
         // キャッシュ用
         private new Camera camera = null;
 
@@ -33,6 +35,13 @@ namespace Main.Handler
             {
                 _isFollowingMouse = value;
                 GameManager.Instance.IsHoldingSymbol = value; // 掴んでいるものは1つだけのはずなので
+
+                // モバイルでは、指で隠れてしまうので、拡大する
+                // SpriteFollow 系統クラスでの共通処理
+#if UNITY_IOS || UNITY_ANDROID
+                float hoverScale = value ? hoverScaleWhenMobile : 1.0f / hoverScaleWhenMobile;
+                transform.SetScaleXY(transform.localScale.x * hoverScale, transform.localScale.y * hoverScale);
+#endif
             }
         }
 
