@@ -65,6 +65,9 @@ namespace Main.Handler
             {
                 if (thisInstance == null) return;
 
+                //TODO: なぜか、Instantiate()の直後はホバースプライトにしても反映されないので、ここで毎フレーム書き換えている.
+                thisInstance.sprite = hoverSprite;
+
                 if (GameManager.Instance.State == GameState.Over)
                 {
                     isFollowingMouse = false;
