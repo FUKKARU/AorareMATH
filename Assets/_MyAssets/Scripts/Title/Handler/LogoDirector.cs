@@ -10,14 +10,19 @@ namespace Title.Handler
     internal sealed class LogoDirector : MonoBehaviour
     {
         [SerializeField] private GameObject startButton;
+        [SerializeField] private GameObject menuButton;
         [SerializeField] private Transform logoTf;
         [SerializeField] private BillMover billMover;
 
         private async UniTaskVoid OnEnable()
         {
+            if (startButton != null) startButton.SetActive(false);
+            if (menuButton != null) menuButton.SetActive(false);
+
             if (billMover != null) billMover.Play(destroyCancellationToken).Forget();
             await DoLogo(destroyCancellationToken);
             if (startButton != null) startButton.SetActive(true);
+            if (menuButton != null) menuButton.SetActive(true);
         }
 
         private async UniTask DoLogo(Ct ct)

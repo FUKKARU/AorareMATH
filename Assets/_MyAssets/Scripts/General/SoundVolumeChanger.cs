@@ -19,12 +19,6 @@ namespace General
 
         private void OnEnable()
         {
-#if true
-            // 現状、機能を廃止する
-            if (slidersRoot != null)
-                slidersRoot.SetActive(false);
-            return;
-#else
             if (bgmSlider == null) return;
             if (seSlider == null) return;
 
@@ -36,7 +30,6 @@ namespace General
 
             seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, PlaySeSample);
             seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, PlaySeSample);
-#endif
         }
 
         private float GetVolumeAsSliderValue(SoundType soundType, Text sliderText = null)

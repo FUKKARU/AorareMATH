@@ -199,7 +199,12 @@ namespace General.Button
         protected virtual bool CanPlaySeOnDown => true;
 
         // このスクリプトでやっていないプロパティ操作を行いたい場合に限る.
+        protected EventTrigger EventTrigger => eventTrigger;
         protected Image BackgroundImage => backgroundImage;
         protected Text Text => text;
+        protected AudioSource SeAudioSource => seAudioSource;
+        protected string DisplayText => displayText;
+        protected Color NormalColor => normalColor;
+        protected Color HoverColor => hoverColor;
     }
 }
