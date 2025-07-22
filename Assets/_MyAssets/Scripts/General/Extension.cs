@@ -11,24 +11,8 @@ using Ct = System.Threading.CancellationToken;
 
 namespace General.Extension
 {
-    internal enum ClientMode
-    {
-        Editor_Editing,
-        Editor_Playing,
-        Build
-    }
-
     internal static class Extension
     {
-        internal static ClientMode GetClientMode()
-        {
-#if UNITY_EDITOR
-            return UnityEditor.EditorApplication.isPlaying ? ClientMode.Editor_Playing : ClientMode.Editor_Editing;
-#else
-            return ClientMode.Build;
-#endif
-        }
-
         internal static async UniTask SecAwait(this float sec, Ct ct)
         {
             await UniTask.WaitForSeconds(sec, cancellationToken: ct);
@@ -309,6 +293,18 @@ namespace General.Extension
             scale.y = y;
             scale.z = z;
             tf.localScale = scale;
+        }
+        internal static void SetAnchorX(this RectTransform rtf, float x)
+        {
+            Vector2 anchoredPos = rtf.anchoredPosition;
+            anchoredPos.x = x;
+            rtf.anchoredPosition = anchoredPos;
+        }
+        internal static void SetAnchorY(this RectTransform rtf, float y)
+        {
+            Vector2 anchoredPos = rtf.anchoredPosition;
+            anchoredPos.y = y;
+            rtf.anchoredPosition = anchoredPos;
         }
         internal static void SetAlpha(this Text text, float alpha)
         {
