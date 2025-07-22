@@ -9,7 +9,6 @@ namespace General
 {
     internal sealed class SoundVolumeChanger : MonoBehaviour
     {
-        [SerializeField] private GameObject slidersRoot;
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;
         [SerializeField] private Text bgmText;
@@ -17,7 +16,7 @@ namespace General
         [SerializeField] private EventTrigger seSampleEventTrigger;
         [SerializeField] private AudioSource seSampleAudioSource;
 
-        private void OnEnable()
+        private void Start()
         {
             if (bgmSlider == null) return;
             if (seSlider == null) return;
