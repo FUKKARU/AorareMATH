@@ -11,7 +11,9 @@ namespace General.Button
     {
         [SerializeField] private AFadeableBgmPlayer bgmPlayer;
         [SerializeField] private SceneTransitionShaderController sceneTransitionShaderController;
-        [SerializeField] private ASceneChangeButtonManager[] linkedButtons; // どれか一つが押されたら、他のボタンも押せなくなる
+        [SerializeField] private ASceneChangeButtonManager[] linkedButtons; // どれか一つが押されたら、他のボタンは無効になる
+
+        private bool isClickEnabled = true;
 
         protected abstract string toSceneName { get; }
 
@@ -23,12 +25,13 @@ namespace General.Button
 
         private void SetLinkedButtonsClicked()
         {
+            if (!isClickEnabled) return;
             if (linkedButtons == null) return;
 
             foreach (var linkedButton in linkedButtons)
             {
                 if (linkedButton == null) continue;
-                linkedButton.MakeClickEventDisabled();
+                linkedButton.isClickEnabled = false;
             }
         }
 
