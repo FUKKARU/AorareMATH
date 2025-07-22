@@ -12,7 +12,7 @@ namespace General.Button
     /// <summary>
     /// Image, Text で構成される
     /// 見た目の変化などは、基本的にこのクラス内で行う
-    /// Awakeを使用
+    /// Awake, OnDisable を使用
     /// </summary>
     internal abstract class ATextButtonManager : AButton
     {
@@ -75,6 +75,25 @@ namespace General.Button
                 eventTrigger.AddListener(EventTriggerType.PointerDown, OnDown);
                 eventTrigger.AddListener(EventTriggerType.PointerUp, OnUp);
             }
+        }
+
+        private void OnDisable()
+        {
+            appearanceState = AppearanceState.Default;
+            isPointerInside = false;
+            trackingPointerId = -1;
+
+            if (backgroundImage != null)
+            {
+                backgroundImage.rectTransform.localScale = imageInitialScale;
+            }
+            if (text != null)
+            {
+                text.color = normalColor;
+                text.rectTransform.localScale = textInitialScale;
+            }
+
+            OnExitImpl();
         }
 
         // 概ねPCのみ

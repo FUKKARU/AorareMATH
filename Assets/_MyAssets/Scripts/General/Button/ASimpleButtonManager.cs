@@ -10,7 +10,7 @@ namespace General.Button
     /// <summary>
     /// SpriteRenderer で構成される
     /// 見た目の変化などは、基本的にこのクラス内で行う
-    /// Awakeを使用
+    /// Awake, OnDisable を使用
     /// </summary>
     internal abstract class ASimpleButtonManager : AButton
     {
@@ -48,6 +48,20 @@ namespace General.Button
                 eventTrigger.AddListener(EventTriggerType.PointerDown, OnDown);
                 eventTrigger.AddListener(EventTriggerType.PointerUp, OnUp);
             }
+        }
+
+        private void OnDisable()
+        {
+            appearanceState = AppearanceState.Default;
+            isPointerInside = false;
+            trackingPointerId = -1;
+
+            if (image != null)
+            {
+                image.transform.localScale = imageInitialScale;
+            }
+
+            OnExitImpl();
         }
 
         // 概ねPCのみ
