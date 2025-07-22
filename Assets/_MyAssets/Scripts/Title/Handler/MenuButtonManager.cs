@@ -7,14 +7,14 @@ namespace Title.Handler
     {
         [SerializeField] private StartButtonManager startButton;
         [SerializeField] private SpriteRenderer titleLogo;
-        [SerializeField] private GameObject menuRoot;
+        [SerializeField] private GameObject menuUi;
         [SerializeField] private string displayTextWhenMenuIsActive;
 
         private bool isMenuActive = false;
 
         private void Start()
         {
-            if (menuRoot != null) menuRoot.SetActive(false);
+            if (menuUi != null) menuUi.SetActive(false);
         }
 
         protected sealed override void OnClickSucceeded()
@@ -22,7 +22,7 @@ namespace Title.Handler
             isMenuActive = !isMenuActive;
 
             if (startButton != null) startButton.gameObject.SetActive(!isMenuActive);
-            if (menuRoot != null) menuRoot.SetActive(isMenuActive);
+            if (menuUi != null) menuUi.SetActive(isMenuActive);
             if (titleLogo != null) titleLogo.enabled = !isMenuActive;
             if (Text != null) Text.text = isMenuActive ? displayTextWhenMenuIsActive : DisplayText;
         }

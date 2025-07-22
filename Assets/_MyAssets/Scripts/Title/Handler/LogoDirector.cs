@@ -14,19 +14,15 @@ namespace Title.Handler
         [SerializeField] private Transform logoTf;
         [SerializeField] private BillMover billMover;
 
-        private async UniTaskVoid OnEnable()
+        private void Start() => DoLogo(destroyCancellationToken).Forget();
+
+        private async UniTask DoLogo(Ct ct)
         {
             if (startButton != null) startButton.SetActive(false);
             if (menuButton != null) menuButton.SetActive(false);
 
             if (billMover != null) billMover.Play(destroyCancellationToken).Forget();
-            await DoLogo(destroyCancellationToken);
-            if (startButton != null) startButton.SetActive(true);
-            if (menuButton != null) menuButton.SetActive(true);
-        }
 
-        private async UniTask DoLogo(Ct ct)
-        {
             if (SO_Handler.Entity.DoFastenDirections == false)
             {
                 logoTf.DOLocalMoveY(1.15f, duration: 1.2f).SetEase(Ease.OutExpo).WithCancellation(ct).Forget();
@@ -38,6 +34,9 @@ namespace Title.Handler
                 logoTf.SetLocalPosY(1.15f);
                 logoTf.SetScaleXY(0.8f, 0.8f);
             }
+
+            if (startButton != null) startButton.SetActive(true);
+            if (menuButton != null) menuButton.SetActive(true);
         }
     }
 }
