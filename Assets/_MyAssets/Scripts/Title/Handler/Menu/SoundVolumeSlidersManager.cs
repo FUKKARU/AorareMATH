@@ -58,7 +58,7 @@ namespace Title.Handler.Menu
 
             if (muted)
             {
-                text = $"<color=#ffffff20>{text}</color>";
+                text = $"<color=#ffffff08>{text}</color>";
             }
 
             sliderText.text = text;
