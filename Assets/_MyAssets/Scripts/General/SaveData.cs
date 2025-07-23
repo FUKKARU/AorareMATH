@@ -3,7 +3,6 @@ using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using General.Extension;
-using Ct = System.Threading.CancellationToken;
 
 namespace General
 {
