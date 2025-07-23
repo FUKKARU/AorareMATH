@@ -1,7 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using General;
 using General.Button;
-using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 
 namespace Main.Handler

@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using General;
-using General.Debug;
-using General.Extension;
 using General.Shaders;
 using Main.Data;
 using Main.Data.Formula;
@@ -173,9 +171,8 @@ namespace Main.Handler
             if (!result) return;
             this.target = target;
             this.answer = answer;
-#if UNITY_EDITOR
-            answer.Show();
-#endif
+
+            answer.Log();
 
             // インスタンスを作り直す
             DestroyInstances();

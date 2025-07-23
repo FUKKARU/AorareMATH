@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
-using General.Extension;
 using SO;
 using Ct = System.Threading.CancellationToken;
 

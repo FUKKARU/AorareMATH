@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;
 
-namespace General.Extension
+namespace General
 {
     internal static class Extension
     {

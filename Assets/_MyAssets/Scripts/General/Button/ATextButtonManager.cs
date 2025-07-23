@@ -1,8 +1,6 @@
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using General.Extension;
-using Main.Data;
+using DG.Tweening;
 using SO;
 using Image = UnityEngine.UI.Image;
 using Text = TMPro.TextMeshProUGUI;

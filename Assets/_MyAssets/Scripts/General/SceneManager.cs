@@ -21,7 +21,7 @@ namespace General
         {
             if (!sceneNameTable.TryGetValue(scene, out string sceneName))
             {
-                UnityEngine.Debug.LogError($"Scene '{scene}' is not defined.");
+                $"Scene '{scene}' is not defined.".LogError();
                 return;
             }
 

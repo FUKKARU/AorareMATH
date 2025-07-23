@@ -47,7 +47,7 @@ namespace General
 
             if (found == null)
             {
-                UnityEngine.Debug.LogWarning("All audio sources are busy. Cannot play sound.");
+                "All audio sources are busy. Cannot play sound.".LogWarning();
                 return null;
             }
 

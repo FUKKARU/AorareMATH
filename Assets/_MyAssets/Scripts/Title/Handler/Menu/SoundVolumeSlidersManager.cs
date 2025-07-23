@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using SO;
 using General;
-using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 
 namespace Title.Handler.Menu

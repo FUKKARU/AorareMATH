@@ -1,6 +1,5 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using General.Extension;
 using General.Shaders;
 using Ct = System.Threading.CancellationToken;
 

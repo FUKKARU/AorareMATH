@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using General;
-using General.Extension;
 using Ct = System.Threading.CancellationToken;
 
 namespace Title.Handler.Menu

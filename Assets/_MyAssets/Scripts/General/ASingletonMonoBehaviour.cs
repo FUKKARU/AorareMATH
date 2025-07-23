@@ -15,13 +15,13 @@ namespace General
 
                     if (instances == null || instances.Length <= 0)
                     {
-                        UnityEngine.Debug.LogError(typeof(T).Name + " not found");
+                        $"{typeof(T).Name} not found".LogError();
 
                         instance = null;
                     }
                     else if (instances.Length > 1)
                     {
-                        UnityEngine.Debug.LogWarning("Multiple instances of " + typeof(T).Name + " found. Using the first instance and destroying others.");
+                        $"Multiple instances of {typeof(T).Name} found. Using the first instance and destroying others.".LogWarning();
 
                         instance = instances[0];
                         for (int i = 1; i < instances.Length; i++)
