@@ -1,7 +1,7 @@
 using General.Button;
 using SO;
 
-namespace Title.Handler.Menu
+namespace Title.Handler
 {
     internal sealed class StartButtonManager : ASceneChangeButtonManager
     {
