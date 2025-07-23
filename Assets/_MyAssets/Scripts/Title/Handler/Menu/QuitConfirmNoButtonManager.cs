@@ -11,6 +11,8 @@ namespace Title.Handler.Menu
 
         protected sealed override void OnClickSucceeded()
         {
+            InputIntervalManagerOnTogglingUi.Instance.InvokeBlockingImage();
+
             if (menuUi != null) menuUi.SetActive(true);
             if (quitConfirmUi != null) quitConfirmUi.SetActive(false);
             if (menuButton != null) menuButton.gameObject.SetActive(true);

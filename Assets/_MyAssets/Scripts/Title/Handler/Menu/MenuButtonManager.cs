@@ -13,15 +13,11 @@ namespace Title.Handler.Menu
 
         private bool isMenuActive = false;
 
-        private void Start()
-        {
-            if (menuUi != null) menuUi.SetActive(false);
-            if (menuBgUi != null) menuBgUi.SetActive(false);
-        }
-
         protected sealed override void OnClickSucceeded()
         {
             isMenuActive = !isMenuActive;
+
+            InputIntervalManagerOnTogglingUi.Instance.InvokeBlockingImage();
 
             if (startButton != null) startButton.gameObject.SetActive(!isMenuActive);
             if (menuUi != null) menuUi.SetActive(isMenuActive);

@@ -9,13 +9,10 @@ namespace Title.Handler.Menu
         [SerializeField] private GameObject quitConfirmUi;
         [SerializeField] private AButton menuButton;
 
-        private void Start()
-        {
-            if (quitConfirmUi != null) quitConfirmUi.SetActive(false);
-        }
-
         protected sealed override void OnClickSucceeded()
         {
+            InputIntervalManagerOnTogglingUi.Instance.InvokeBlockingImage();
+
             if (menuUi != null) menuUi.SetActive(false);
             if (quitConfirmUi != null) quitConfirmUi.SetActive(true);
             if (menuButton != null) menuButton.gameObject.SetActive(false);
