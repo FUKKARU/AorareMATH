@@ -1,13 +1,14 @@
-﻿using General.Extension;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using SO;
 using UnityEngine.EventSystems;
+using SO;
+using General;
+using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 
-namespace General
+namespace Title.Handler.Menu
 {
-    internal sealed class SoundVolumeChanger : MonoBehaviour
+    internal sealed class SoundVolumeSlidersManager : MonoBehaviour
     {
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;

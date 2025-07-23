@@ -17,6 +17,14 @@ namespace General
 
         // 演出の高速化
         public bool DoFastenDirections = false;
+
+        public void CopyFromOther(SaveData other)
+        {
+            if (other == null) return;
+
+            Array.Copy(other.CorrectAmountRanking, CorrectAmountRanking, CorrectAmountRankingLength);
+            DoFastenDirections = other.DoFastenDirections;
+        }
     }
 
     public static class SaveDataHolder
@@ -24,7 +32,12 @@ namespace General
         private const string SavePath = "gameData.json";
         private static SaveData saveData = new();
 
+        // ロード直後のSaveDataをキャッシュしておく
+        //! この中のメンバを書き換えることは、想定していない
+        private static SaveData saveDataCache = new();
+
         public static SaveData Data => saveData;
+        public static SaveData CacheData => saveDataCache;
 
         private static readonly float AutoSaveIntervalSec = 30.0f;
 
@@ -64,6 +77,8 @@ namespace General
             }
             finally
             {
+                saveDataCache?.CopyFromOther(saveData);
+
                 // オートセーブを開始
                 SavePeriodically(AutoSaveIntervalSec).Forget();
             }

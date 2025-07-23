@@ -1,8 +1,9 @@
-﻿using General.Extension;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using General;
+using General.Extension;
 using Main.Data;
 using Main.Data.Formula;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Main.Handler
 {

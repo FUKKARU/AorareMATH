@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Ct = System.Threading.CancellationToken;
-using SO;
+using General;
 using General.Extension;
+using Ct = System.Threading.CancellationToken;
 
 namespace Title.Handler
 {
@@ -23,7 +23,7 @@ namespace Title.Handler
 
             if (billMover != null) billMover.Play(destroyCancellationToken).Forget();
 
-            if (SO_Handler.Entity.DoFastenDirections == false)
+            if (SaveDataHolder.CacheData.DoFastenDirections == false)
             {
                 logoTf.DOLocalMoveY(1.15f, duration: 1.2f).SetEase(Ease.OutExpo).WithCancellation(ct).Forget();
                 logoTf.DOScale(new Vector2(0.8f, 0.8f), duration: 2.0f).SetEase(Ease.InOutExpo).WithCancellation(ct).Forget();

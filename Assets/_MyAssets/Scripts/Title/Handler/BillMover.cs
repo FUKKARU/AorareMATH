@@ -1,7 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using SO;
+using General;
 using General.Extension;
 using Ct = System.Threading.CancellationToken;
 
@@ -21,9 +21,9 @@ namespace Title.Handler
 
         internal async UniTaskVoid Play(Ct ct)
         {
-            float billMoveDelay = SO_Handler.Entity.DoFastenDirections ? 0.0f : 2.6f;
-            float billMoveDuration = SO_Handler.Entity.DoFastenDirections ? 0.0f : 0.6f;
-            float billRotateDelay = SO_Handler.Entity.DoFastenDirections ? 0.0f : 3.4f;
+            float billMoveDelay = SaveDataHolder.CacheData.DoFastenDirections ? 0.0f : 2.6f;
+            float billMoveDuration = SaveDataHolder.CacheData.DoFastenDirections ? 0.0f : 0.6f;
+            float billRotateDelay = SaveDataHolder.CacheData.DoFastenDirections ? 0.0f : 0.8f;
 
             await billMoveDelay.SecAwait(ct: ct);
             await UniTask.WhenAll(

@@ -1,7 +1,7 @@
 using UnityEngine;
 using General.Button;
 
-namespace Title.Handler
+namespace Title.Handler.Menu
 {
     internal sealed class QuitConfirmNoButtonManager : ATextButtonManager
     {

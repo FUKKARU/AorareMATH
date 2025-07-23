@@ -1,7 +1,7 @@
 using General.Button;
 using General;
 
-namespace Title.Handler
+namespace Title.Handler.Menu
 {
     internal sealed class QuitConfirmYesButtonManager : ATextButtonManager
     {
