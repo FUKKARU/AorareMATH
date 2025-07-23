@@ -58,12 +58,11 @@ namespace Main.Handler
         internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
-        internal GameData GameData { get; private set; } = new(); // セーブデータ（正解数を格納）
+        internal RankDataHolder rankDataHolder { get; private set; } = new(); // セーブデータに対して、ランキングの読み書きを行うラッパー
+        internal int CorrectAmount => rankDataHolder.CorrectAmount;
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
         private int target = 0; // 出題中の問題のターゲット数
         private string answer = string.Empty; // 出題中の問題の答え
-
-        internal GameDataHolder GameDataHolder { get; private set; } = new();
 
         private float _time = 0;
         private float time
@@ -101,7 +100,7 @@ namespace Main.Handler
         {
             State = GameState.Stay;
 
-            GameDataHolder?.Init();
+            rankDataHolder?.Init();
             Formula.Init();
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
@@ -130,11 +129,6 @@ namespace Main.Handler
         private void LateUpdate()
         {
             IsPreviewNumberSameAsTargetThisFrame = false;
-        }
-
-        private void OnDestroy()
-        {
-            GameDataHolder?.Dispose();
         }
 
         private void OnStay()
@@ -180,7 +174,7 @@ namespace Main.Handler
 
         private void CreateQuestion()
         {
-            bool result = GameDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
+            bool result = rankDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
             this.answer = answer;
@@ -336,7 +330,7 @@ namespace Main.Handler
                 // スコア更新部
                 {
                     time += SO_Handler.Entity.TimeIncreaseAmount;
-                    if (++GameDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
+                    if (++rankDataHolder.CorrectAmount >= SO_Handler.Entity.QuestionAmount)
                     {
                         State = GameState.Over;
                         hasForciblyCleared = true;
@@ -348,7 +342,7 @@ namespace Main.Handler
                         }
                         return;
                     }
-                    if (GameDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
+                    if (rankDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
                 }
 
                 await 1.0f.SecAwait(ct);
@@ -426,8 +420,7 @@ namespace Main.Handler
 
         private async UniTask OnResult(Ct ct)
         {
-            GameDataHolder?.SaveRanking();
-            int rank = GameDataHolder?.GetRank() ?? 0;
+            int rank = rankDataHolder?.GetRank() ?? 0;
 
             // 最後の問題の答えを見せる
             if (!hasForciblyCleared)
@@ -438,7 +431,7 @@ namespace Main.Handler
             }
 
             resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
-            await resultShower.Play(GameDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
+            await resultShower.Play(rankDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
         }
 
 #if UNITY_IOS || UNITY_ANDROID
