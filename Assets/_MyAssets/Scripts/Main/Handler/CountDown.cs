@@ -51,9 +51,9 @@ namespace Main.Handler
             if (SO_Handler.Entity.DoFastenDirections == false)
             {
                 await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).WithCancellation(ct);
-                await 1.0f.SecAwait(ct);
+                await 1.0f.SecAwait(ct: ct);
                 await UniTask.WaitUntil(() => IsTouchedThisFrame(), cancellationToken: ct);
-                await 0.1f.SecAwait(ct);
+                await 0.1f.SecAwait(ct: ct);
                 beginDescriptionTransform.gameObject.SetActive(false);
             }
             else
@@ -70,14 +70,14 @@ namespace Main.Handler
             if (SO_Handler.Entity.DoFastenDirections == false && audioSource != null)
                 audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountSec, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
-            await oneCountSec.SecAwait(ct);
+            await oneCountSec.SecAwait(ct: ct);
             spriteRenderers.Yellow.enabled = true;
-            await oneCountSec.SecAwait(ct);
+            await oneCountSec.SecAwait(ct: ct);
             spriteRenderers.Green.enabled = true;
-            await oneCountSec.SecAwait(ct);
+            await oneCountSec.SecAwait(ct: ct);
             spriteRenderers.Red.sprite = spriteRenderers.Green.sprite;
             spriteRenderers.Yellow.sprite = spriteRenderers.Green.sprite;
-            await oneCountSec.SecAwait(ct);
+            await oneCountSec.SecAwait(ct: ct);
 
             await counterTransform.DOLocalMoveY(8.75f, counterDuration).WithCancellation(ct);
             onBeginBlockingImage.enabled = false;

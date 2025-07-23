@@ -34,9 +34,9 @@ namespace Main.Handler
 
             if (SO_Handler.Entity.DoFastenDirections == false)
             {
-                await 0.1f.SecAwait(ct);
+                await 0.1f.SecAwait(ct: ct);
                 await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
-                await 0.1f.SecAwait(ct);
+                await 0.1f.SecAwait(ct: ct);
 
                 await DOTween.To(
                     () => 0,
@@ -45,7 +45,7 @@ namespace Main.Handler
                     1.0f
                 ).WithCancellation(ct);
 
-                await 0.2f.SecAwait(ct);
+                await 0.2f.SecAwait(ct: ct);
             }
             else
             {
@@ -71,7 +71,7 @@ namespace Main.Handler
             }
 
             if (SO_Handler.Entity.DoFastenDirections == false)
-                await 0.5f.SecAwait(ct);
+                await 0.5f.SecAwait(ct: ct);
 
             SetButtonsEnabled(true);
 

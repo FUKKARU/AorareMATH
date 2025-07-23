@@ -345,7 +345,7 @@ namespace Main.Handler
                     if (rankDataHolder.CorrectAmount <= 1) correctAmountTextShower.Appear(destroyCancellationToken).Forget();
                 }
 
-                await 1.0f.SecAwait(ct);
+                await 1.0f.SecAwait(ct: ct);
             }
 
             // フラグOFF

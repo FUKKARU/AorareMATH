@@ -42,10 +42,10 @@ namespace General.Button
             float beforeDirectionDuration = SO_Handler.Entity.DoFastenDirections ? 0.1f : 0.2f;
             float afterDirectionDuration = SO_Handler.Entity.DoFastenDirections ? 1.0f : 1.5f;
 
-            await beforeDirectionDuration.SecAwait(ct);
+            await beforeDirectionDuration.SecAwait(ct: ct);
             if (sceneTransitionShaderController != null)
                 await sceneTransitionShaderController.Play(true, ct);
-            await afterDirectionDuration.SecAwait(ct);
+            await afterDirectionDuration.SecAwait(ct: ct);
 
             toSceneName.LoadAsync().Forget();
         }
