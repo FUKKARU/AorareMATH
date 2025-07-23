@@ -69,7 +69,7 @@ namespace Main.Handler
             }
 
             onInterval = true;
-            clickInterval.SecAwaitThenDo(() => onInterval = false, destroyCancellationToken).Forget();
+            clickInterval.SecAwaitThenDo(() => onInterval = false, ct: destroyCancellationToken).Forget();
         }
     }
 }

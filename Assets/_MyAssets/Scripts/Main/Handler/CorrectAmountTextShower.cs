@@ -29,11 +29,11 @@ namespace Main.Handler
             if (GameManager.Instance.State != GameState.OnGoing) return;
             if (!hasAppeared) return;
 
-            int correctAmount = GameManager.Instance.GameDataHolder.CorrectAmount;
+            int correctAmount = GameManager.Instance.CorrectAmount;
             if (correctAmount <= 0) return;
 
             if (text == null) return;
-            text.text = $"{GameManager.Instance.GameDataHolder.CorrectAmount}<size=45><color=black>問正解中</color></size>";
+            text.text = $"{GameManager.Instance.CorrectAmount}<size=45><color=black>問正解中</color></size>";
         }
 
         internal async UniTaskVoid Appear(Ct ct)

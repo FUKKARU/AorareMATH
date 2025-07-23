@@ -2,7 +2,6 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Ct = System.Threading.CancellationToken;
-using SO;
 
 namespace General.Shaders
 {
@@ -43,7 +42,7 @@ namespace General.Shaders
             float beginValue = beforeSceneChange ? 0 : 1;
             float endValue = beforeSceneChange ? 1 : 0;
 
-            float dur = SO_Handler.Entity.DoFastenDirections ? durationOnFasten : duration;
+            float dur = SaveDataHolder.CacheData.DoFastenDirections ? durationOnFasten : duration;
 
             await DOTween.To
             (

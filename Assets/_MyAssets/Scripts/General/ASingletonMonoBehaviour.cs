@@ -11,11 +11,27 @@ namespace General
             {
                 if (instance == null)
                 {
-                    instance = FindFirstObjectByType<T>();
+                    T[] instances = FindObjectsByType<T>(FindObjectsSortMode.None);
 
-                    if (instance == null)
+                    if (instances == null || instances.Length <= 0)
                     {
                         UnityEngine.Debug.LogError(typeof(T).Name + " not found");
+
+                        instance = null;
+                    }
+                    else if (instances.Length > 1)
+                    {
+                        UnityEngine.Debug.LogWarning("Multiple instances of " + typeof(T).Name + " found. Using the first instance and destroying others.");
+
+                        instance = instances[0];
+                        for (int i = 1; i < instances.Length; i++)
+                        {
+                            Destroy(instances[i].gameObject);
+                        }
+                    }
+                    else
+                    {
+                        instance = instances[0];
                     }
                 }
 

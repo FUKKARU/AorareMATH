@@ -1,11 +1,11 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using UnityEngine;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using UnityEngine;
+using General;
 using General.Button;
 using General.Extension;
 using Text = TMPro.TextMeshProUGUI;
 using Ct = System.Threading.CancellationToken;
-using SO;
 
 namespace Main.Handler
 {
@@ -32,11 +32,11 @@ namespace Main.Handler
                 scoreText.color = Color.yellow;
             }
 
-            if (SO_Handler.Entity.DoFastenDirections == false)
+            if (SaveDataHolder.CacheData.DoFastenDirections == false)
             {
-                await 0.1f.SecAwait(ct);
+                await 0.1f.SecAwait(ct: ct);
                 await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
-                await 0.1f.SecAwait(ct);
+                await 0.1f.SecAwait(ct: ct);
 
                 await DOTween.To(
                     () => 0,
@@ -45,7 +45,7 @@ namespace Main.Handler
                     1.0f
                 ).WithCancellation(ct);
 
-                await 0.2f.SecAwait(ct);
+                await 0.2f.SecAwait(ct: ct);
             }
             else
             {
@@ -70,8 +70,8 @@ namespace Main.Handler
                 }
             }
 
-            if (SO_Handler.Entity.DoFastenDirections == false)
-                await 0.5f.SecAwait(ct);
+            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+                await 0.5f.SecAwait(ct: ct);
 
             SetButtonsEnabled(true);
 
