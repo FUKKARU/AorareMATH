@@ -43,11 +43,6 @@ namespace Main.Handler
         [SerializeField] private ParticleSystem justEffectRight;
         [SerializeField] private ResultShower resultShower;
 
-        [SerializeField] private AudioSource selectSEAudioSource;
-        [SerializeField] private AudioSource attackSEAudioSource;
-        [SerializeField] private AudioSource attackFailedSEAudioSource;
-        [SerializeField] private AudioSource justAttackedSEAudioSource;
-        [SerializeField] private AudioSource resultSEAudioSource;
         [SerializeField, Range(0.01f, 5.0f)] private float mouseHoverSymbolFrameLimitWidth;
         [SerializeField, Range(0.01f, 5.0f)] private float mouseHoverSymbolFrameLimitHeight;
 
@@ -317,10 +312,8 @@ namespace Main.Handler
             {
                 // 演出部
                 {
-                    if (attackSEAudioSource != null)
-                        attackSEAudioSource.Raise(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
-                    if (justAttackedSEAudioSource != null)
-                        justAttackedSEAudioSource.Raise(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
+                    AudioSourceManager.Instance.Play(SO_Sound.Entity.AttackSE, SoundType.SE, volume: 0.5f);
+                    AudioSourceManager.Instance.Play(SO_Sound.Entity.JustAttackedSE, SoundType.SE, volume: 0.5f);
                     if (justEffectLeft != null)
                         justEffectLeft.Play();
                     if (justEffectRight != null)
@@ -359,7 +352,7 @@ namespace Main.Handler
         }
 
         internal void PlaySelectSE(float pitch = 1.0f)
-            => selectSEAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
+            => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE, pitch: pitch);
 
         private async UniTaskVoid UpdateHoverSeCooltime(Ct ct)
         {
@@ -430,7 +423,7 @@ namespace Main.Handler
                     await untilResultCountDown.BeginCountDown(ct);
             }
 
-            resultSEAudioSource.Raise(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
+            AudioSourceManager.Instance.Play(SO_Sound.Entity.ResultSE, SoundType.SE, volume: 0.5f);
             await resultShower.Play(rankDataHolder.CorrectAmount, rank, hasForciblyCleared, ct);
         }
 

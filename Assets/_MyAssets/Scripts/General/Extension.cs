@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 using Random = UnityEngine.Random;
 using Text = TMPro.TextMeshProUGUI;
@@ -344,24 +343,6 @@ namespace General.Extension
             color.a = alpha;
             sr.color = color;
         }
-
-        /// <summary>
-        /// キャンセル不可
-        /// </summary>
-        internal static async UniTaskVoid LoadAsync(this string sceneName)
-        {
-            if (isSceneLoading) return;
-            if (string.IsNullOrEmpty(sceneName)) return;
-
-            isSceneLoading = true;
-            var opr = SceneManager.LoadSceneAsync(sceneName);
-            opr.allowSceneActivation = false;
-            await UniTask.WaitUntil(() => opr.progress >= 0.9f);
-            opr.allowSceneActivation = true;
-            await UniTask.WaitUntil(() => opr.isDone);
-            isSceneLoading = false;
-        }
-        private static bool isSceneLoading = false;
 
         // PCの場合、pointerIdは-1のままでOK(無視される). モバイルの場合、対象にしたい指のIDを指定する.
         internal static Vector3 PointerPositionToWorldPosition(this Camera camera, float z, int pointerId = -1)

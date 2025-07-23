@@ -15,7 +15,6 @@ namespace Title.Handler.Menu
         [SerializeField] private Text bgmText;
         [SerializeField] private Text seText;
         [SerializeField] private EventTrigger seSampleEventTrigger;
-        [SerializeField] private AudioSource seSampleAudioSource;
 
         private void Start()
         {
@@ -64,7 +63,8 @@ namespace Title.Handler.Menu
             sliderText.text = text;
         }
 
-        private void PlaySeSample(PointerEventData data) => seSampleAudioSource.Raise(SO_Sound.Entity.SymbolSE, SoundType.SE);
+        private void PlaySeSample(PointerEventData data)
+            => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE);
     }
 
     internal static class SoundVolumeChangerEx

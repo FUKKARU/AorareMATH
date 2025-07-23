@@ -1,10 +1,10 @@
+using General;
 using General.Button;
-using SO;
 
 namespace Title.Handler
 {
     internal sealed class RetryButtonManager : ASceneChangeButtonManager
     {
-        protected sealed override string toSceneName => SO_SceneName.Entity.Main;
+        protected sealed override Scene toScene => Scene.Main;
     }
 }
