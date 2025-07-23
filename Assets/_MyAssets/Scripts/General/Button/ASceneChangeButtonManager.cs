@@ -1,6 +1,5 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using General.Extension;
 using General.Shaders;
 using Ct = System.Threading.CancellationToken;
 
@@ -14,7 +13,7 @@ namespace General.Button
 
         private bool isClickEnabled = true;
 
-        protected abstract string toSceneName { get; }
+        protected abstract Scene toScene { get; }
 
         protected sealed override void OnClickSucceeded()
         {
@@ -46,7 +45,7 @@ namespace General.Button
                 await sceneTransitionShaderController.Play(true, ct);
             await afterDirectionDuration.SecAwait(ct: ct);
 
-            toSceneName.LoadAsync().Forget();
+            toScene.LoadAsync();
         }
     }
 }

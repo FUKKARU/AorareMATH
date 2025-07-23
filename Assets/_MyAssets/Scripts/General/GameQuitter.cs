@@ -5,7 +5,7 @@ namespace General
         internal static void Quit()
         {
             SaveDataHolder.Save();
-            UnityEngine.Debug.Log("SaveData was saved before quitting the game.");
+            "SaveData was saved before quitting the game.".Log();
 
             // WebGL は、何もしない
 #if UNITY_EDITOR

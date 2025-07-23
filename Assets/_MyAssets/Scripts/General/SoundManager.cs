@@ -42,7 +42,7 @@ namespace General
             SO_Sound.Entity.AudioMixer.SetFloat(GetAMGroupString(soundType), newVolume);
         }
 
-        internal static void Raise
+        internal static void Play
             (this AudioSource source, AudioClip clip, SoundType type, float volume = 1, float pitch = 1, float time = 0)
         {
             if (source == null) return;

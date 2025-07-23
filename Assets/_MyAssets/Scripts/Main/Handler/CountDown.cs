@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using General;
-using General.Extension;
 using SO;
 using Ct = System.Threading.CancellationToken;
 
@@ -33,7 +32,6 @@ namespace Main.Handler
         [SerializeField] private Transform counterTransform;
         [SerializeField] private SpriteRenderers spriteRenderers;
         [SerializeField] private Sprites sprites;
-        [SerializeField] private AudioSource audioSource;
         [SerializeField, Range(0.1f, 3.0f)] private float oneCountDuration;
         [SerializeField, Range(0.1f, 3.0f)] private float oneCountDurationOnFasten;
 
@@ -67,8 +65,8 @@ namespace Main.Handler
 
             await counterTransform.DOLocalMoveY(1.4f, counterDuration).WithCancellation(ct);
             // 演出が速いと音が高くなり過ぎたので、むしろ鳴らさないようにした
-            if (SaveDataHolder.CacheData.DoFastenDirections == false && audioSource != null)
-                audioSource.Raise(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountSec, volume: 0.5f);
+            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+                AudioSourceManager.Instance.Play(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountSec, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
             await oneCountSec.SecAwait(ct: ct);
             spriteRenderers.Yellow.enabled = true;

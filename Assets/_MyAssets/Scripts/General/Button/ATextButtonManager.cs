@@ -1,8 +1,6 @@
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using General.Extension;
-using Main.Data;
+using DG.Tweening;
 using SO;
 using Image = UnityEngine.UI.Image;
 using Text = TMPro.TextMeshProUGUI;
@@ -19,7 +17,6 @@ namespace General.Button
         [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private Image backgroundImage;
         [SerializeField] private Text text;
-        [SerializeField] private AudioSource seAudioSource;
 
         [SerializeField] private string displayText;
         [SerializeField] private Color normalColor;
@@ -205,7 +202,8 @@ namespace General.Button
             }
         }
 
-        private void PlayClickSE(float pitch = 1.0f) => seAudioSource.Raise(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
+        private void PlayClickSE(float pitch = 1.0f)
+            => AudioSourceManager.Instance.Play(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
 
         protected virtual void OnClickSucceeded() { }
 
@@ -228,7 +226,6 @@ namespace General.Button
         protected EventTrigger EventTrigger => eventTrigger;
         protected Image BackgroundImage => backgroundImage;
         protected Text Text => text;
-        protected AudioSource SeAudioSource => seAudioSource;
         protected string DisplayText => displayText;
         protected Color NormalColor => normalColor;
         protected Color HoverColor => hoverColor;

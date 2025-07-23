@@ -17,7 +17,7 @@ namespace General
 
                     if (_entity == null)
                     {
-                        UnityEngine.Debug.LogError(Path + " not found");
+                        $"{Path} not found".LogError();
                     }
                 }
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
-using General.Extension;
+using General;
 using Random = UnityEngine.Random;
 
 namespace Main.Data

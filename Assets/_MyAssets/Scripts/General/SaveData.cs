@@ -1,8 +1,7 @@
 using System;
 using System.IO;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
-using General.Extension;
+using Cysharp.Threading.Tasks;
 
 namespace General
 {
@@ -53,7 +52,7 @@ namespace General
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError($"Failed to save SaveData: {e.Message}");
+                $"Failed to save SaveData: {e.Message}".LogError();
             }
         }
 
@@ -70,7 +69,7 @@ namespace General
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogWarning($"Failed to load SaveData: {e.Message}. A new SaveData will be created.");
+                $"Failed to load SaveData: {e.Message}. A new SaveData will be created.".LogWarning();
 
                 saveData = new SaveData();
                 Save();
@@ -92,7 +91,7 @@ namespace General
                 await intervalSec.SecAwait(ignoreTimeScale: true, timing: PlayerLoopTiming.PostLateUpdate);
                 Save();
 
-                UnityEngine.Debug.Log("SaveData was saved periodically.");
+                "SaveData was saved periodically.".Log();
             }
         }
     }

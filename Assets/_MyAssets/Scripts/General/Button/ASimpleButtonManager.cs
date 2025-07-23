@@ -1,8 +1,6 @@
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using General.Extension;
-using Main.Data;
+using DG.Tweening;
 using SO;
 
 namespace General.Button
@@ -16,7 +14,6 @@ namespace General.Button
     {
         [SerializeField] private EventTrigger eventTrigger;
         [SerializeField] private SpriteRenderer image;
-        [SerializeField] private AudioSource seAudioSource;
 
         private Vector3 imageInitialScale;
 
@@ -166,7 +163,8 @@ namespace General.Button
                 image.transform.DOScale(imageInitialScale * scaleCoef, 0.1f).SetEase(Ease.OutBack);
         }
 
-        private void PlayClickSE(float pitch = 1.0f) => seAudioSource.Raise(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
+        private void PlayClickSE(float pitch = 1.0f)
+            => AudioSourceManager.Instance.Play(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
 
         protected virtual void OnClickSucceeded() { }
 
@@ -188,6 +186,5 @@ namespace General.Button
         // このスクリプトでやっていないプロパティ操作を行いたい場合に限る.
         protected EventTrigger EventTrigger => eventTrigger;
         protected SpriteRenderer Image => image;
-        protected AudioSource SeAudioSource => seAudioSource;
     }
 }
