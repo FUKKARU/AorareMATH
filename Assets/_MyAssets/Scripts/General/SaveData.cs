@@ -73,11 +73,9 @@ namespace General
         // ゲーム実行中ずっと回すので、Ctは渡さない
         private static async UniTaskVoid SavePeriodically(float intervalSec)
         {
-            Ct noneCt = Ct.None;
-
             while (true)
             {
-                await intervalSec.SecAwait(noneCt);
+                await intervalSec.SecAwait(ignoreTimeScale: true, timing: PlayerLoopTiming.PostLateUpdate);
                 Save();
 
                 UnityEngine.Debug.Log("SaveData was saved periodically.");
