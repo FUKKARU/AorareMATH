@@ -89,7 +89,7 @@ namespace Main.Handler
         private bool isPreviewTextOverriding = false; // PreviewTextが上書きされているかどうか (問題の答えを見せるときなどに使う)
         private bool hasForciblyCleared = false;
 
-        private void OnEnable()
+        private void Start()
         {
             State = GameState.Stay;
 
@@ -105,6 +105,10 @@ namespace Main.Handler
 
             // ずっと実行させとくので十分だと思う
             UpdateHoverSeCooltime(destroyCancellationToken).Forget();
+
+            // デリゲート
+            if (skipButtonManager != null)
+                skipButtonManager.OnClicked += Skip;
         }
 
         private void Update()
@@ -135,7 +139,6 @@ namespace Main.Handler
 
         private void OnOnGoing()
         {
-            CheckSkip();  // スキップボタンが押されたかを監視し、押されたなら次の問題にするよう非同期に発火する
             CheckFormula();  // 入力欄を監視し、ピッタリなら正解演出を非同期に発火する
 
             if (time > 0)
@@ -270,12 +273,6 @@ namespace Main.Handler
         private void SetAnswerToPreviewText(string answer)
           => SetPreviewText(text: $"<size=90>答え:</size> {answer}", color: Color.black);
 
-        private void CheckSkip()
-        {
-            if (skipButtonManager == null || !skipButtonManager.IsClickedThisFrame) return;
-            Skip();
-        }
-
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
@@ -287,13 +284,15 @@ namespace Main.Handler
         }
 
         // 問題数は進まない仕様
-        private void Skip()
+        private bool Skip()
         {
-            if (isDoingAttack) return;
+            if (State != GameState.OnGoing) return false;
+            if (isDoingAttack) return false;
 
             // 新しく問題を作成
-            if (State != GameState.OnGoing) return;
             CreateQuestion();
+
+            return true;
         }
 
         // everythingBlockingImage : サウンドスライダーはクリック不可 (演出時間が短いので、許容する)

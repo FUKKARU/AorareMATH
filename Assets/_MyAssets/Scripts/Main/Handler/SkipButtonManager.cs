@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using General;
@@ -25,16 +26,17 @@ namespace Main.Handler
             }
         }
 
-        internal bool IsClickedThisFrame { get; private set; } = false;
+        // 内部ロジックを実行できたか、戻り値で返す
+        internal Func<bool> OnClicked { get; set; } = null;
 
         private void Start()
         {
             skipLeftAmount = SO.SO_Handler.Entity.SkipAmount;
         }
 
-        private void LateUpdate()
+        private void OnDestroy()
         {
-            IsClickedThisFrame = false;
+            OnClicked = null;
         }
 
         protected sealed override bool CanEnter => CanFirePointerEvent();
@@ -58,12 +60,11 @@ namespace Main.Handler
 
             if (onInterval) return;
 
-            IsClickedThisFrame = true;
+            if (OnClicked?.Invoke() != true) return; // クリックした時の処理を実行できなかったら、残り回数を消費しない
             GameManager.Instance.HasFormulaChanged |= true;
 
             if ((--skipLeftAmount) <= 0)
             {
-                IsClickedThisFrame = false; // フラグをリセット
                 this.gameObject.SetActive(false); // このスクリプトが全てのルートに付いている想定
                 return;
             }
