@@ -20,6 +20,7 @@ Shader "Custom/DistortShader"
         [MaterialToggle] SHAPEX("Multiply Noise", Float) = 0
         _ShapeTex("Mask", 2D) = "white" {}
         [Toggle] _FlipX("Flip X", Float) = 0
+        [Toggle] _UseNoiseAlpha("Use Noise Alpha", Float) = 0 // オンならaを、オフならrを使用
     }
     SubShader
     {
@@ -59,6 +60,7 @@ Shader "Custom/DistortShader"
             float4 _ColorA, _ColorB, _TintA, _TintB;
             float _Offset, _ScrollX, _ScrollY;
             float _FillAmount, _Edge, _Distort, _Hard, _FlipX;
+            fixed _UseNoiseAlpha;
 
             v2f vert(appdata v)
             {
@@ -93,9 +95,10 @@ Shader "Custom/DistortShader"
                 noise += gradientBlend;
                 #endif
 
-                float4 flame = saturate(noise.r * _Hard);
+                fixed noiseValue = lerp(noise.r, noise.a, _UseNoiseAlpha);
+                float4 flame = saturate(noiseValue * _Hard);
                 float4 flamecolored = flame * gradientMain;
-                float4 flamerim = saturate((noise.r + _Edge) * _Hard) - flame;
+                float4 flamerim = saturate((noiseValue + _Edge) * _Hard) - flame;
                 float4 flamecolored2 = flamerim * gradientTint;
                 float4 finalcolor = flamecolored + flamecolored2;
                 return finalcolor;
