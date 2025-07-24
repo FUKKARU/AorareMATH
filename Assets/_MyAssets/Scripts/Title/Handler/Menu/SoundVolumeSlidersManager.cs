@@ -7,7 +7,7 @@ using Text = TMPro.TextMeshProUGUI;
 
 namespace Title.Handler.Menu
 {
-    //TODO: Remap を複数回計算しているので、デフォルト値にピッタリ戻せなくなっている
+    //TODO: Remap を毎回計算しているので、デフォルト値にピッタリ戻せなくなっている
     internal sealed class SoundVolumeSlidersManager : MonoBehaviour
     {
         [SerializeField] private Slider bgmSlider;
@@ -23,12 +23,6 @@ namespace Title.Handler.Menu
             if (bgmText == null) return;
             if (seText == null) return;
             if (seSampleEventTrigger == null) return;
-
-            // セーブデータのボリュームに設定
-            {
-                SoundManager.SetVolume(SoundType.BGM, SaveDataHolder.Data.BgmVolume);
-                SoundManager.SetVolume(SoundType.SE, SaveDataHolder.Data.SeVolume);
-            }
 
             // スライダーの value を設定
             {
@@ -71,19 +65,17 @@ namespace Title.Handler.Menu
             if (slider == null) return;
 
             float volume = SoundManager.GetVolume(type);
-            float value = volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
-            float wholeValue = Mathf.Round(value.Remap(0, 1, slider.minValue, slider.maxValue));
+            float value = volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, slider.minValue, slider.maxValue);
 
-            slider.value = wholeValue;
+            slider.value = value;
         }
 
         private void SetFromSliderToAm(Slider slider, SoundType type)
         {
             if (slider == null) return;
 
-            float wholeValue = slider.value;
-            float value = wholeValue.Remap(slider.minValue, slider.maxValue, 0, 1);
-            float volume = value.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
+            float value = slider.value;
+            float volume = value.Remap(slider.minValue, slider.maxValue, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
 
             SoundManager.SetVolume(type, volume);
 
