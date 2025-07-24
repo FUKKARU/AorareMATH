@@ -142,7 +142,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 4.0.0
+  bundleVersion: 4.0.1
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -857,7 +857,7 @@ PlayerSettings:
     Stadia: DOTWEEN
     Standalone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
     VisionOS: DOTWEEN
-    WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_ON
+    WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
     Windows Store Apps: DOTWEEN
     XboxOne: DOTWEEN
     iPhone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
