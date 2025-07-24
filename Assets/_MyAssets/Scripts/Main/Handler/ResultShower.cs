@@ -34,7 +34,7 @@ namespace Main.Handler
             if (SaveDataHolder.CacheData.DoFastenDirections == false)
             {
                 await 0.1f.SecAwait(ct: ct);
-                await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
+                await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
                 await 0.1f.SecAwait(ct: ct);
 
                 await DOTween.To(
@@ -48,7 +48,7 @@ namespace Main.Handler
             }
             else
             {
-                await baseImageRt.DOAnchorPosY(-50, 0.5f).WithCancellation(ct);
+                await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
                 scoreText.text = correctAmount.ToString();
             }
 
