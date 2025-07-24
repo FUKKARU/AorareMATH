@@ -12,10 +12,10 @@ namespace SO
         [SerializeField, Header("演出の高速化")] private bool doFastenDirections;
         internal bool DoFastenDirections => doFastenDirections;
 
-        [SerializeField, Range(-20.0f, 20.0f), Header("BGMボリューム (dB)")] private float bgmVolume;
+        [SerializeField, Range(-20.0f, 20.0f), Header("BGMボリューム (dB)"), Tooltip("スライダーの値が整数なので注意")] private float bgmVolume;
         internal float BgmVolume => bgmVolume;
 
-        [SerializeField, Range(-20.0f, 20.0f), Header("SEボリューム (dB)")] private float seVolume;
+        [SerializeField, Range(-20.0f, 20.0f), Header("SEボリューム (dB)"), Tooltip("スライダーの値が整数なので注意")] private float seVolume;
         internal float SeVolume => seVolume;
     }
 }

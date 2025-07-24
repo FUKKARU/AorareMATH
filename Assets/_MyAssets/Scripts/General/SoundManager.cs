@@ -11,8 +11,11 @@ namespace General
         SE
     }
 
+    // セーブの処理は行わない
     internal static class SoundManager
     {
+        private static readonly float mutedVolume = -80.0f;
+
         private static readonly AmParamTable amParamTable = new()
         {
             { SoundType.Master, "MasterParam" },
@@ -20,35 +23,31 @@ namespace General
             { SoundType.SE, "SEParam" }
         };
 
-        // 閾値以下のボリュームであったら、muted が true になる
-        internal static float GetVolume(SoundType soundType, out bool muted)
+        internal static bool IsMuted(SoundType soundType)
+            => GetVolume(soundType) <= SO_Handler.Entity.MinVolume;
+
+        internal static float GetVolume(SoundType soundType)
         {
             if (!amParamTable.TryGetValue(soundType, out string param))
             {
-                muted = true;
-                return 0.0f;
+                $"param not found for sound type: {soundType}".LogError();
+                return 0;
             }
 
             SO_Sound.Entity.AudioMixer.GetFloat(param, out float volume);
-            muted = volume <= SO_Handler.Entity.MinVolume;
             return volume;
         }
 
-        // 閾値以下のボリュームがセットされたら、muted が true になる
-        internal static void SetVolume(SoundType soundType, float newVolume, out bool muted)
+        internal static void SetVolume(SoundType soundType, float newVolume)
         {
             if (!amParamTable.TryGetValue(soundType, out string param))
             {
-                muted = true;
+                $"param not found for sound type: {soundType}".LogError();
                 return;
             }
 
-            muted = false;
             if (newVolume <= SO_Handler.Entity.MinVolume)
-            {
-                newVolume = -80.0f;
-                muted = true;
-            }
+                newVolume = mutedVolume;
 
             SO_Sound.Entity.AudioMixer.SetFloat(param, newVolume);
         }

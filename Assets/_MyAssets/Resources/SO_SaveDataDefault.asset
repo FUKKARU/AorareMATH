@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   correctAmountRankingLength: 100
   doFastenDirections: 0
-  bgmVolume: -5
-  seVolume: 5
+  bgmVolume: -4
+  seVolume: 4

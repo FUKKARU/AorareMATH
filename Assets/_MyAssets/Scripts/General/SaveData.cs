@@ -9,25 +9,28 @@ namespace General
     [Serializable]
     public sealed class SaveData
     {
-        private static SO_SaveDataDefault @default => SO_SaveDataDefault.Entity;
-
         // 正解数 (ランキング用, TOP 100)
         // データを追加する用に、最後の一つ分多く確保
-        public int[] CorrectAmountRanking = new int[@default.CorrectAmountRankingLength + 1];
+        public int[] CorrectAmountRanking;
 
         // 演出の高速化
-        public bool DoFastenDirections = @default.DoFastenDirections;
+        public bool DoFastenDirections;
 
         // サウンドボリューム
-        public float BgmVolume = @default.BgmVolume;
-        public float SeVolume = @default.SeVolume;
+        public float BgmVolume;
+        public float SeVolume;
 
         public void CopyFromOther(SaveData other)
         {
             if (other == null) return;
 
-            Array.Copy(other.CorrectAmountRanking, CorrectAmountRanking, @default.CorrectAmountRankingLength + 1);
+            int correctAmountRankingLength = other.CorrectAmountRanking.Length;
+            CorrectAmountRanking = new int[correctAmountRankingLength];
+            Array.Copy(other.CorrectAmountRanking, CorrectAmountRanking, correctAmountRankingLength);
+
             DoFastenDirections = other.DoFastenDirections;
+            BgmVolume = other.BgmVolume;
+            SeVolume = other.SeVolume;
         }
     }
 
@@ -76,7 +79,13 @@ namespace General
             {
                 $"Failed to load SaveData: {e.Message}. A new SaveData will be created.".LogWarning();
 
-                saveData = new SaveData();
+                saveData = new SaveData()
+                {
+                    CorrectAmountRanking = new int[SO_SaveDataDefault.Entity.CorrectAmountRankingLength + 1],
+                    DoFastenDirections = SO_SaveDataDefault.Entity.DoFastenDirections,
+                    BgmVolume = SO_SaveDataDefault.Entity.BgmVolume,
+                    SeVolume = SO_SaveDataDefault.Entity.SeVolume
+                };
                 Save();
             }
             finally
