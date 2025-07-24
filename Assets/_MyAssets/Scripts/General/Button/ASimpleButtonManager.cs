@@ -1,6 +1,4 @@
-using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening;
 using SO;
 
 namespace General.Button

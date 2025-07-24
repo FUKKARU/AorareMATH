@@ -1,27 +1,23 @@
-using System;
 using System.IO;
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 using SO;
-using Ct = System.Threading.CancellationToken;
 
 namespace General
 {
     [Serializable]
-    public sealed class SaveData
+    internal sealed class SaveData
     {
         // 正解数 (ランキング用, TOP 100)
         // データを追加する用に、最後の一つ分多く確保
-        public int[] CorrectAmountRanking;
+        internal int[] CorrectAmountRanking;
 
         // 演出の高速化
-        public bool DoFastenDirections;
+        internal bool DoFastenDirections;
 
         // サウンドボリューム
-        public float BgmVolume;
-        public float SeVolume;
+        internal float BgmVolume;
+        internal float SeVolume;
 
-        public void CopyFromOther(SaveData other)
+        internal void CopyFromOther(SaveData other)
         {
             if (other == null) return;
 
@@ -35,7 +31,7 @@ namespace General
         }
     }
 
-    public static class SaveDataHolder
+    internal static class SaveDataHolder
     {
         private const string SavePath = "gameData.json";
         private static SaveData saveData = new();
@@ -44,14 +40,14 @@ namespace General
         //! この中のメンバを書き換えることは、想定していない
         private static SaveData saveDataCache = new();
 
-        public static SaveData Data => saveData;
-        public static SaveData CacheData => saveDataCache;
+        internal static SaveData Data => saveData;
+        internal static SaveData CacheData => saveDataCache;
 
         private static readonly float AutoSaveIntervalSec = 30.0f;
 
         // SaveDataをセーブする
         //! 外部依存
-        public static void Save()
+        internal static void Save()
         {
             try
             {

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Main.Handler
 {
     internal sealed class InputFrameOutliner : MonoBehaviour

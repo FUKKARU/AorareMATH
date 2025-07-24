@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 namespace General
 {
     // 全てのシーンに配置する

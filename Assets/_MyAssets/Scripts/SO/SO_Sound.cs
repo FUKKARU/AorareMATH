@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Audio;
+﻿using UnityEngine.Audio;
 using General;
 
 namespace SO

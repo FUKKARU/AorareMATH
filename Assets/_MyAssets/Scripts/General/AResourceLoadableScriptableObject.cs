@@ -1,13 +1,11 @@
-using UnityEngine;
-
 namespace General
 {
-    public abstract class AResourceLoadableScriptableObject<T> : ScriptableObject where T : ScriptableObject
+    internal abstract class AResourceLoadableScriptableObject<T> : ScriptableObject where T : ScriptableObject
     {
         private static readonly string Path = typeof(T).Name;
 
         private static T _entity = null;
-        public static T Entity
+        internal static T Entity
         {
             get
             {

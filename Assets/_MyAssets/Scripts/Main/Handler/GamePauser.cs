@@ -1,4 +1,3 @@
-using UnityEngine;
 using General.Shaders;
 
 namespace Main.Handler

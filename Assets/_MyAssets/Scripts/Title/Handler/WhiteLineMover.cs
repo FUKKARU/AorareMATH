@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using UnityEngine;
+﻿using System.Collections.ObjectModel;
 
 namespace Title.Handler
 {

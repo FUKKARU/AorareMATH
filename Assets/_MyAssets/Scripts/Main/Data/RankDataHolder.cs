@@ -1,5 +1,3 @@
-using System;
-using UnityEngine;
 using General;
 
 namespace Main.Data

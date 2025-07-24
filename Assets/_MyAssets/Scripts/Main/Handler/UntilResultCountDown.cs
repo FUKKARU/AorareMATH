@@ -1,9 +1,3 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
-using DG.Tweening;
-
 namespace Main.Handler
 {
     internal sealed class UntilResultCountDown : MonoBehaviour

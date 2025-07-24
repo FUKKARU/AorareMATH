@@ -1,9 +1,4 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using General;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {

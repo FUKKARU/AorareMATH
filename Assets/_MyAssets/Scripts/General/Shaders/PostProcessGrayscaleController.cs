@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace General.Shaders
 {
     internal sealed class PostProcessGrayscaleController : MonoBehaviour

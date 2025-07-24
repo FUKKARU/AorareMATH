@@ -1,9 +1,6 @@
-using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening;
 using SO;
 using Image = UnityEngine.UI.Image;
-using Text = TMPro.TextMeshProUGUI;
 
 namespace General.Button
 {
