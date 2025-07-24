@@ -1,7 +1,4 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 using General.Shaders;
-using Ct = System.Threading.CancellationToken;
 
 namespace General.Button
 {

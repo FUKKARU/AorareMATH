@@ -1,6 +1,5 @@
 ﻿using Main.Data.Formula;
 using SO;
-using UnityEngine;
 
 namespace Main.Data
 {

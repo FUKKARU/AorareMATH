@@ -1,19 +1,13 @@
-﻿using System;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
+﻿using System.Linq;
 using General;
 using General.Shaders;
 using Main.Data;
 using Main.Data.Formula;
 using SO;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
-    internal enum GameState
+    internal enum GameState : byte
     {
         Stay,
         OnGoing,

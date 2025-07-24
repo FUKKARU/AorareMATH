@@ -1,10 +1,5 @@
-﻿using UnityEngine;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using General;
+﻿using General;
 using General.Button;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {

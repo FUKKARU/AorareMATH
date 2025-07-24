@@ -1,6 +1,3 @@
-using UnityEngine;
-using Text = TMPro.TextMeshProUGUI;
-
 namespace Title.Handler
 {
     internal sealed class VersionLabelSetter : MonoBehaviour

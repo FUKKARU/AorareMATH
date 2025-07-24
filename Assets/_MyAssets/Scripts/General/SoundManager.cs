@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using SO;
+﻿using SO;
 using AmParamTable = System.Collections.Generic.Dictionary<General.SoundType, string>;
 
 namespace General

@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 using SO;
 using General;
-using Text = TMPro.TextMeshProUGUI;
 
 namespace Title.Handler.Menu
 {

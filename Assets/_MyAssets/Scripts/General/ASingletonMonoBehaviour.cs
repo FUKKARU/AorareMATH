@@ -1,11 +1,9 @@
-using UnityEngine;
-
 namespace General
 {
-    public abstract class ASingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+    internal abstract class ASingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T instance = null;
-        public static T Instance
+        internal static T Instance
         {
             get
             {

@@ -1,6 +1,3 @@
-using UnityEngine;
-using UnityEngine.UI;
-
 namespace Main.Handler
 {
     internal sealed class ResultBackgroundShaderController : MonoBehaviour
@@ -17,6 +14,9 @@ namespace Main.Handler
         private Material materialInstance; // マテリアルのインスタンスを保存
         private Vector2 offset; // スクロールのオフセットを保存
 
+        private static readonly int EnabledID = Shader.PropertyToID("_Enabled");
+        private static readonly int OffsetID = Shader.PropertyToID("_Offset");
+
         private void Awake()
         {
             if (material != null)
@@ -29,7 +29,7 @@ namespace Main.Handler
             direction.Normalize();
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             if (materialInstance != null)
             {
@@ -45,8 +45,8 @@ namespace Main.Handler
 
             if (materialInstance != null)
             {
-                materialInstance.SetFloat("_Enabled", Enabled ? 1 : 0);
-                materialInstance.SetVector("_Offset", offset);
+                materialInstance.SetFloat(EnabledID, Enabled ? 1 : 0);
+                materialInstance.SetVector(OffsetID, offset);
             }
         }
     }

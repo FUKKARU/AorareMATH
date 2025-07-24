@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEngine;
 using General;
-using Random = UnityEngine.Random;
 
 namespace Main.Data
 {
-    public static class FixedQuestions
+    internal static class FixedQuestions
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()

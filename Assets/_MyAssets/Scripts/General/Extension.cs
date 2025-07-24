@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Cysharp.Threading.Tasks;
-using Random = UnityEngine.Random;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
+﻿using UnityEngine.EventSystems;
 
 namespace General
 {
