@@ -51,7 +51,7 @@ namespace Main.Handler
         internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
-        internal RankDataHolder rankDataHolder { get; private set; } = new(); // セーブデータに対して、ランキングの読み書きを行うラッパー
+        internal RankDataHolder rankDataHolder { get; private set; } = null; // セーブデータに対して、ランキングの読み書きを行うラッパー
         internal int CorrectAmount => rankDataHolder.CorrectAmount;
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
         private int target = 0; // 出題中の問題のターゲット数
@@ -93,8 +93,7 @@ namespace Main.Handler
         {
             State = GameState.Stay;
 
-            rankDataHolder?.Init();
-            Formula.Init();
+            rankDataHolder = RankDataHolder.Create();
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
@@ -187,7 +186,7 @@ namespace Main.Handler
 
             void DestroyInstances()
             {
-                Formula.Init();
+                Formula?.Reset();
 
                 foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
                 Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
