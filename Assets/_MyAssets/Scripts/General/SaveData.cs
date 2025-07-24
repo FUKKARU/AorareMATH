@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using SO;
+using Ct = System.Threading.CancellationToken;
 
 namespace General
 {
@@ -94,6 +95,22 @@ namespace General
 
                 // オートセーブを開始
                 SavePeriodically(AutoSaveIntervalSec).Forget();
+            }
+
+            // セーブデータをロードした後の初期化処理を行う
+            {
+                SetVolumeToAm(Ct.None).Forget(); // キャンセルしない
+
+
+
+                static async UniTaskVoid SetVolumeToAm(Ct ct)
+                {
+                    // AudioMixer.SetFloat は Awake 段階では発動しないバグがあるため，タイミング調整
+                    await UniTask.Yield(PlayerLoopTiming.LastInitialization);
+
+                    SoundManager.SetVolume(SoundType.BGM, saveData.BgmVolume);
+                    SoundManager.SetVolume(SoundType.SE, saveData.SeVolume);
+                }
             }
         }
 

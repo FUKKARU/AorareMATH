@@ -6,13 +6,13 @@ namespace General
     internal sealed class BGMPlayer : AFadeableBgmPlayer
     {
         [SerializeField] private Scene thisScene; // 現在のシーンにあったBGMを鳴らすため
-        [SerializeField] private bool playOnAwake;
+        [SerializeField] private bool playOnStart;
 
         private bool hasPlayed = false;
 
-        private void Awake()
+        private void Start()
         {
-            if (playOnAwake)
+            if (playOnStart)
                 Play();
         }
 
