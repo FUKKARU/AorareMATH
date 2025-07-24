@@ -187,10 +187,11 @@ namespace Main.Data.Formula
         internal List<IntStr> Data { get; set; }
         internal static readonly int MaxLength = 12;
 
-        internal Formula()
+        internal Formula() => Data = new()
         {
-            Data = new();
-        }
+            Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
+            Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
+        };
 
         internal Formula(IntStr[] data)
         {
@@ -199,18 +200,10 @@ namespace Main.Data.Formula
             Data = data.ToList();
         }
 
-        internal void Init()
-        {
-            Data = new()
-            {
-                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
-                Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-            };
-        }
-
         internal void Reset()
         {
-            Data.Clear();
+            for (int i = 0; i < Data.Count; ++i)
+                Data[i] = Symbol.NONE;
         }
 
 #if UNITY_EDITOR
