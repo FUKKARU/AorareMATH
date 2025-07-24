@@ -8,14 +8,14 @@ namespace General
     {
         // 正解数 (ランキング用, TOP 100)
         // データを追加する用に、最後の一つ分多く確保
-        internal int[] CorrectAmountRanking;
+        public int[] CorrectAmountRanking;
 
         // 演出の高速化
-        internal bool DoFastenDirections;
+        public bool DoFastenDirections;
 
         // サウンドボリューム
-        internal float BgmVolume;
-        internal float SeVolume;
+        public float BgmVolume;
+        public float SeVolume;
 
         internal void CopyFromOther(SaveData other)
         {
