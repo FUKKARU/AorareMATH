@@ -19,65 +19,95 @@ namespace Title.Handler.Menu
         {
             if (bgmSlider == null) return;
             if (seSlider == null) return;
+            if (bgmText == null) return;
+            if (seText == null) return;
+            if (seSampleEventTrigger == null) return;
 
-            bgmSlider.value = GetVolumeAsSliderValue(SoundType.BGM, bgmText);
-            seSlider.value = GetVolumeAsSliderValue(SoundType.SE, seText);
+            {
+                InitializeSoundSettings(bgmSlider, SoundType.BGM, out bool bgmMuted);
+                UpdateSliderLabel(bgmText, SoundType.BGM, bgmMuted);
 
-            bgmSlider.onValueChanged.AddListener(value => SetVolumeFromSliderValue(SoundType.BGM, value, bgmText));
-            seSlider.onValueChanged.AddListener(value => SetVolumeFromSliderValue(SoundType.SE, value, seText));
+                InitializeSoundSettings(seSlider, SoundType.SE, out bool seMuted);
+                UpdateSliderLabel(seText, SoundType.SE, seMuted);
+            }
 
-            seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, PlaySeSample);
-            seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, PlaySeSample);
+            {
+                bgmSlider.onValueChanged.AddListener(value =>
+                {
+                    UpdateSoundVolumeFromSlider(value, SoundType.BGM, out bool muted);
+                    UpdateSliderLabel(bgmText, SoundType.BGM, muted);
+                });
+
+                seSlider.onValueChanged.AddListener(value =>
+                {
+                    UpdateSoundVolumeFromSlider(value, SoundType.SE, out bool muted);
+                    UpdateSliderLabel(seText, SoundType.SE, muted);
+                });
+            }
+
+            {
+                seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, PlaySeSample);
+                seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, PlaySeSample);
+
+
+
+                static void PlaySeSample(PointerEventData data)
+                    => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE);
+            }
         }
 
-        private float GetVolumeAsSliderValue(SoundType soundType, Text sliderText = null)
+        // ロードされたセーブデータからサウンドボリュームの値を読み取り、AudioMixer と Slider にセットする
+        private static void InitializeSoundSettings(Slider slider, SoundType type, out bool muted)
         {
-            float sliderValue = SoundManager.GetVolume(soundType, out bool muted).ConvertToSliderValue();
-            UpdateSliderText(sliderText, soundType, muted);
-            return sliderValue;
+            float volume = type switch
+            {
+                SoundType.BGM => SaveDataHolder.Data.BgmVolume,
+                SoundType.SE => SaveDataHolder.Data.SeVolume,
+                _ => 0.0f
+            };
+
+            SoundManager.SetVolume(type, volume, out muted);
+
+            if (slider != null)
+                slider.value = VolumeToSlider(volume);
+
+
+
+            static float VolumeToSlider(float volume)
+                => volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
         }
 
-        private void SetVolumeFromSliderValue(SoundType soundType, float sliderValue, Text sliderText = null)
+        // スライダーの値からサウンドボリュームを計算し、SaveData と AudioMixer にセットする
+        private static void UpdateSoundVolumeFromSlider(float value, SoundType type, out bool muted)
         {
-            SoundManager.SetVolume(soundType, sliderValue.ConvertToVolume(), out bool muted);
-            UpdateSliderText(sliderText, soundType, muted);
+            float volume = SliderToVolume(value);
+
+            if (type == SoundType.BGM) SaveDataHolder.Data.BgmVolume = volume;
+            else if (type == SoundType.SE) SaveDataHolder.Data.SeVolume = volume;
+
+            SoundManager.SetVolume(type, volume, out muted);
+
+
+
+            static float SliderToVolume(float slider)
+                => slider.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
         }
 
-        private void UpdateSliderText(Text sliderText, SoundType soundType, bool muted)
+        // スライダーのラベルを更新する (種類・ミュート状態)
+        private void UpdateSliderLabel(Text label, SoundType type, bool muted)
         {
-            if (sliderText == null) return;
+            if (label == null) return;
 
-            string text = soundType switch
+            string text = type switch
             {
                 SoundType.BGM => "BGM",
                 SoundType.SE => "SE",
                 _ => string.Empty
             };
-
             if (muted)
-            {
                 text = $"<color=#ffffff08>{text}</color>";
-            }
 
-            sliderText.text = text;
+            label.text = text;
         }
-
-        private void PlaySeSample(PointerEventData data)
-            => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE);
-    }
-
-    internal static class SoundVolumeChangerEx
-    {
-        /// <summary>
-        /// スライダーの値[0, 1]を、音量の値[minVolume, maxVolume]に、線形マッピングする
-        /// </summary>
-        internal static float ConvertToVolume(this float sliderValue)
-            => sliderValue.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
-
-        /// <summary>
-        /// 音量の値[minVolume, maxVolume]を、スライダーの値[0, 1]に、線形マッピングする
-        /// </summary>
-        internal static float ConvertToSliderValue(this float volume)
-            => volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
     }
 }

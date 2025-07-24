@@ -1,9 +1,10 @@
-﻿using SO;
-using UnityEngine;
+﻿using UnityEngine;
+using SO;
+using AmParamTable = System.Collections.Generic.Dictionary<General.SoundType, string>;
 
 namespace General
 {
-    internal enum SoundType
+    internal enum SoundType : byte
     {
         Master,
         BGM,
@@ -12,34 +13,44 @@ namespace General
 
     internal static class SoundManager
     {
-        private static string GetAMGroupString(SoundType soundType)
+        private static readonly AmParamTable amParamTable = new()
         {
-            return soundType switch
-            {
-                SoundType.Master => "MasterParam",
-                SoundType.BGM => "BGMParam",
-                SoundType.SE => "SEParam",
-                _ => throw new System.Exception("不正な値です")
-            };
-        }
+            { SoundType.Master, "MasterParam" },
+            { SoundType.BGM, "BGMParam" },
+            { SoundType.SE, "SEParam" }
+        };
 
+        // 閾値以下のボリュームであったら、muted が true になる
         internal static float GetVolume(SoundType soundType, out bool muted)
         {
-            SO_Sound.Entity.AudioMixer.GetFloat(GetAMGroupString(soundType), out float volume);
+            if (!amParamTable.TryGetValue(soundType, out string param))
+            {
+                muted = true;
+                return 0.0f;
+            }
+
+            SO_Sound.Entity.AudioMixer.GetFloat(param, out float volume);
             muted = volume <= SO_Handler.Entity.MinVolume;
             return volume;
         }
 
+        // 閾値以下のボリュームがセットされたら、muted が true になる
         internal static void SetVolume(SoundType soundType, float newVolume, out bool muted)
         {
+            if (!amParamTable.TryGetValue(soundType, out string param))
+            {
+                muted = true;
+                return;
+            }
+
             muted = false;
             if (newVolume <= SO_Handler.Entity.MinVolume)
             {
-                newVolume = -80;
+                newVolume = -80.0f;
                 muted = true;
             }
 
-            SO_Sound.Entity.AudioMixer.SetFloat(GetAMGroupString(soundType), newVolume);
+            SO_Sound.Entity.AudioMixer.SetFloat(param, newVolume);
         }
 
         internal static void Play

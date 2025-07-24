@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 278d5fd797ed86f4d821ce7dc92cff55, type: 3}
-  m_Name: SO_GameState
+  m_Script: {fileID: 11500000, guid: 4923bcb24267344ec8479b2ad81d7600, type: 3}
+  m_Name: SO_SaveDataDefault
   m_EditorClassIdentifier: 
-  _resolution: {x: 1920, y: 1080}
-  _isFullScreen: 1
-  _targetFrameRate: 60
+  correctAmountRankingLength: 100
+  doFastenDirections: 0
+  bgmVolume: -5
+  seVolume: 5

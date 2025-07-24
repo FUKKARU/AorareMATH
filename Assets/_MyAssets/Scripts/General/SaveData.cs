@@ -2,26 +2,31 @@ using System;
 using System.IO;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using SO;
 
 namespace General
 {
     [Serializable]
     public sealed class SaveData
     {
-        private static readonly int CorrectAmountRankingLength = 100;
+        private static SO_SaveDataDefault @default => SO_SaveDataDefault.Entity;
 
         // 正解数 (ランキング用, TOP 100)
         // データを追加する用に、最後の一つ分多く確保
-        public int[] CorrectAmountRanking = new int[CorrectAmountRankingLength + 1];
+        public int[] CorrectAmountRanking = new int[@default.CorrectAmountRankingLength + 1];
 
         // 演出の高速化
-        public bool DoFastenDirections = false;
+        public bool DoFastenDirections = @default.DoFastenDirections;
+
+        // サウンドボリューム
+        public float BgmVolume = @default.BgmVolume;
+        public float SeVolume = @default.SeVolume;
 
         public void CopyFromOther(SaveData other)
         {
             if (other == null) return;
 
-            Array.Copy(other.CorrectAmountRanking, CorrectAmountRanking, CorrectAmountRankingLength);
+            Array.Copy(other.CorrectAmountRanking, CorrectAmountRanking, @default.CorrectAmountRankingLength + 1);
             DoFastenDirections = other.DoFastenDirections;
         }
     }
