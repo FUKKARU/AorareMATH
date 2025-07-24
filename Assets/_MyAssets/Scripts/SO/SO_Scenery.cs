@@ -6,7 +6,7 @@ using General;
 namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Scenery", fileName = "SO_Scenery")]
-    public class SO_Scenery : AResourceLoadableScriptableObject<SO_Scenery>
+    internal sealed class SO_Scenery : AResourceLoadableScriptableObject<SO_Scenery>
     {
         [SerializeField, FormerlySerializedAs("_whiteLineProperty")] private SceneryElementProperty _whitelineProperty;
         internal SceneryElementProperty WhitelineProperty => _whitelineProperty;

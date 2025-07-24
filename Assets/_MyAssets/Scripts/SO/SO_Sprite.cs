@@ -4,7 +4,7 @@ using General;
 namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Sprite", fileName = "SO_Sprite")]
-    public class SO_Sprite : AResourceLoadableScriptableObject<SO_Sprite>
+    internal sealed class SO_Sprite : AResourceLoadableScriptableObject<SO_Sprite>
     {
         [SerializeField] private Sprite _n0;
         internal Sprite N0 => _n0;

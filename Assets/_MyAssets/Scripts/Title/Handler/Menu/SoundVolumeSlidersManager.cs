@@ -7,6 +7,7 @@ using Text = TMPro.TextMeshProUGUI;
 
 namespace Title.Handler.Menu
 {
+    //TODO: Remap を複数回計算しているので、デフォルト値にピッタリ戻せなくなっている
     internal sealed class SoundVolumeSlidersManager : MonoBehaviour
     {
         [SerializeField] private Slider bgmSlider;
@@ -19,65 +20,95 @@ namespace Title.Handler.Menu
         {
             if (bgmSlider == null) return;
             if (seSlider == null) return;
+            if (bgmText == null) return;
+            if (seText == null) return;
+            if (seSampleEventTrigger == null) return;
 
-            bgmSlider.value = GetVolumeAsSliderValue(SoundType.BGM, bgmText);
-            seSlider.value = GetVolumeAsSliderValue(SoundType.SE, seText);
+            // セーブデータのボリュームに設定
+            {
+                SoundManager.SetVolume(SoundType.BGM, SaveDataHolder.Data.BgmVolume);
+                SoundManager.SetVolume(SoundType.SE, SaveDataHolder.Data.SeVolume);
+            }
 
-            bgmSlider.onValueChanged.AddListener(value => SetVolumeFromSliderValue(SoundType.BGM, value, bgmText));
-            seSlider.onValueChanged.AddListener(value => SetVolumeFromSliderValue(SoundType.SE, value, seText));
+            // スライダーの value を設定
+            {
+                SetFromAmToSlider(bgmSlider, SoundType.BGM);
+                SetFromAmToSlider(seSlider, SoundType.SE);
 
-            seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, PlaySeSample);
-            seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, PlaySeSample);
+                UpdateSliderLabel(bgmText, SoundType.BGM);
+                UpdateSliderLabel(seText, SoundType.SE);
+            }
+
+            // スライダーの値が変更されたときの処理をデリゲート
+            {
+                bgmSlider.onValueChanged.AddListener(wholeValue =>
+                {
+                    SetFromSliderToAm(bgmSlider, SoundType.BGM);
+                    UpdateSliderLabel(bgmText, SoundType.BGM);
+                });
+
+                seSlider.onValueChanged.AddListener(wholeValue =>
+                {
+                    SetFromSliderToAm(seSlider, SoundType.SE);
+                    UpdateSliderLabel(seText, SoundType.SE);
+                });
+            }
+
+            // SEスライダーのサンプル音再生処理をデリゲート
+            {
+                seSampleEventTrigger.AddListener(EventTriggerType.PointerClick, PlaySeSample);
+                seSampleEventTrigger.AddListener(EventTriggerType.PointerUp, PlaySeSample);
+
+
+
+                static void PlaySeSample(PointerEventData _)
+                    => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE);
+            }
         }
 
-        private float GetVolumeAsSliderValue(SoundType soundType, Text sliderText = null)
+        private void SetFromAmToSlider(Slider slider, SoundType type)
         {
-            float sliderValue = SoundManager.GetVolume(soundType, out bool muted).ConvertToSliderValue();
-            UpdateSliderText(sliderText, soundType, muted);
-            return sliderValue;
+            if (slider == null) return;
+
+            float volume = SoundManager.GetVolume(type);
+            float value = volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
+            float wholeValue = Mathf.Round(value.Remap(0, 1, slider.minValue, slider.maxValue));
+
+            slider.value = wholeValue;
         }
 
-        private void SetVolumeFromSliderValue(SoundType soundType, float sliderValue, Text sliderText = null)
+        private void SetFromSliderToAm(Slider slider, SoundType type)
         {
-            SoundManager.SetVolume(soundType, sliderValue.ConvertToVolume(), out bool muted);
-            UpdateSliderText(sliderText, soundType, muted);
+            if (slider == null) return;
+
+            float wholeValue = slider.value;
+            float value = wholeValue.Remap(slider.minValue, slider.maxValue, 0, 1);
+            float volume = value.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
+
+            SoundManager.SetVolume(type, volume);
+
+            // セーブデータも更新する
+            if (type == SoundType.BGM)
+                SaveDataHolder.Data.BgmVolume = volume;
+            else if (type == SoundType.SE)
+                SaveDataHolder.Data.SeVolume = volume;
         }
 
-        private void UpdateSliderText(Text sliderText, SoundType soundType, bool muted)
+        // スライダーのラベルを更新する (種類・ミュート状態)
+        private void UpdateSliderLabel(Text label, SoundType type)
         {
-            if (sliderText == null) return;
+            if (label == null) return;
 
-            string text = soundType switch
+            string text = type switch
             {
                 SoundType.BGM => "BGM",
                 SoundType.SE => "SE",
                 _ => string.Empty
             };
-
-            if (muted)
-            {
+            if (SoundManager.IsMuted(type))
                 text = $"<color=#ffffff08>{text}</color>";
-            }
 
-            sliderText.text = text;
+            label.text = text;
         }
-
-        private void PlaySeSample(PointerEventData data)
-            => AudioSourceManager.Instance.Play(SO_Sound.Entity.SymbolSE, SoundType.SE);
-    }
-
-    internal static class SoundVolumeChangerEx
-    {
-        /// <summary>
-        /// スライダーの値[0, 1]を、音量の値[minVolume, maxVolume]に、線形マッピングする
-        /// </summary>
-        internal static float ConvertToVolume(this float sliderValue)
-            => sliderValue.Remap(0, 1, SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume);
-
-        /// <summary>
-        /// 音量の値[minVolume, maxVolume]を、スライダーの値[0, 1]に、線形マッピングする
-        /// </summary>
-        internal static float ConvertToSliderValue(this float volume)
-            => volume.Remap(SO_Handler.Entity.MinVolume, SO_Handler.Entity.MaxVolume, 0, 1);
     }
 }

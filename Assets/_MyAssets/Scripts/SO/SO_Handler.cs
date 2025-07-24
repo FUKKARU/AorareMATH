@@ -4,7 +4,7 @@ using General;
 namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Handler", fileName = "SO_Handler")]
-    public class SO_Handler : AResourceLoadableScriptableObject<SO_Handler>
+    internal sealed class SO_Handler : AResourceLoadableScriptableObject<SO_Handler>
     {
         [SerializeField, Header("音量の最小値/最大値(db)")] private Vector2 _soundVolumeRange;
         internal float MinVolume => _soundVolumeRange.x;

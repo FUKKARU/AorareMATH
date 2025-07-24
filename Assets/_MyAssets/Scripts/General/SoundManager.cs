@@ -1,45 +1,55 @@
-﻿using SO;
-using UnityEngine;
+﻿using UnityEngine;
+using SO;
+using AmParamTable = System.Collections.Generic.Dictionary<General.SoundType, string>;
 
 namespace General
 {
-    internal enum SoundType
+    internal enum SoundType : byte
     {
         Master,
         BGM,
         SE
     }
 
+    // セーブの処理は行わない
     internal static class SoundManager
     {
-        private static string GetAMGroupString(SoundType soundType)
-        {
-            return soundType switch
-            {
-                SoundType.Master => "MasterParam",
-                SoundType.BGM => "BGMParam",
-                SoundType.SE => "SEParam",
-                _ => throw new System.Exception("不正な値です")
-            };
-        }
+        private static readonly float mutedVolume = -80.0f;
 
-        internal static float GetVolume(SoundType soundType, out bool muted)
+        private static readonly AmParamTable amParamTable = new()
         {
-            SO_Sound.Entity.AudioMixer.GetFloat(GetAMGroupString(soundType), out float volume);
-            muted = volume <= SO_Handler.Entity.MinVolume;
+            { SoundType.Master, "MasterParam" },
+            { SoundType.BGM, "BGMParam" },
+            { SoundType.SE, "SEParam" }
+        };
+
+        internal static bool IsMuted(SoundType soundType)
+            => GetVolume(soundType) <= SO_Handler.Entity.MinVolume;
+
+        internal static float GetVolume(SoundType soundType)
+        {
+            if (!amParamTable.TryGetValue(soundType, out string param))
+            {
+                $"param not found for sound type: {soundType}".LogError();
+                return 0;
+            }
+
+            SO_Sound.Entity.AudioMixer.GetFloat(param, out float volume);
             return volume;
         }
 
-        internal static void SetVolume(SoundType soundType, float newVolume, out bool muted)
+        internal static void SetVolume(SoundType soundType, float newVolume)
         {
-            muted = false;
-            if (newVolume <= SO_Handler.Entity.MinVolume)
+            if (!amParamTable.TryGetValue(soundType, out string param))
             {
-                newVolume = -80;
-                muted = true;
+                $"param not found for sound type: {soundType}".LogError();
+                return;
             }
 
-            SO_Sound.Entity.AudioMixer.SetFloat(GetAMGroupString(soundType), newVolume);
+            if (newVolume <= SO_Handler.Entity.MinVolume)
+                newVolume = mutedVolume;
+
+            SO_Sound.Entity.AudioMixer.SetFloat(param, newVolume);
         }
 
         internal static void Play
