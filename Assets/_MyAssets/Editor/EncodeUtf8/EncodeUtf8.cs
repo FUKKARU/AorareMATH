@@ -21,12 +21,12 @@ public class EncodeUtf8 : Editor
         foreach (var file in files)
         {
 #if UNITY_STANDALONE_WIN
-            var    path = $"{Application.dataPath}{file.Remove(0, 6)}".Replace("/", "\\");
+            var path = $"{Application.dataPath}{file.Remove(0, 6)}".Replace("/", "\\");
 #else
-            var    path = $"{Application.dataPath}{file.Remove(0, 6)}".Replace("\\", "/");
+            var path = $"{Application.dataPath}{file.Remove(0, 6)}".Replace("\\", "/");
 #endif
 
-            var    enc  = GetEncode(File.ReadAllBytes(path));
+            var enc = GetEncode(File.ReadAllBytes(path));
             string text;
 
             if (enc != Encoding.UTF8)
@@ -67,15 +67,15 @@ public class EncodeUtf8 : Editor
         // Encode::is_utf8 は無視
 
         bool isBinary = false;
-        for(int i=0; i<len; i++)
+        for (int i = 0; i < len; i++)
         {
             b1 = bytes[i];
 
-            if(b1 <= 0x06 || b1 == 0x7F || b1 == 0xFF)
+            if (b1 <= 0x06 || b1 == 0x7F || b1 == 0xFF)
             {
                 // 'binary'
                 isBinary = true;
-                if(b1 == 0x00 && i < len - 1 && bytes[i + 1] <= 0x7F)
+                if (b1 == 0x00 && i < len - 1 && bytes[i + 1] <= 0x7F)
                 {
                     // smells like raw unicode
                     return System.Text.Encoding.Unicode;
@@ -83,53 +83,53 @@ public class EncodeUtf8 : Editor
             }
         }
 
-        if(isBinary)
+        if (isBinary)
         {
             return null;
         }
 
         // not Japanese
         bool notJapanese = true;
-        for(int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             b1 = bytes[i];
 
-            if(b1 == bEscape || 0x80 <= b1)
+            if (b1 == bEscape || 0x80 <= b1)
             {
                 notJapanese = false;
                 break;
             }
         }
 
-        if(notJapanese)
+        if (notJapanese)
         {
             return System.Text.Encoding.ASCII;
         }
 
-        for(int i=0; i<len - 2; i++)
+        for (int i = 0; i < len - 2; i++)
         {
             b1 = bytes[i];
             b2 = bytes[i + 1];
             b3 = bytes[i + 2];
 
-            if(b1 == bEscape)
+            if (b1 == bEscape)
             {
-                if(b2 == bDollar && b3 == bAt)
+                if (b2 == bDollar && b3 == bAt)
                 {
                     // JIS_0208 1978
                     return System.Text.Encoding.GetEncoding(50220);
                 }
-                else if(b2 == bDollar && b3 == bB)
+                else if (b2 == bDollar && b3 == bB)
                 {
                     // JIS_0208 1983
                     return System.Text.Encoding.GetEncoding(50220);
                 }
-                else if(b2 == bOpen && (b3 == bB || b3 == bJ))
+                else if (b2 == bOpen && (b3 == bB || b3 == bJ))
                 {
                     // JIS_ASC
                     return System.Text.Encoding.GetEncoding(50220);
                 }
-                else if(b2 == bOpen && b3 == bI)
+                else if (b2 == bOpen && b3 == bI)
                 {
                     // JIS_KANA
                     return System.Text.Encoding.GetEncoding(50220);
@@ -159,12 +159,12 @@ public class EncodeUtf8 : Editor
         int euc = 0;
         int utf8 = 0;
 
-        for(int i=0; i<len - 1; i++)
+        for (int i = 0; i < len - 1; i++)
         {
             b1 = bytes[i];
             b2 = bytes[i + 1];
 
-            if(((0x81 <= b1 && b1 <= 0x9F) || (0xE0 <= b1 && b1 <= 0xFC)) && ((0x40 <= b2 && b2 <= 0x7E) || (0x80 <= b2 && b2 <= 0xFC)))
+            if (((0x81 <= b1 && b1 <= 0x9F) || (0xE0 <= b1 && b1 <= 0xFC)) && ((0x40 <= b2 && b2 <= 0x7E) || (0x80 <= b2 && b2 <= 0xFC)))
             {
                 // SJIS_C
                 sjis += 2;
@@ -172,23 +172,23 @@ public class EncodeUtf8 : Editor
             }
         }
 
-        for(int i=0; i<len - 1; i++)
+        for (int i = 0; i < len - 1; i++)
         {
             b1 = bytes[i];
             b2 = bytes[i + 1];
 
-            if(((0xA1 <= b1 && b1 <= 0xFE) && (0xA1 <= b2 && b2 <= 0xFE)) || (b1 == 0x8E && (0xA1 <= b2 && b2 <= 0xDF)))
+            if (((0xA1 <= b1 && b1 <= 0xFE) && (0xA1 <= b2 && b2 <= 0xFE)) || (b1 == 0x8E && (0xA1 <= b2 && b2 <= 0xDF)))
             {
                 // EUC_C
                 // EUC_KANA
                 euc += 2;
                 i++;
             }
-            else if(i < len - 2)
+            else if (i < len - 2)
             {
                 b3 = bytes[i + 2];
 
-                if(b1 == 0x8F && (0xA1 <= b2 && b2 <= 0xFE) && (0xA1 <= b3 && b3 <= 0xFE))
+                if (b1 == 0x8F && (0xA1 <= b2 && b2 <= 0xFE) && (0xA1 <= b3 && b3 <= 0xFE))
                 {
                     // EUC_0212
                     euc += 3;
@@ -197,21 +197,21 @@ public class EncodeUtf8 : Editor
             }
         }
 
-        for(int i=0; i<len - 1; i++)
+        for (int i = 0; i < len - 1; i++)
         {
             b1 = bytes[i];
             b2 = bytes[i + 1];
 
-            if((0xC0 <= b1 && b1 <= 0xDF) && (0x80 <= b2 && b2 <= 0xBF))
+            if ((0xC0 <= b1 && b1 <= 0xDF) && (0x80 <= b2 && b2 <= 0xBF))
             {
                 // UTF8
                 utf8 += 2;
                 i++;
             }
-            else if(i < len - 2)
+            else if (i < len - 2)
             {
                 b3 = bytes[i + 2];
-                if((0xE0 <= b1 && b1 <= 0xEF) && (0x80 <= b2 && b2 <= 0xBF) && (0x80 <= b3 && b3 <= 0xBF))
+                if ((0xE0 <= b1 && b1 <= 0xEF) && (0x80 <= b2 && b2 <= 0xBF) && (0x80 <= b3 && b3 <= 0xBF))
                 {
                     // UTF8
                     utf8 += 3;
@@ -220,17 +220,17 @@ public class EncodeUtf8 : Editor
             }
         }
 
-        if(euc > sjis && euc > utf8)
+        if (euc > sjis && euc > utf8)
         {
             // EUC
             return System.Text.Encoding.GetEncoding(51932);
         }
-        else if(sjis > euc && sjis > utf8)
+        else if (sjis > euc && sjis > utf8)
         {
             // SJIS
             return System.Text.Encoding.GetEncoding(932);
         }
-        else if(utf8 > euc && utf8 > sjis)
+        else if (utf8 > euc && utf8 > sjis)
         {
             // UTF8
             return System.Text.Encoding.UTF8;
