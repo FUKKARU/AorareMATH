@@ -42,7 +42,7 @@ namespace General.Button
                 await sceneTransitionShaderController.Play(true, ct);
             await afterDirectionDuration.SecAwait(ct: ct);
 
-            toScene.LoadAsync();
+            toScene.LoadAsync().Forget();
         }
     }
 }
