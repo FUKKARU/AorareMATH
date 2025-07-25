@@ -104,17 +104,13 @@ namespace Main.Handler
                 skipButtonManager.OnClicked += Skip;
         }
 
-        private void Update()
+        private void Update() => (State switch
         {
-            Action action = State switch
-            {
-                GameState.Stay => OnStay,
-                GameState.OnGoing => OnOnGoing,
-                GameState.Over => OnOver,
-                _ => null
-            };
-            action?.Invoke();
-        }
+            GameState.Stay => OnStay,
+            GameState.OnGoing => OnOnGoing,
+            GameState.Over => OnOver,
+            _ => null as Action
+        })?.Invoke();
 
         private void LateUpdate()
         {
