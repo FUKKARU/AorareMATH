@@ -1,4 +1,4 @@
-namespace Title.Handler
+﻿namespace Title.Handler
 {
     internal sealed class VersionLabelSetter : MonoBehaviour
     {

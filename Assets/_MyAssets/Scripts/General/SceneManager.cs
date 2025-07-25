@@ -1,4 +1,4 @@
-using UniSceneManager = UnityEngine.SceneManagement.SceneManager;
+﻿using UniSceneManager = UnityEngine.SceneManagement.SceneManager;
 using SceneNameTable = System.Collections.Generic.Dictionary<General.Scene, string>;
 
 namespace General

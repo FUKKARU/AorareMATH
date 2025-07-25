@@ -1,4 +1,4 @@
-namespace Title.Handler.Menu
+﻿namespace Title.Handler.Menu
 {
     internal sealed class UiActiveStatesInitializer : MonoBehaviour
     {

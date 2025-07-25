@@ -1,4 +1,4 @@
-namespace General
+﻿namespace General
 {
     internal abstract class ASingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {

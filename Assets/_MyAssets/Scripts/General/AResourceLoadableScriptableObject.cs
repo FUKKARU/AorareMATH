@@ -1,4 +1,4 @@
-namespace General
+﻿namespace General
 {
     internal abstract class AResourceLoadableScriptableObject<T> : ScriptableObject where T : ScriptableObject
     {

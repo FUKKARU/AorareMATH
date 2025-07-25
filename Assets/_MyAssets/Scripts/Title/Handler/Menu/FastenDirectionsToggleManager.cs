@@ -1,4 +1,4 @@
-using General;
+﻿using General;
 using SO;
 
 namespace Title.Handler.Menu
