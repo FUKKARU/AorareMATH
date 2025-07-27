@@ -4,7 +4,7 @@ namespace General
 {
     internal static class Logger
     {
-        private const string SYMBOL = "MY_LOGGER_ON";
+        private const string SYMBOL = "MY_LOGGER";
 
         [Conditional(SYMBOL)] internal static void Log(this object message) => Debug.Log(message);
         [Conditional(SYMBOL)] internal static void LogWarning(this object message) => Debug.LogWarning(message);
