@@ -1,6 +1,4 @@
-using UnityEngine;
-using UnityEngine.UI;
-using General;
+﻿using General;
 using SO;
 
 namespace Title.Handler.Menu
@@ -12,7 +10,7 @@ namespace Title.Handler.Menu
         private void Start()
         {
             toggle.isOn = SaveDataHolder.Data.DoFastenDirections;
-            toggle.onValueChanged.AddListener(isOn =>
+            toggle.onValueChanged.AddListener(static isOn =>
             {
                 SaveDataHolder.Data.DoFastenDirections = isOn;
                 AudioSourceManager.Instance.Play(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: Pitch.Hover);

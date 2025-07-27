@@ -1,9 +1,7 @@
-using UnityEngine;
-
 namespace General
 {
     // 全てのシーンに配置したい
-    public sealed class DataSaverOnDestroy : MonoBehaviour
+    internal sealed class DataSaverOnDestroy : MonoBehaviour
     {
         private void OnDestroy()
         {

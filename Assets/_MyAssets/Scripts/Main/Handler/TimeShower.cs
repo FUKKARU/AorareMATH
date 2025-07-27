@@ -1,8 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Rendering;
+﻿using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using DG.Tweening;
 using General;
 using SO;
 

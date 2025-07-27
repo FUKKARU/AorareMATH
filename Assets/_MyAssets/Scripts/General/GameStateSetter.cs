@@ -1,12 +1,11 @@
 ﻿using SO;
-using UnityEngine;
 
 namespace General
 {
-    public class GameStateSetter
+    internal class GameStateSetter
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void RuntimeInitializeOnLoadMethods()
+        private static void RuntimeInitializeOnLoadMethods()
         {
 #if UNITY_STANDALONE
             Screen.SetResolution(SO_GameState.Entity.Resolution.x, SO_GameState.Entity.Resolution.y, SO_GameState.Entity.IsFullScreen);

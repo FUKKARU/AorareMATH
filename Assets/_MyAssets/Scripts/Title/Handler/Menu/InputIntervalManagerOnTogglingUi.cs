@@ -1,8 +1,4 @@
-using UnityEngine;
-using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
 using General;
-using Ct = System.Threading.CancellationToken;
 
 namespace Title.Handler.Menu
 {
@@ -19,7 +15,7 @@ namespace Title.Handler.Menu
         }
 
         // UIトグル時に呼び出し、一定秒数だけ BlockingImage をオンにする
-        public void InvokeBlockingImage() => EnableBlockingImageTemporarily(destroyCancellationToken).Forget();
+        internal void InvokeBlockingImage() => EnableBlockingImageTemporarily(destroyCancellationToken).Forget();
 
         private async UniTaskVoid EnableBlockingImageTemporarily(Ct ct)
         {

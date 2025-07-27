@@ -1,5 +1,4 @@
-using UnityEngine;
-using General.Button;
+﻿using General.Button;
 
 namespace Title.Handler.Menu
 {

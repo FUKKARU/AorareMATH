@@ -1,4 +1,4 @@
-using UniSceneManager = UnityEngine.SceneManagement.SceneManager;
+﻿using UniSceneManager = UnityEngine.SceneManagement.SceneManager;
 using SceneNameTable = System.Collections.Generic.Dictionary<General.Scene, string>;
 
 namespace General
@@ -17,7 +17,7 @@ namespace General
             { Scene.Main, "Main" },
         };
 
-        internal static void LoadAsync(this Scene scene)
+        internal static async UniTask LoadAsync(this Scene scene, Ct ct = default)
         {
             if (!sceneNameTable.TryGetValue(scene, out string sceneName))
             {
@@ -25,7 +25,11 @@ namespace General
                 return;
             }
 
-            _ = UniSceneManager.LoadSceneAsync(sceneName);
+            await Resources.UnloadUnusedAssets().WithCancellation(ct);
+            await UniTask.NextFrame(cancellationToken: ct);
+            GC.Collect();
+
+            await UniSceneManager.LoadSceneAsync(sceneName);
         }
     }
 }

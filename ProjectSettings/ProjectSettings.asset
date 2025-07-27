@@ -142,7 +142,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 4.0.3
+  bundleVersion: 4.1.2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -845,7 +845,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Android: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
+    Android: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     EmbeddedLinux: DOTWEEN
     GameCoreScarlett: DOTWEEN
     GameCoreXboxOne: DOTWEEN
@@ -855,12 +855,12 @@ PlayerSettings:
     PS5: DOTWEEN
     QNX: DOTWEEN
     Stadia: DOTWEEN
-    Standalone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
+    Standalone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     VisionOS: DOTWEEN
-    WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
+    WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     Windows Store Apps: DOTWEEN
     XboxOne: DOTWEEN
-    iPhone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
+    iPhone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     tvOS: DOTWEEN
   additionalCompilerArguments: {}
   platformArchitecture: {}
@@ -870,7 +870,8 @@ PlayerSettings:
     Android: 2
     Standalone: 2
     WebGL: 2
-  il2cppCodeGeneration: {}
+  il2cppCodeGeneration:
+    iPhone: 0
   il2cppStacktraceInformation: {}
   managedStrippingLevel:
     Android: 3

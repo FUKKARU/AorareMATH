@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using General;
-using Ct = System.Threading.CancellationToken;
+﻿using General;
 
 namespace Title.Handler
 {

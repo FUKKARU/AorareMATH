@@ -1,24 +1,29 @@
-using System;
-using UnityEngine;
 using General;
 
 namespace Main.Data
 {
-    public sealed class RankDataHolder : IInittable
+    internal sealed class RankDataHolder
     {
         private int[] rankingCache = null;
         private int rankingLength = 0;
 
-        public void Init()
+        internal static RankDataHolder Create()
         {
-            rankingLength = SaveDataHolder.Data.CorrectAmountRanking.Length;
-            rankingCache = new int[rankingLength];
-            Array.Copy(SaveDataHolder.Data.CorrectAmountRanking, rankingCache, rankingLength);
-            SortDescending(rankingCache); // 一応ソートしておく
+            int rankingLength = SaveDataHolder.Data.CorrectAmountRanking.Length;
+            RankDataHolder @new = new()
+            {
+                rankingLength = rankingLength,
+                rankingCache = new int[rankingLength]
+            };
+
+            Array.Copy(SaveDataHolder.Data.CorrectAmountRanking, @new.rankingCache, @new.rankingLength);
+            SortDescending(@new.rankingCache); // 一応ソートしておく
+
+            return @new;
         }
 
         private int _correctAmount = 0;
-        public int CorrectAmount
+        internal int CorrectAmount
         {
             get => _correctAmount;
             set
@@ -38,7 +43,7 @@ namespace Main.Data
         }
 
         // 1始まり、ランキング外だったら0を返す
-        public int GetRank()
+        internal int GetRank()
         {
             for (int i = 0; i < rankingCache.Length - 1; i++)
             {
@@ -50,7 +55,7 @@ namespace Main.Data
             return 0;
         }
 
-        private void SortDescending<T>(T[] array)
+        private static void SortDescending<T>(T[] array)
         {
             Array.Sort(array);
             Array.Reverse(array);

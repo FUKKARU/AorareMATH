@@ -1,19 +1,13 @@
-﻿using System;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
+﻿using System.Linq;
 using General;
 using General.Shaders;
 using Main.Data;
 using Main.Data.Formula;
 using SO;
-using Text = TMPro.TextMeshProUGUI;
-using Ct = System.Threading.CancellationToken;
 
 namespace Main.Handler
 {
-    internal enum GameState
+    internal enum GameState : byte
     {
         Stay,
         OnGoing,
@@ -51,7 +45,7 @@ namespace Main.Handler
         internal SpriteFollow[] FormulaInstances => _formulaInstances;
 
         internal GameState State { get; private set; } = GameState.Stay; // ゲームの状態
-        internal RankDataHolder rankDataHolder { get; private set; } = new(); // セーブデータに対して、ランキングの読み書きを行うラッパー
+        internal RankDataHolder rankDataHolder { get; private set; } = null; // セーブデータに対して、ランキングの読み書きを行うラッパー
         internal int CorrectAmount => rankDataHolder.CorrectAmount;
         internal Formula Formula { get; private set; } = new(); // 出題中の問題
         private int target = 0; // 出題中の問題のターゲット数
@@ -93,8 +87,7 @@ namespace Main.Handler
         {
             State = GameState.Stay;
 
-            rankDataHolder?.Init();
-            Formula.Init();
+            rankDataHolder = RankDataHolder.Create();
 
             _symbolPositions = symbolFrames.Select(e => e.position.ToVector2()).ToArray();
 
@@ -111,17 +104,13 @@ namespace Main.Handler
                 skipButtonManager.OnClicked += Skip;
         }
 
-        private void Update()
+        private void Update() => (State switch
         {
-            Action action = State switch
-            {
-                GameState.Stay => OnStay,
-                GameState.OnGoing => OnOnGoing,
-                GameState.Over => OnOver,
-                _ => null
-            };
-            action?.Invoke();
-        }
+            GameState.Stay => OnStay,
+            GameState.OnGoing => OnOnGoing,
+            GameState.Over => OnOver,
+            _ => null as Action
+        })?.Invoke();
 
         private void LateUpdate()
         {
@@ -187,7 +176,7 @@ namespace Main.Handler
 
             void DestroyInstances()
             {
-                Formula.Init();
+                Formula?.Reset();
 
                 foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
                 Array.Clear(_formulaInstances, 0, _formulaInstances.Length);

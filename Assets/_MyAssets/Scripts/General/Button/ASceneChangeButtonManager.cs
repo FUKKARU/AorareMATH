@@ -1,7 +1,4 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 using General.Shaders;
-using Ct = System.Threading.CancellationToken;
 
 namespace General.Button
 {
@@ -45,7 +42,7 @@ namespace General.Button
                 await sceneTransitionShaderController.Play(true, ct);
             await afterDirectionDuration.SecAwait(ct: ct);
 
-            toScene.LoadAsync();
+            toScene.LoadAsync().Forget();
         }
     }
 }

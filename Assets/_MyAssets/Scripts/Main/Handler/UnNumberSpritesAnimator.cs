@@ -1,8 +1,3 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using Ct = System.Threading.CancellationToken;
-
 namespace Main.Handler
 {
     internal sealed class UnNumberSpritesAnimator : MonoBehaviour

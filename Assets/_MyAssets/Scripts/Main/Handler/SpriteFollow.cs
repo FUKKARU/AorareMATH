@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 using General;
 using Main.Data;
 using Main.Data.Formula;
@@ -24,6 +23,7 @@ namespace Main.Handler
 
         // キャッシュ用
         private new Camera camera = null;
+        private Vector3 initScale; // ｚは無視する前提
 
         internal Vector3 InitPosition { get; set; }
 
@@ -39,8 +39,8 @@ namespace Main.Handler
                 // モバイルでは、指で隠れてしまうので、拡大する
                 // SpriteFollow 系統クラスでの共通処理
 #if UNITY_IOS || UNITY_ANDROID
-                float hoverScale = value ? hoverScaleWhenMobile : 1.0f / hoverScaleWhenMobile;
-                transform.SetScaleXY(transform.localScale.x * hoverScale, transform.localScale.y * hoverScale);
+                Vector3 scale = value ? initScale * hoverScaleWhenMobile : initScale;
+                transform.SetScaleXY(scale.x, scale.y);
 #endif
             }
         }
@@ -52,6 +52,7 @@ namespace Main.Handler
         private void Awake()
         {
             camera = Camera.main;
+            initScale = transform.localScale;
         }
 
         private void Start()

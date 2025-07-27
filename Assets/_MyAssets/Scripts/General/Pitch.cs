@@ -1,4 +1,4 @@
-namespace General
+﻿namespace General
 {
     internal static class Pitch
     {

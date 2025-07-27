@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using SO;
+﻿using SO;
 
 namespace General
 {
