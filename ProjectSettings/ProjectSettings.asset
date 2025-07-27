@@ -180,7 +180,7 @@ PlayerSettings:
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   aotOptions: 
-  stripEngineCode: 0
+  stripEngineCode: 1
   iPhoneStrippingLevel: 0
   iPhoneScriptCallOptimization: 1
   ForceInternetPermission: 0
@@ -860,7 +860,7 @@ PlayerSettings:
     WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
     Windows Store Apps: DOTWEEN
     XboxOne: DOTWEEN
-    iPhone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_ON
+    iPhone: DOTWEEN;UNITASK_DOTWEEN_SUPPORT;MY_LOGGER_OFF
     tvOS: DOTWEEN
   additionalCompilerArguments: {}
   platformArchitecture: {}
@@ -871,7 +871,7 @@ PlayerSettings:
     Standalone: 2
     WebGL: 2
   il2cppCodeGeneration:
-    iPhone: 1
+    iPhone: 0
   il2cppStacktraceInformation: {}
   managedStrippingLevel:
     Android: 3
@@ -888,7 +888,7 @@ PlayerSettings:
     WebGL: 3
     Windows Store Apps: 1
     XboxOne: 1
-    iPhone: 4
+    iPhone: 3
     tvOS: 1
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
