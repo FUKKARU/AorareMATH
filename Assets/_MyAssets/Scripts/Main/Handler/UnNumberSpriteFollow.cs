@@ -129,10 +129,9 @@ namespace Main.Handler
 
             // モバイルでは、指で隠れてしまうので、拡大する
             // SpriteFollow 系統クラスでの共通処理
+            // はめ込む時、このクラスのインスタンスは削除されるので、拡大しっぱなしでいいと思う
 #if UNITY_IOS || UNITY_ANDROID
-            thisInstance.transform.localScale = new(hoverScaleWhenMobile, hoverScaleWhenMobile, 1.0f);
-#else
-            thisInstance.transform.localScale = Vector3.one;
+            thisInstance.transform.SetScaleXY(hoverScaleWhenMobile, hoverScaleWhenMobile);
 #endif
         }
 
