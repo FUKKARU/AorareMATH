@@ -125,8 +125,8 @@ namespace Main.Handler
 
                     var otherInstance = GameManager.Instance.FormulaInstances[toIndex];
 
-                    GameManager.Instance.Formula.Data[fromIndex] = otherInstance.Type.GetSymbol();
-                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+                    GameManager.Instance.Formula.Data[fromIndex] = otherInstance.Type.GetElement();
+                    GameManager.Instance.Formula.Data[toIndex] = Type.GetElement();
 
                     GameManager.Instance.FormulaInstances[fromIndex] = otherInstance;
                     GameManager.Instance.FormulaInstances[toIndex] = this;
@@ -141,7 +141,7 @@ namespace Main.Handler
                     // はめ込める
 
                     GameManager.Instance.Formula.Data[fromIndex] = Symbol.NONE;
-                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
+                    GameManager.Instance.Formula.Data[toIndex] = Type.GetElement();
 
                     GameManager.Instance.FormulaInstances[fromIndex] = null;
                     GameManager.Instance.FormulaInstances[toIndex] = this;
@@ -155,7 +155,7 @@ namespace Main.Handler
             {
                 GameManager.Instance.PlaySelectSE(Pitch.DisposeSymbol);
 
-                if (Symbol.IsNumber(Type.GetSymbol()) == true)
+                if (Type.GetElement().Type == Data.Formula.Type.Number)
                 {
                     // 元の位置に戻す
                     transform.position = InitPosition;

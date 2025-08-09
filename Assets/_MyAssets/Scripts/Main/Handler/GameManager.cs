@@ -207,11 +207,11 @@ namespace Main.Handler
 
                 void InstantiateNumber(int n, int i)
                 {
-                    IntStr intStr = new(n);
-                    Formula.Data[i] = intStr;
+                    Element element = new(n);
+                    Formula.Data[i] = element;
 
                     Vector2 pos = SymbolPositions[i];
-                    var prefabInstance = ToInstance(intStr);
+                    var prefabInstance = ToInstance(element);
                     var instance = Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
                     _formulaInstances[i] = instance;
                 }
@@ -225,12 +225,12 @@ namespace Main.Handler
 
             IsPreviewNumberSameAsTargetThisFrame = false;
 
-            float? r = Formula.Calcurate();
+            double? r = Formula.Calcurate();
             if (r.HasValue)
             {
                 SetPreviewText(text: $"= {(int)r.Value}");
 
-                float diff = Mathf.Abs(target - r.Value);
+                double diff = Math.Abs(target - r.Value);
                 bool isSame = diff < SO_Handler.DiffLimit;
 
                 IsPreviewNumberSameAsTargetThisFrame = isSame;
@@ -265,10 +265,10 @@ namespace Main.Handler
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
-            float? r = Formula?.Calcurate();
+            double? r = Formula?.Calcurate();
             if (!r.HasValue) return;
 
-            if (Mathf.Abs(target - r.Value) <= SO_Handler.DiffLimit)
+            if (Math.Abs(target - r.Value) <= SO_Handler.DiffLimit)
                 Attack(destroyCancellationToken).Forget();
         }
 
@@ -354,11 +354,11 @@ namespace Main.Handler
             }
         }
 
-        private SpriteFollow ToInstance(IntStr symbol)
+        private SpriteFollow ToInstance(Element element)
         {
             foreach (var e in symbolSprites)
             {
-                if (e.Type.GetSymbol() == symbol)
+                if (e.Type.GetElement() == element)
                 {
                     return e;
                 }

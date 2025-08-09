@@ -21,6 +21,6 @@ namespace SO
         [SerializeField, Header("ピッタリ時の時間増加量")] private float _timeIncreaseAmount;
         internal float TimeIncreaseAmount => _timeIncreaseAmount;
 
-        internal static readonly float DiffLimit = 1e-8f;
+        internal static readonly double DiffLimit = 1e-8f;
     }
 }
