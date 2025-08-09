@@ -202,29 +202,29 @@ namespace General.Button
         private void PlayClickSE(float pitch = 1.0f)
             => AudioSourceManager.Instance.Play(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: pitch);
 
-        protected virtual void OnClickSucceeded() { }
+        private protected virtual void OnClickSucceeded() { }
 
         // 各コールバック時、このプロパティがfalseを返すなら実行されない
         // ただし、フラグの管理などは行われる
-        protected virtual bool CanEnter => true;
-        protected virtual bool CanExit => true;
-        protected virtual bool CanDown => true;
-        protected virtual bool CanUp => true;
+        private protected virtual bool CanEnter => true;
+        private protected virtual bool CanExit => true;
+        private protected virtual bool CanDown => true;
+        private protected virtual bool CanUp => true;
 
-        protected virtual void OnEnterImpl() { }
-        protected virtual void OnExitImpl() { }
-        protected virtual void OnDownImpl() { }
-        protected virtual void OnUpImpl() { }
+        private protected virtual void OnEnterImpl() { }
+        private protected virtual void OnExitImpl() { }
+        private protected virtual void OnDownImpl() { }
+        private protected virtual void OnUpImpl() { }
 
-        protected virtual bool CanPlaySeOnEnter => true;
-        protected virtual bool CanPlaySeOnDown => true;
+        private protected virtual bool CanPlaySeOnEnter => true;
+        private protected virtual bool CanPlaySeOnDown => true;
 
         // このスクリプトでやっていないプロパティ操作を行いたい場合に限る.
-        protected EventTrigger EventTrigger => eventTrigger;
-        protected Image BackgroundImage => backgroundImage;
-        protected Text Text => text;
-        protected string DisplayText => displayText;
-        protected Color NormalColor => normalColor;
-        protected Color HoverColor => hoverColor;
+        private protected EventTrigger EventTrigger => eventTrigger;
+        private protected Image BackgroundImage => backgroundImage;
+        private protected Text Text => text;
+        private protected string DisplayText => displayText;
+        private protected Color NormalColor => normalColor;
+        private protected Color HoverColor => hoverColor;
     }
 }

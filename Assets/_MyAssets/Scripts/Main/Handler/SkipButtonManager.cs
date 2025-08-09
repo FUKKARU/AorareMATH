@@ -35,12 +35,12 @@ namespace Main.Handler
             OnClicked = null;
         }
 
-        protected sealed override bool CanEnter => CanFirePointerEvent();
-        protected sealed override bool CanExit => CanFirePointerEvent();
-        protected sealed override bool CanDown => CanFirePointerEvent();
-        protected sealed override bool CanUp => CanFirePointerEvent();
+        private protected sealed override bool CanEnter => CanFirePointerEvent();
+        private protected sealed override bool CanExit => CanFirePointerEvent();
+        private protected sealed override bool CanDown => CanFirePointerEvent();
+        private protected sealed override bool CanUp => CanFirePointerEvent();
 
-        protected sealed override bool CanPlaySeOnEnter => CanFirePointerEvent() && GameManager.Instance.IsHoverSeAvailable;
+        private protected sealed override bool CanPlaySeOnEnter => CanFirePointerEvent() && GameManager.Instance.IsHoverSeAvailable;
 
         private bool CanFirePointerEvent()
         {
@@ -50,7 +50,7 @@ namespace Main.Handler
             return true;
         }
 
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             GameManager.Instance.PlaySelectSE();
 

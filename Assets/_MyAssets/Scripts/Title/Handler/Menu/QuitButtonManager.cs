@@ -8,7 +8,7 @@ namespace Title.Handler.Menu
         [SerializeField] private GameObject quitConfirmUi;
         [SerializeField] private AButton menuButton;
 
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             InputIntervalManagerOnTogglingUi.Instance.InvokeBlockingImage();
 
