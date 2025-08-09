@@ -5,6 +5,6 @@ namespace Title.Handler
 {
     internal sealed class StartButtonManager : ASceneChangeButtonManager
     {
-        protected sealed override Scene toScene => Scene.Main;
+        private protected sealed override Scene toScene => Scene.Main;
     }
 }

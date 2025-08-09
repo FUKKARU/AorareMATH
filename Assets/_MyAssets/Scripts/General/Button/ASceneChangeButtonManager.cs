@@ -10,9 +10,9 @@ namespace General.Button
 
         private bool isClickEnabled = true;
 
-        protected abstract Scene toScene { get; }
+        private protected abstract Scene toScene { get; }
 
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             SetLinkedButtonsClicked();
             Load(destroyCancellationToken).Forget();
