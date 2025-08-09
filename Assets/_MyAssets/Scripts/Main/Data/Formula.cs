@@ -19,25 +19,25 @@ internal readonly record struct Element
     };
 
 #if UNITY_EDITOR
-    internal string ToStr() => Type switch
+    internal char ToChar() => Type switch
     {
-        Type.Number => Id.ToString(),
+        Type.Number => Id.ToString()[0],
         Type.Operator => Id switch
         {
-            101 => "+",
-            102 => "-",
-            103 => "*",
-            104 => "/",
-            _ => throw new Exception("不正な演算子です")
+            101 => '+',
+            102 => '-',
+            103 => '*',
+            104 => '/',
+            _ => '?'
         },
         Type.Paragraph => Id switch
         {
-            105 => "(",
-            106 => ")",
-            _ => throw new Exception("不正な括弧です")
+            105 => '(',
+            106 => ')',
+            _ => '?'
         },
-        Type.None => ".",
-        _ => throw new Exception("不正な要素です")
+        Type.None => '.',
+        _ => '?'
     };
 #endif
 }
@@ -99,14 +99,17 @@ internal sealed class Formula
 #if UNITY_EDITOR
     internal string Dump()
     {
-        string[] dataStr = new string[Data.Length];
-        for (int i = 0; i < Data.Length; ++i)
-            dataStr[i] = Data[i].ToStr();
-        return string.Join("", dataStr);
+        int len = Data.Length;
+
+        Span<char> dataChars = stackalloc char[len];
+        for (int i = 0; i < len; ++i)
+            dataChars[i] = Data[i].ToChar();
+
+        return new(dataChars);
     }
 #endif
 
-    internal double? Calcurate()
+    internal double Calcurate()
     {
         try
         {
@@ -114,16 +117,22 @@ internal sealed class Formula
 
             if (!IsArrayOK(_onRemoveNoneList) || !IsNumberOK(_onRemoveNoneList)
                 || !IsOperatorOK(_onRemoveNoneList) || !IsParagraphOK(_onRemoveNoneList))
-                throw new Exception("不正な形式です");
+                return double.NaN;
 
             ConnectNumbers(_onRemoveNoneList, _onConnectNumbersList);
+            if (_onConnectNumbersList.Count <= 0) return double.NaN;
+
             ConvertToDouble(_onConnectNumbersList, _onConvertToDoubleList);
+
             double result = Calcurate(_onConvertToDoubleList);
+            if (double.IsNaN(result)) return double.NaN;
+
             return Math.Clamp(result, short.MinValue, short.MaxValue);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return null;
+            $"式の計算中に、想定外の例外が発生しました: {e.Message}".LogError();
+            return double.NaN;
         }
     }
 
@@ -214,8 +223,9 @@ internal sealed class Formula
         int len = src.Count;
 
         int n = 0;
-        foreach (var e in src)
+        for (int i = 0; i < len; i++)
         {
+            Element e = src[i];
             if (e == Symbol.PL) n++;
             else if (e == Symbol.PR) n--;
 
@@ -282,31 +292,40 @@ internal sealed class Formula
     /// </summary>
     private void ConnectNumbers(IReadOnlyList<Element> src, List<Element> result)
     {
-        checked
+        try
         {
-            int len = src.Count;
-
-            result.Clear();
-            for (int i = 0; i < len; i++)
+            checked
             {
-                // 今調べている要素が数字でないなら、結合しない
-                Element s = src[i];
-                if (s.Type != Type.Number)
-                {
-                    result.Add(s);
-                    continue;
-                }
+                int len = src.Count;
 
-                // 先の要素を順に見ていき、数字を結合していく
-                int n = s.Id;
-                for (int j = i + 1; j < len; i++, j++)
+                result.Clear();
+                for (int i = 0; i < len; i++)
                 {
-                    Element _s = src[j];
-                    if (_s.Type != Type.Number) break;
-                    else n = n * 10 + _s.Id;
+                    // 今調べている要素が数字でないなら、結合しない
+                    Element s = src[i];
+                    if (s.Type != Type.Number)
+                    {
+                        result.Add(s);
+                        continue;
+                    }
+
+                    // 先の要素を順に見ていき、数字を結合していく
+                    int n = s.Id;
+                    for (int j = i + 1; j < len; i++, j++)
+                    {
+                        Element _s = src[j];
+                        if (_s.Type != Type.Number) break;
+                        else n = n * 10 + _s.Id;
+                    }
+                    result.Add(new(n));
                 }
-                result.Add(new(n));
             }
+        }
+        catch (OverflowException)
+        {
+            "数字を結合する際に、int型のオーバーフローが発生しました。".LogWarning();
+            result.Clear();
+            return;
         }
     }
 
@@ -317,14 +336,15 @@ internal sealed class Formula
     /// </summary>
     private void ConvertToDouble(IReadOnlyList<Element> src, List<double> result)
     {
+        int len = src.Count;
+
         result.Clear();
-        foreach (var e in src)
-            result.Add(e.Id);
+        for (int i = 0; i < len; i++)
+            result.Add(src[i].Id);
     }
 
     /// <summary>
     /// 計算する
-    /// srcから読み取りのみ行う
     /// </summary>
     private double Calcurate(IReadOnlyList<double> src)
     {
@@ -337,7 +357,6 @@ internal sealed class Formula
 
     /// <summary>
     /// 計算のコアロジック
-    /// srcから読み取りのみ行う
     /// </summary>
     private double CalcurateImpl(ReadOnlySpan<double> src)
     {
@@ -368,6 +387,7 @@ internal sealed class Formula
                     for (int k = i + 1; k <= j - 1; k++)
                         newSpan[k - (i + 1)] = _src[k];
                     double value = CalcurateImpl(newSpan);
+                    if (double.IsNaN(value)) return double.NaN;
 
                     // "()"を削除し、計算結果を_srcに挿入する
                     newSpan = stackalloc double[_src.Length - (j - i)];
@@ -381,7 +401,11 @@ internal sealed class Formula
                 break;
             }
 
-            if (++cnt >= byte.MaxValue) throw new Exception("無限ループの可能性があります");
+            if (++cnt >= byte.MaxValue)
+            {
+                "無限ループの可能性があります".LogWarning();
+                return double.NaN;
+            }
         }
 
         // かっこが無くなった(あるいはそもそも、かっこが無かった)ので、四則演算を行う
@@ -391,7 +415,6 @@ internal sealed class Formula
 
         /// <summary>
         /// かっこが無い前提で、式を計算する
-        /// srcから読み取りのみ行う
         /// </summary>
         static double CalcurateRaw(ReadOnlySpan<double> src)
         {
@@ -425,7 +448,7 @@ internal sealed class Formula
                 }
                 else if (_src[i] == Symbol.OD.Id)
                 {
-                    if (_src[i + 1] == 0) throw new Exception("0除算");
+                    if (_src[i + 1] == 0) return double.NaN;
 
                     Span<double> newSpan = stackalloc double[_src.Length - 2];
                     for (int j = 0; j < i - 1; j++) newSpan[j] = _src[j];
@@ -721,8 +744,12 @@ internal static class Profile
             }
         };
 
-        double? result = double.NaN;
+        double result = double.NaN;
         const ulong LoopAmount = 1_000_000;
+
+        // Warmup
+        for (int i = 0; i < 8; i++)
+            result = formula.Calcurate();
 
         UnityEngine.Profiling.Profiler.BeginSample("Custom_Formula");
 

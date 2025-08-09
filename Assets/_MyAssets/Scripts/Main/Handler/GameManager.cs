@@ -225,12 +225,12 @@ namespace Main.Handler
 
             IsPreviewNumberSameAsTargetThisFrame = false;
 
-            double? r = Formula.Calcurate();
-            if (r.HasValue)
+            double r = Formula.Calcurate();
+            if (!double.IsNaN(r))
             {
-                SetPreviewText(text: $"= {(int)r.Value}");
+                SetPreviewText(text: $"= {(int)r}");
 
-                double diff = Math.Abs(target - r.Value);
+                double diff = Math.Abs(target - r);
                 bool isSame = diff < SO_Handler.DiffLimit;
 
                 IsPreviewNumberSameAsTargetThisFrame = isSame;
@@ -265,10 +265,10 @@ namespace Main.Handler
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
-            double? r = Formula?.Calcurate();
-            if (!r.HasValue) return;
+            double r = Formula.Calcurate();
+            if (double.IsNaN(r)) return;
 
-            if (Math.Abs(target - r.Value) <= SO_Handler.DiffLimit)
+            if (Math.Abs(target - r) <= SO_Handler.DiffLimit)
                 Attack(destroyCancellationToken).Forget();
         }
 
