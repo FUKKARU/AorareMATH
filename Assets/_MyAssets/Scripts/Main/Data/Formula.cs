@@ -1,4 +1,5 @@
-﻿using General;
+﻿using System.Runtime.CompilerServices;
+using General;
 
 namespace Main.Data.Formula;
 
@@ -7,37 +8,41 @@ internal readonly record struct Element
     // デフォルトはNone
     internal readonly int Id { get; init; } = 0;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Element(int id) => Id = id;
 
-    internal Type Type => Id switch
+    // 最適化のために、厳密な判定ではない
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal new Type GetType() => Id switch
     {
-        0 or 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 => Type.Number,
-        101 or 102 or 103 or 104 => Type.Operator,
-        105 or 106 => Type.Paragraph,
-        -1 => Type.None,
-        _ => throw new Exception("不正な要素です")
+        < 100 => Type.Number,
+        < 200 => Type.Operator,
+        < 300 => Type.Paragraph,
+        _ => Type.None
     };
 
 #if UNITY_EDITOR
-    internal char ToChar() => Type switch
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal char ToChar() => Id switch
     {
-        Type.Number => Id.ToString()[0],
-        Type.Operator => Id switch
-        {
-            101 => '+',
-            102 => '-',
-            103 => '*',
-            104 => '/',
-            _ => '?'
-        },
-        Type.Paragraph => Id switch
-        {
-            105 => '(',
-            106 => ')',
-            _ => '?'
-        },
-        Type.None => '.',
-        _ => '?'
+        0 => '0',
+        1 => '1',
+        2 => '2',
+        3 => '3',
+        4 => '4',
+        5 => '5',
+        6 => '6',
+        7 => '7',
+        8 => '8',
+        9 => '9',
+        101 => '+',
+        102 => '-',
+        103 => '*',
+        104 => '/',
+        201 => '(',
+        202 => ')',
+        1001 => '.',
+        _ => '?',
     };
 #endif
 }
@@ -66,9 +71,9 @@ internal static class Symbol
     internal static readonly Element OS = new(102);
     internal static readonly Element OM = new(103);
     internal static readonly Element OD = new(104);
-    internal static readonly Element PL = new(105);
-    internal static readonly Element PR = new(106);
-    internal static readonly Element NONE = new(-1);
+    internal static readonly Element PL = new(201);
+    internal static readonly Element PR = new(202);
+    internal static readonly Element NONE = new(1001);
 }
 
 
@@ -84,12 +89,14 @@ internal sealed class Formula
     private readonly List<Element> _onConnectNumbersList = new(MaxLength);
     private readonly List<double> _onConvertToDoubleList = new(MaxLength);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Formula()
     {
         Data = new Element[MaxLength];
         Reset();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Reset()
     {
         for (int i = 0; i < Data.Length; ++i)
@@ -97,6 +104,7 @@ internal sealed class Formula
     }
 
 #if UNITY_EDITOR
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal string Dump()
     {
         int len = Data.Length;
@@ -109,6 +117,7 @@ internal sealed class Formula
     }
 #endif
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal double Calcurate()
     {
         try
@@ -142,6 +151,7 @@ internal sealed class Formula
     /// コレクションがnullでないか、配列の要素数が0でないか
     /// srcから読み取りのみ行う
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsArrayOK(IReadOnlyList<Element> src)
         => src is not null and { Count: > 0 };
 
@@ -149,13 +159,14 @@ internal sealed class Formula
     /// かっこのすぐ外側に数字が来ていないか
     /// srcから読み取りのみ行う
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsNumberOK(IReadOnlyList<Element> src)
     {
         for (int i = 0; i < src.Count - 1; i++)
         {
             Element e = src[i], f = src[i + 1];
-            if (e.Type == Type.Number && f == Symbol.PL) return false;
-            else if (e == Symbol.PR && f.Type == Type.Number) return false;
+            if (e.GetType() == Type.Number && f == Symbol.PL) return false;
+            else if (e == Symbol.PR && f.GetType() == Type.Number) return false;
         }
 
         return true;
@@ -166,6 +177,7 @@ internal sealed class Formula
     /// 「+」「-」を除いた演算子について、「一つ前の要素が存在しそれが 数字,) のいずれかである」かつ「一つ後の要素が存在しそれが 数字,( のいずれかである」であるか
     /// srcから読み取りのみ行う
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsOperatorOK(IReadOnlyList<Element> src)
     {
         int n = src.Count;
@@ -174,20 +186,20 @@ internal sealed class Formula
         {
             Element e = src[i];
 
-            if (e.Type != Type.Operator) continue;
+            if (e.GetType() != Type.Operator) continue;
 
             if (e == Symbol.OA || e == Symbol.OS)
             {
                 if (i > 0)
                 {
                     Element left = src[i - 1];
-                    if (left.Type != Type.Number && left != Symbol.PL && left != Symbol.PR) return false;
+                    if (left.GetType() != Type.Number && left != Symbol.PL && left != Symbol.PR) return false;
                 }
 
                 if (i < n - 1)
                 {
                     Element right = src[i + 1];
-                    if (right.Type != Type.Number && right != Symbol.PL) return false;
+                    if (right.GetType() != Type.Number && right != Symbol.PL) return false;
                 }
                 else return false;
             }
@@ -196,14 +208,14 @@ internal sealed class Formula
                 if (i > 0)
                 {
                     Element left = src[i - 1];
-                    if (left.Type != Type.Number && left != Symbol.PR) return false;
+                    if (left.GetType() != Type.Number && left != Symbol.PR) return false;
                 }
                 else return false;
 
                 if (i < n - 1)
                 {
                     Element right = src[i + 1];
-                    if (right.Type != Type.Number && right != Symbol.PL) return false;
+                    if (right.GetType() != Type.Number && right != Symbol.PL) return false;
                 }
                 else return false;
             }
@@ -218,6 +230,7 @@ internal sealed class Formula
     /// )(の配置が存在しないか
     /// srcから読み取りのみ行う
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsParagraphOK(IReadOnlyList<Element> src)
     {
         int len = src.Count;
@@ -248,7 +261,7 @@ internal sealed class Formula
                 for (int k = i, _n = 0; _n < j - i + 1; k++, _n++)
                 {
                     Element e = src[k];
-                    if (e.Type == Type.Number)
+                    if (e.GetType() == Type.Number)
                     {
                         hasNumber = true;
                         break;
@@ -275,6 +288,7 @@ internal sealed class Formula
     /// Noneを消して詰める
     /// resultに結果を書き込む、capacityは高々MaxLengthの前提
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void RemoveNone(IReadOnlyList<Element> src, List<Element> result)
     {
         result.Clear();
@@ -290,6 +304,7 @@ internal sealed class Formula
     /// 12桁全て結合、などのケースは想定していない
     /// resultに結果を書き込む、capacityは高々MaxLengthの前提
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ConnectNumbers(IReadOnlyList<Element> src, List<Element> result)
     {
         try
@@ -303,7 +318,7 @@ internal sealed class Formula
                 {
                     // 今調べている要素が数字でないなら、結合しない
                     Element s = src[i];
-                    if (s.Type != Type.Number)
+                    if (s.GetType() != Type.Number)
                     {
                         result.Add(s);
                         continue;
@@ -314,7 +329,7 @@ internal sealed class Formula
                     for (int j = i + 1; j < len; i++, j++)
                     {
                         Element _s = src[j];
-                        if (_s.Type != Type.Number) break;
+                        if (_s.GetType() != Type.Number) break;
                         else n = n * 10 + _s.Id;
                     }
                     result.Add(new(n));
@@ -334,6 +349,7 @@ internal sealed class Formula
     /// 記号を表すIDも、そのまま変換する
     /// resultに結果を書き込む、capacityは高々MaxLengthの前提
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ConvertToDouble(IReadOnlyList<Element> src, List<double> result)
     {
         int len = src.Count;
@@ -346,6 +362,7 @@ internal sealed class Formula
     /// <summary>
     /// 計算する
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private double Calcurate(IReadOnlyList<double> src)
     {
         Span<double> srcSpan = stackalloc double[src.Count];
@@ -358,6 +375,7 @@ internal sealed class Formula
     /// <summary>
     /// 計算のコアロジック
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private double CalcurateImpl(ReadOnlySpan<double> src)
     {
         Span<double> _src = stackalloc double[src.Length];
@@ -416,6 +434,7 @@ internal sealed class Formula
         /// <summary>
         /// かっこが無い前提で、式を計算する
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static double CalcurateRaw(ReadOnlySpan<double> src)
         {
             Span<double> _src = stackalloc double[src.Length];
@@ -534,22 +553,22 @@ internal static class Test
         (formula.Calcurate() == -1234).Log();
 
         // 2(3+4)
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.N2, Symbol.PL, Symbol.N3, Symbol.OA, Symbol.N4, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // (1+2)(3+4)
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.PL, Symbol.N1, Symbol.OA, Symbol.N2, Symbol.PR, Symbol.PL,
             Symbol.N3, Symbol.OA, Symbol.N4, Symbol.PR, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // 2*((4-2)*3)
         // = 12
@@ -606,13 +625,13 @@ internal static class Test
         (formula.Calcurate() == 1).Log();
 
         // 4/(6-(2*3))
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.N4, Symbol.OD, Symbol.PL, Symbol.N6, Symbol.OS, Symbol.PL,
             Symbol.N2, Symbol.OM, Symbol.N3, Symbol.PR, Symbol.PR, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // (3)
         // = 3
@@ -651,67 +670,67 @@ internal static class Test
         (formula.Calcurate() == 0).Log();
 
         // ()
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // (-)
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.OS, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // (+)
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.OA, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // 1-
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.N1, Symbol.OS, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // *123
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.OM, Symbol.N1, Symbol.N2, Symbol.N3, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // 23++34
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.N2, Symbol.N3, Symbol.OA, Symbol.OA,
             Symbol.N3, Symbol.N4, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // 123456789123
-        // = null
+        // = NaN
         formula.Data = new Element[]
         {
             Symbol.N1, Symbol.N2, Symbol.N3, Symbol.N4, Symbol.N5, Symbol.N6,
             Symbol.N7, Symbol.N8, Symbol.N9, Symbol.N1, Symbol.N2, Symbol.N3,
         };
-        (formula.Calcurate() == null).Log();
+        (double.IsNaN(formula.Calcurate())).Log();
 
         // (-3)+4-(-5)
         // = 6

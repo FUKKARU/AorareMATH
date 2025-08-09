@@ -155,7 +155,7 @@ namespace Main.Handler
             {
                 GameManager.Instance.PlaySelectSE(Pitch.DisposeSymbol);
 
-                if (Type.GetElement().Type == Data.Formula.Type.Number)
+                if (Type.GetElement().GetType() == Data.Formula.Type.Number)
                 {
                     // 元の位置に戻す
                     transform.position = InitPosition;
