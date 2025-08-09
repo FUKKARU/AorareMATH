@@ -158,7 +158,7 @@ namespace Main.Handler
                 int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
                 Element toElement = GameManager.Instance.Formula.Data[toIndex];
 
-                if (toElement.Type != Data.Formula.Type.Number)
+                if (toElement.GetType() != Data.Formula.Type.Number)
                 {
                     // はめ込める
 
