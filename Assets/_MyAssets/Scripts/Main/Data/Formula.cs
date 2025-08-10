@@ -80,8 +80,11 @@ internal static class Symbol
 
 internal sealed class Formula
 {
-    internal Element[] Data { get; set; } = null;
     internal const int MaxLength = 12;
+    private readonly Element[] data = null;
+
+    private bool dirty = true; // これがtrueなら、data が更新されたので、再度最初から計算する
+    private double lastResult = double.NaN; // 最後に計算した結果 (dirty が立つ度に、再度計算して更新する)
 
     // 計算部で使用する参照型オブジェクト
     // 事前に作成して、使いまわす
@@ -92,26 +95,69 @@ internal sealed class Formula
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Formula()
     {
-        Data = new Element[MaxLength];
-        Reset();
+        data = new Element[MaxLength];
+        ClearData();
+    }
+
+#if UNITY_EDITOR
+    // デバッグ用
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal Formula(ReadOnlySpan<Element> data)
+    {
+        this.data = data.ToArray();
+    }
+#endif
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal Element GetData(int index) => data[index];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void SetData(int index, Element value)
+    {
+        dirty |= true;
+        data[index] = value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void Reset()
+    internal Element GetDataSafe(int index)
     {
-        for (int i = 0; i < Data.Length; ++i)
-            Data[i] = Symbol.NONE;
+        if (index < 0 || index >= data.Length)
+        {
+            "Formula.GetDataSafe: index out of range".LogError();
+            return Symbol.NONE;
+        }
+
+        return GetData(index);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void SetDataSafe(int index, Element value)
+    {
+        if (index < 0 || index >= data.Length)
+        {
+            "Formula.SetDataSafe: index out of range".LogError();
+            return;
+        }
+
+        SetData(index, value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void ClearData()
+    {
+        for (int i = 0; i < data.Length; ++i)
+            data[i] = Symbol.NONE;
     }
 
 #if UNITY_EDITOR
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal string Dump()
     {
-        int len = Data.Length;
+        int len = data.Length;
 
         Span<char> dataChars = stackalloc char[len];
         for (int i = 0; i < len; ++i)
-            dataChars[i] = Data[i].ToChar();
+            dataChars[i] = data[i].ToChar();
 
         return new(dataChars);
     }
@@ -122,7 +168,10 @@ internal sealed class Formula
     {
         try
         {
-            RemoveNone(Data, _onRemoveNoneList);
+            // 既にこのdataで計算済みなので、保存してあった計算結果を返す
+            if (!dirty) return lastResult;
+
+            RemoveNone(data, _onRemoveNoneList);
 
             if (!IsArrayOK(_onRemoveNoneList) || !IsNumberOK(_onRemoveNoneList)
                 || !IsOperatorOK(_onRemoveNoneList) || !IsParagraphOK(_onRemoveNoneList))
@@ -135,8 +184,13 @@ internal sealed class Formula
 
             double result = Calcurate(_onConvertToDoubleList);
             if (double.IsNaN(result)) return double.NaN;
+            result = Math.Clamp(result, short.MinValue, short.MaxValue);
 
-            return Math.Clamp(result, short.MinValue, short.MaxValue);
+            // dirtyフラグをリセットし、今回の計算結果を保存しておく
+            dirty &= false;
+            lastResult = result;
+
+            return result;
         }
         catch (Exception e)
         {
@@ -518,227 +572,227 @@ internal static class Test
 
         // 1+3*(4-5)
         // = -2
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.OA, Symbol.N3, Symbol.OM, Symbol.PL, Symbol.N4,
             Symbol.OS, Symbol.N5, Symbol.PR, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == -2).Log();
 
         // 1 23
         // = 123
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.NONE, Symbol.N2, Symbol.N3, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 123).Log();
 
         // +12-21
         // = -9
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.OA, Symbol.N1, Symbol.N2, Symbol.OS, Symbol.N2, Symbol.N1,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == -9).Log();
 
         // -123 4
         // = -1234
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.OS, Symbol.N1, Symbol.N2, Symbol.N3, Symbol.NONE, Symbol.N4,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == -1234).Log();
 
         // 2(3+4)
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N2, Symbol.PL, Symbol.N3, Symbol.OA, Symbol.N4, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // (1+2)(3+4)
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.PL, Symbol.N1, Symbol.OA, Symbol.N2, Symbol.PR, Symbol.PL,
             Symbol.N3, Symbol.OA, Symbol.N4, Symbol.PR, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // 2*((4-2)*3)
         // = 12
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N2, Symbol.OM, Symbol.PL, Symbol.PL, Symbol.N4, Symbol.OS,
             Symbol.N2, Symbol.PR, Symbol.OM, Symbol.N3, Symbol.PR, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 12).Log();
 
         // 2*(4-2)*3
         // = 12
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N2, Symbol.OM, Symbol.PL, Symbol.N4, Symbol.OS, Symbol.N2,
             Symbol.PR, Symbol.OM, Symbol.N3, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 12).Log();
 
         // 1 2 3 -4
         // = 119
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.NONE, Symbol.N2, Symbol.NONE, Symbol.N3, Symbol.NONE,
             Symbol.OS, Symbol.N4, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 119).Log();
 
         // 1+2+3+4
         // = 10
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.OA, Symbol.N2, Symbol.OA, Symbol.N3, Symbol.OA,
             Symbol.N4, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 10).Log();
 
         // (2+3-4)
         // = 1
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.PL, Symbol.N2, Symbol.OA, Symbol.N3, Symbol.OS, Symbol.N4,
             Symbol.PR, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 1).Log();
 
         // 3/(7-4)
         // = 1
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N3, Symbol.OD, Symbol.PL, Symbol.N7, Symbol.OS, Symbol.N4,
             Symbol.PR, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 1).Log();
 
         // 4/(6-(2*3))
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N4, Symbol.OD, Symbol.PL, Symbol.N6, Symbol.OS, Symbol.PL,
             Symbol.N2, Symbol.OM, Symbol.N3, Symbol.PR, Symbol.PR, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // (3)
         // = 3
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.PL, Symbol.N3, Symbol.PR, Symbol.NONE, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 3).Log();
 
         // ((1+2))
         // = 3
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.PL, Symbol.PL, Symbol.N1, Symbol.OA, Symbol.N2, Symbol.PR,
             Symbol.PR, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 3).Log();
 
         // 8/4/2
         // = 1
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N8, Symbol.OD, Symbol.N4, Symbol.OD, Symbol.N2, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 1).Log();
 
         // 0+0*0
         // = 0
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N0, Symbol.OA, Symbol.N0, Symbol.OM, Symbol.N0, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (formula.Calcurate() == 0).Log();
 
         // ()
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // (-)
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.OS, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // (+)
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.PL, Symbol.OA, Symbol.PR,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // 1-
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.OS, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // *123
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.OM, Symbol.N1, Symbol.N2, Symbol.N3, Symbol.NONE, Symbol.NONE,
             Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // 23++34
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.NONE, Symbol.NONE, Symbol.N2, Symbol.N3, Symbol.OA, Symbol.OA,
             Symbol.N3, Symbol.N4, Symbol.NONE, Symbol.NONE, Symbol.NONE, Symbol.NONE
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // 123456789123
         // = NaN
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.N1, Symbol.N2, Symbol.N3, Symbol.N4, Symbol.N5, Symbol.N6,
             Symbol.N7, Symbol.N8, Symbol.N9, Symbol.N1, Symbol.N2, Symbol.N3,
-        };
+        });
         (double.IsNaN(formula.Calcurate())).Log();
 
         // (-3)+4-(-5)
         // = 6
-        formula.Data = new Element[]
+        formula = new(stackalloc Element[]
         {
             Symbol.PL, Symbol.OS, Symbol.N3, Symbol.PR, Symbol.OA, Symbol.N4,
             Symbol.OS, Symbol.PL, Symbol.OS, Symbol.N5, Symbol.PR, Symbol.NONE,
-        };
+        });
         (formula.Calcurate() == 6).Log();
     }
 }
@@ -752,16 +806,13 @@ internal static class Profile
     {
         await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
 
-        Formula formula = new()
+        // 1+2*3/(4-5).
+        // = -5
+        Formula formula = new(stackalloc Element[]
         {
-            // 1+2*3/(4-5)
-            // = -5
-            Data = new Element[]
-            {
-                Symbol.N1, Symbol.OA, Symbol.N2, Symbol.OM, Symbol.N3, Symbol.OD,
-                Symbol.PL, Symbol.N4, Symbol.OS, Symbol.N5, Symbol.PR, Symbol.NONE
-            }
-        };
+            Symbol.N1, Symbol.OA, Symbol.N2, Symbol.OM, Symbol.N3, Symbol.OD,
+            Symbol.PL, Symbol.N4, Symbol.OS, Symbol.N5, Symbol.PR, Symbol.NONE
+        });
 
         double result = double.NaN;
         const ulong LoopAmount = 1_000_000;

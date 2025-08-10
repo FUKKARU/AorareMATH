@@ -176,7 +176,7 @@ namespace Main.Handler
 
             void DestroyInstances()
             {
-                Formula?.Reset();
+                Formula?.ClearData();
 
                 foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
                 Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
@@ -208,7 +208,7 @@ namespace Main.Handler
                 void InstantiateNumber(int n, int i)
                 {
                     Element element = new(n);
-                    Formula.Data[i] = element;
+                    Formula.SetData(i, element);
 
                     Vector2 pos = SymbolPositions[i];
                     var prefabInstance = ToInstance(element);
