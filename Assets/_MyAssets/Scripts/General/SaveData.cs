@@ -31,15 +31,12 @@ namespace General
         }
     }
 
+    // Webでは StreamWriter/StreamReader が上手く動作しなかったため、 PlayerPrefs で対応する
     internal static class SaveDataHolder
     {
         private const string SavePath = "gameData.json";
-#if !UNITY_WEBGL
+        private const string SavePathWeb = "gameDataWeb.json";
         private static readonly float AutoSaveIntervalSec = 30.0f;
-#else
-        //! Webではゲーム終了時、 OnDestroy でのセーブが出来なかったため、頻繁にオートセーブする
-        private static readonly float AutoSaveIntervalSec = 5.0f;
-#endif
 
         private static SaveData saveData = new();
         internal static SaveData Data => saveData;
@@ -58,8 +55,14 @@ namespace General
             try
             {
                 string json = JsonUtility.ToJson(saveData);
+
+#if !UNITY_WEBGL
                 using StreamWriter writer = new(Path.Combine(Application.persistentDataPath, SavePath), false);
                 writer.WriteLine(json);
+#else
+                PlayerPrefs.SetString(SavePathWeb, json);
+                PlayerPrefs.Save();
+#endif
             }
             catch (Exception e)
             {
@@ -74,8 +77,13 @@ namespace General
         {
             try
             {
+#if !UNITY_WEBGL
                 using StreamReader reader = new(Path.Combine(Application.persistentDataPath, SavePath));
                 string json = reader.ReadToEnd();
+#else
+                string json = PlayerPrefs.GetString(SavePathWeb, "{}");
+#endif
+
                 saveData = JsonUtility.FromJson<SaveData>(json);
             }
             catch (Exception e)
