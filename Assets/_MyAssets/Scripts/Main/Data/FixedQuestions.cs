@@ -184,7 +184,7 @@ internal static class FixedQuestions
     /// テキストファイルの方の問題データも、同様に対策済み
     /// </summary>
     internal static bool ShouldShuffle(this Type type)
-        => type is Type._2_0 or Type._3_0;
+        => type is not (Type._2_0 or Type._3_0);
 
     /// <summary>
     /// 取得に成功したらtrue、失敗したらfalseを返す
