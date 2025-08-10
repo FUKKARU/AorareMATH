@@ -34,7 +34,12 @@ namespace General
     internal static class SaveDataHolder
     {
         private const string SavePath = "gameData.json";
+#if !UNITY_WEBGL
         private static readonly float AutoSaveIntervalSec = 30.0f;
+#else
+        //! Webではゲーム終了時、 OnDestroy でのセーブが出来なかったため、頻繁にオートセーブする
+        private static readonly float AutoSaveIntervalSec = 5.0f;
+#endif
 
         private static SaveData saveData = new();
         internal static SaveData Data => saveData;
@@ -46,10 +51,6 @@ namespace General
         private static readonly SaveData saveDataCache = new();
         // internal static SaveData CacheData => saveDataCache;
 
-        //! Webで正しくセーブさせるために、このメソッドで IndexedDB をフラッシュする必要がある
-        [System.Runtime.InteropServices.DllImport("__Internal")]
-        private static extern void syncDB();
-
         // SaveDataをセーブする
         //! 外部依存
         internal static void Save()
@@ -59,10 +60,6 @@ namespace General
                 string json = JsonUtility.ToJson(saveData);
                 using StreamWriter writer = new(Path.Combine(Application.persistentDataPath, SavePath), false);
                 writer.WriteLine(json);
-
-#if UNITY_WEBGL
-                syncDB();
-#endif
             }
             catch (Exception e)
             {
