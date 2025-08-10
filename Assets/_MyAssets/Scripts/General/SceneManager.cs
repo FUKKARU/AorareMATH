@@ -25,9 +25,7 @@ namespace General
                 return;
             }
 
-            await Resources.UnloadUnusedAssets().WithCancellation(ct);
-            await UniTask.NextFrame(cancellationToken: ct);
-            GC.Collect();
+            await Cleanupper.RunAsync(ct);
 
             await UniSceneManager.LoadSceneAsync(sceneName);
         }

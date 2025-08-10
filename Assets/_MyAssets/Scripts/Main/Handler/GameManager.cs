@@ -159,7 +159,9 @@ namespace Main.Handler
 
         private void CreateQuestion(bool isFirstCall = false)
         {
-            bool result = rankDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
+            FixedQuestions.Type questionType = rankDataHolder.CorrectAmount.ToQuestionType();
+
+            bool result = questionType.GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
             this.answer = answer;
@@ -168,7 +170,7 @@ namespace Main.Handler
 
             // インスタンスを作り直す
             DestroyInstances();
-            CreateInstances();
+            CreateInstances(questionType.ShouldShuffle());
 
             return;
 
@@ -184,12 +186,12 @@ namespace Main.Handler
                 SetTargetText(string.Empty);
             }
 
-            void CreateInstances()
+            void CreateInstances(bool doShuffle)
             {
-                InstantiateNumbers(numbers: numbers);
+                InstantiateNumbers(doShuffle, numbers);
                 SetTargetText(target.ToString());
 
-                void InstantiateNumbers(bool doShuffle = true, params int[] numbers)
+                void InstantiateNumbers(bool doShuffle, int[] numbers)
                 {
                     if (numbers == null) return;
                     if (numbers.Length <= 0 || Formula.MaxLength < numbers.Length) return;
