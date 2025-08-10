@@ -18,7 +18,7 @@ namespace Title.Handler
 
             if (billMover != null) billMover.Play(destroyCancellationToken).Forget();
 
-            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+            if (SaveDataHolder.Data.DoFastenDirections == false)
             {
                 logoTf.DOLocalMoveY(1.15f, duration: 1.2f).SetEase(Ease.OutExpo).WithCancellation(ct).Forget();
                 logoTf.DOScale(new Vector2(0.8f, 0.8f), duration: 2.0f).SetEase(Ease.InOutExpo).WithCancellation(ct).Forget();

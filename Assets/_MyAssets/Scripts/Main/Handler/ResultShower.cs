@@ -26,7 +26,7 @@ namespace Main.Handler
                 scoreText.color = Color.yellow;
             }
 
-            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+            if (SaveDataHolder.Data.DoFastenDirections == false)
             {
                 await 0.1f.SecAwait(ct: ct);
                 await baseImageRt.DOAnchorPosY(0, 0.5f).WithCancellation(ct);
@@ -64,7 +64,7 @@ namespace Main.Handler
                 }
             }
 
-            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+            if (SaveDataHolder.Data.DoFastenDirections == false)
                 await 0.5f.SecAwait(ct: ct);
 
             SetButtonsEnabled(true);
