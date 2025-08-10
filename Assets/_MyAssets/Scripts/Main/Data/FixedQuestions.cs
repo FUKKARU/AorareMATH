@@ -43,6 +43,8 @@ internal static class FixedQuestions
             theData.ShuffleSelf(); // ここで問題のシャッフルも行っておく
             data[textFile.name] = Array.AsReadOnly(theData);
         }
+
+        Cleanupper.RunOnlyGC();
     }
 
     // 事前生成のデータ
@@ -176,6 +178,13 @@ internal static class FixedQuestions
             _ => Type._4_3,
         };
     }
+
+    /// <summary>
+    /// 演算子を使わない問題なら、勝手に正解してしまうことを防ぐため、シャッフルするべきではない
+    /// テキストファイルの方の問題データも、同様に対策済み
+    /// </summary>
+    internal static bool ShouldShuffle(this Type type)
+        => type is not (Type._2_0 or Type._3_0);
 
     /// <summary>
     /// 取得に成功したらtrue、失敗したらfalseを返す
