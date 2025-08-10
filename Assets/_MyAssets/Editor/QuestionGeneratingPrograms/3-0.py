@@ -27,6 +27,12 @@ with open("3-0.txt", "w", encoding="utf-8") as f:
         numbers_copy = copy.deepcopy(numbers)
         random.shuffle(numbers_copy)
         target = int("".join(map(str, numbers_copy)))
+        if (
+            str(numbers[0]) == str(target)[0]
+            and str(numbers[1]) == str(target)[1]
+            and str(numbers[2]) == str(target)[2]
+        ):
+            continue
         ret = solve(numbers, target)
         if not ret:
             continue
