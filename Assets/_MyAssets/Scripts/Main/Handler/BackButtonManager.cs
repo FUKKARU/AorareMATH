@@ -5,6 +5,6 @@ namespace Title.Handler
 {
     internal sealed class BackButtonManager : ASceneChangeButtonManager
     {
-        protected sealed override Scene toScene => Scene.Title;
+        private protected sealed override Scene toScene => Scene.Title;
     }
 }

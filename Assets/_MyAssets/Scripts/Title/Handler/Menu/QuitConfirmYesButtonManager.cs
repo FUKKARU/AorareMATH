@@ -5,7 +5,7 @@ namespace Title.Handler.Menu
 {
     internal sealed class QuitConfirmYesButtonManager : ATextButtonManager
     {
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             GameQuitter.Quit();
         }

@@ -3,6 +3,7 @@ global using System.Collections.Generic;
 global using UnityEngine;
 global using UnityEngine.UI;
 global using Cysharp.Threading.Tasks;
+global using R3;
 global using DG.Tweening;
 global using Text = TMPro.TextMeshProUGUI;
 global using Random = UnityEngine.Random;

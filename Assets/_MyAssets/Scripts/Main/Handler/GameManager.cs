@@ -157,9 +157,11 @@ namespace Main.Handler
             OnResult(destroyCancellationToken).Forget();
         }
 
-        private void CreateQuestion()
+        private void CreateQuestion(bool isFirstCall = false)
         {
-            bool result = rankDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
+            FixedQuestions.Type questionType = rankDataHolder.CorrectAmount.ToQuestionType();
+
+            bool result = questionType.GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
             this.target = target;
             this.answer = answer;
@@ -168,7 +170,7 @@ namespace Main.Handler
 
             // インスタンスを作り直す
             DestroyInstances();
-            CreateInstances();
+            CreateInstances(questionType.ShouldShuffle());
 
             return;
 
@@ -176,7 +178,7 @@ namespace Main.Handler
 
             void DestroyInstances()
             {
-                Formula?.Reset();
+                Formula?.ClearData();
 
                 foreach (var e in _formulaInstances) if (e) Destroy(e.gameObject);
                 Array.Clear(_formulaInstances, 0, _formulaInstances.Length);
@@ -184,12 +186,12 @@ namespace Main.Handler
                 SetTargetText(string.Empty);
             }
 
-            void CreateInstances()
+            void CreateInstances(bool doShuffle)
             {
-                InstantiateNumbers(numbers: numbers);
+                InstantiateNumbers(doShuffle, numbers);
                 SetTargetText(target.ToString());
 
-                void InstantiateNumbers(bool doShuffle = true, params int[] numbers)
+                void InstantiateNumbers(bool doShuffle, int[] numbers)
                 {
                     if (numbers == null) return;
                     if (numbers.Length <= 0 || Formula.MaxLength < numbers.Length) return;
@@ -207,13 +209,17 @@ namespace Main.Handler
 
                 void InstantiateNumber(int n, int i)
                 {
-                    IntStr intStr = new(n);
-                    Formula.Data[i] = intStr;
+                    Element element = new(n);
+                    Formula.SetData(i, element);
 
                     Vector2 pos = SymbolPositions[i];
-                    var prefabInstance = ToInstance(intStr);
+                    var prefabInstance = ToInstance(element);
                     var instance = Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
                     _formulaInstances[i] = instance;
+
+                    // 有効化する
+                    if (instance.TryGetComponent(out SpriteAnimator animator))
+                        animator.Enable(isFirstQuestion: isFirstCall);
                 }
             }
         }
@@ -225,12 +231,12 @@ namespace Main.Handler
 
             IsPreviewNumberSameAsTargetThisFrame = false;
 
-            float? r = Formula.Calcurate();
-            if (r.HasValue)
+            double r = Formula.Calcurate();
+            if (!double.IsNaN(r))
             {
-                SetPreviewText(text: $"= {(int)r.Value}");
+                SetPreviewText(text: $"= {(int)r}");
 
-                float diff = Mathf.Abs(target - r.Value);
+                double diff = Math.Abs(target - r);
                 bool isSame = diff < SO_Handler.DiffLimit;
 
                 IsPreviewNumberSameAsTargetThisFrame = isSame;
@@ -265,10 +271,10 @@ namespace Main.Handler
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
-            float? r = Formula?.Calcurate();
-            if (!r.HasValue) return;
+            double r = Formula.Calcurate();
+            if (double.IsNaN(r)) return;
 
-            if (Mathf.Abs(target - r.Value) <= SO_Handler.DiffLimit)
+            if (Math.Abs(target - r) <= SO_Handler.DiffLimit)
                 Attack(destroyCancellationToken).Forget();
         }
 
@@ -354,11 +360,11 @@ namespace Main.Handler
             }
         }
 
-        private SpriteFollow ToInstance(IntStr symbol)
+        private SpriteFollow ToInstance(Element element)
         {
             foreach (var e in symbolSprites)
             {
-                if (e.Type.GetSymbol() == symbol)
+                if (e.Type.GetElement() == element)
                 {
                     return e;
                 }
@@ -383,7 +389,7 @@ namespace Main.Handler
             await countDown.Play(ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
-            CreateQuestion();
+            CreateQuestion(isFirstCall: true);
             if (unNumberSpritesAnimators != null)
             {
                 foreach (var animator in unNumberSpritesAnimators)

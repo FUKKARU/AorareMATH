@@ -40,7 +40,7 @@ namespace Main.Handler
 
         internal async UniTask Play(Ct ct)
         {
-            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+            if (SaveDataHolder.Data.DoFastenDirections == false)
             {
                 await beginDescriptionTransform.DOAnchorPosX(0, 0.1f).WithCancellation(ct);
                 await 1.0f.SecAwait(ct: ct);
@@ -54,12 +54,12 @@ namespace Main.Handler
                 beginDescriptionTransform.gameObject.SetActive(false);
             }
 
-            float counterDuration = SaveDataHolder.CacheData.DoFastenDirections ? 0.15f : 0.3f;
-            float oneCountSec = SaveDataHolder.CacheData.DoFastenDirections ? oneCountDurationOnFasten : oneCountDuration;
+            float counterDuration = SaveDataHolder.Data.DoFastenDirections ? 0.15f : 0.3f;
+            float oneCountSec = SaveDataHolder.Data.DoFastenDirections ? oneCountDurationOnFasten : oneCountDuration;
 
             await counterTransform.DOLocalMoveY(1.4f, counterDuration).WithCancellation(ct);
             // 演出が速いと音が高くなり過ぎたので、むしろ鳴らさないようにした
-            if (SaveDataHolder.CacheData.DoFastenDirections == false)
+            if (SaveDataHolder.Data.DoFastenDirections == false)
                 AudioSourceManager.Instance.Play(SO_Sound.Entity.CountDownSE, SoundType.SE, pitch: 1.0f / oneCountSec, volume: 0.5f);
             spriteRenderers.Red.enabled = true;
             await oneCountSec.SecAwait(ct: ct);

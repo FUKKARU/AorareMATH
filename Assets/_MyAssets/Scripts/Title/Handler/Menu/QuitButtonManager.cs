@@ -8,7 +8,15 @@ namespace Title.Handler.Menu
         [SerializeField] private GameObject quitConfirmUi;
         [SerializeField] private AButton menuButton;
 
-        protected sealed override void OnClickSucceeded()
+        private void Start()
+        {
+            // モバイル・WebGL では、ゲーム終了ボタンを出さない
+#if !(UNITY_EDITOR || UNITY_STANDALONE)
+            gameObject.SetActive(false);
+#endif
+        }
+
+        private protected sealed override void OnClickSucceeded()
         {
             InputIntervalManagerOnTogglingUi.Instance.InvokeBlockingImage();
 

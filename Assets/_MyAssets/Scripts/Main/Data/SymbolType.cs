@@ -12,7 +12,7 @@ namespace Main.Data
 
     internal static class SymbolTypeEx
     {
-        internal static IntStr GetSymbol(this SymbolType type) => type switch
+        internal static Element GetElement(this SymbolType type) => type switch
         {
             SymbolType.N0 => Symbol.N0,
             SymbolType.N1 => Symbol.N1,

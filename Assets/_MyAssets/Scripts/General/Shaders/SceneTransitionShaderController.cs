@@ -48,7 +48,7 @@ namespace General.Shaders
             float beginValue = beforeSceneChange ? 0 : 1;
             float endValue = beforeSceneChange ? 1 : 0;
 
-            float dur = SaveDataHolder.CacheData.DoFastenDirections ? durationOnFasten : duration;
+            float dur = SaveDataHolder.Data.DoFastenDirections ? durationOnFasten : duration;
 
             await DOTween.To
             (

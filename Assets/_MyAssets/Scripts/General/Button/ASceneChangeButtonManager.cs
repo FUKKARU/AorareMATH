@@ -10,9 +10,9 @@ namespace General.Button
 
         private bool isClickEnabled = true;
 
-        protected abstract Scene toScene { get; }
+        private protected abstract Scene toScene { get; }
 
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             SetLinkedButtonsClicked();
             Load(destroyCancellationToken).Forget();
@@ -34,8 +34,8 @@ namespace General.Button
         {
             if (bgmPlayer != null) bgmPlayer.Fade();
 
-            float beforeDirectionDuration = SaveDataHolder.CacheData.DoFastenDirections ? 0.1f : 0.2f;
-            float afterDirectionDuration = SaveDataHolder.CacheData.DoFastenDirections ? 1.0f : 1.5f;
+            float beforeDirectionDuration = SaveDataHolder.Data.DoFastenDirections ? 0.1f : 0.2f;
+            float afterDirectionDuration = SaveDataHolder.Data.DoFastenDirections ? 1.0f : 1.5f;
 
             await beforeDirectionDuration.SecAwait(ct: ct);
             if (sceneTransitionShaderController != null)

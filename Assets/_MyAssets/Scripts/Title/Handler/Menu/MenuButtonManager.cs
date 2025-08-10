@@ -12,7 +12,7 @@ namespace Title.Handler.Menu
 
         private bool isMenuActive = false;
 
-        protected sealed override void OnClickSucceeded()
+        private protected sealed override void OnClickSucceeded()
         {
             isMenuActive = !isMenuActive;
 

@@ -34,16 +34,17 @@ namespace General
     internal static class SaveDataHolder
     {
         private const string SavePath = "gameData.json";
+        private static readonly float AutoSaveIntervalSec = 30.0f;
+
         private static SaveData saveData = new();
+        internal static SaveData Data => saveData;
 
         // ロード直後のSaveDataをキャッシュしておく
         //! この中のメンバを書き換えることは、想定していない
-        private static SaveData saveDataCache = new();
-
-        internal static SaveData Data => saveData;
-        internal static SaveData CacheData => saveDataCache;
-
-        private static readonly float AutoSaveIntervalSec = 30.0f;
+        //! 再起動後に反映するセーブデータ用だが、現状そのようなデータがないため、使用していない
+        //! (もし上記の使用用途が必要になった場合、データの更新はDataに対して行う一方で、データの読み取りはCacheDataに対して行えばよい)
+        private static readonly SaveData saveDataCache = new();
+        // internal static SaveData CacheData => saveDataCache;
 
         // SaveDataをセーブする
         //! 外部依存

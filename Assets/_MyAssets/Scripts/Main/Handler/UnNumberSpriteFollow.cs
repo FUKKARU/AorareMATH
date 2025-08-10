@@ -156,17 +156,17 @@ namespace Main.Handler
 
                 Vector3 toPos = symbolPosition.ToVector3(z);
                 int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
-                IntStr toSymbol = GameManager.Instance.Formula.Data[toIndex];
+                Element toElement = GameManager.Instance.Formula.GetData(toIndex);
 
-                if (Symbol.IsNumber(toSymbol) == false)
+                if (toElement.GetType() != Data.Formula.Type.Number)
                 {
                     // はめ込める
 
                     GameManager.Instance.PlaySelectSE();
 
                     SpriteFollow instance = Instantiate(prefab, toPos, Quaternion.identity, transform.parent);
-                    GameManager.Instance.Formula.Data[toIndex] = Type.GetSymbol();
-                    if (toSymbol != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
+                    GameManager.Instance.Formula.SetData(toIndex, Type.GetElement());
+                    if (toElement != Symbol.NONE) Destroy(GameManager.Instance.FormulaInstances[toIndex].gameObject);
                     GameManager.Instance.FormulaInstances[toIndex] = instance;
 
                     GameManager.Instance.HasFormulaChanged |= true;

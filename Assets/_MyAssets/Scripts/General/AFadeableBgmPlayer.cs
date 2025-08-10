@@ -8,7 +8,7 @@ namespace General
     internal abstract class AFadeableBgmPlayer : MonoBehaviour, IFadeable
     {
         // 派生クラスで取得し、格納する
-        protected AudioSource audioSource = null;
+        private protected AudioSource audioSource = null;
 
         private bool hasFaded = false;
 
