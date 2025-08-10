@@ -157,7 +157,7 @@ namespace Main.Handler
             OnResult(destroyCancellationToken).Forget();
         }
 
-        private void CreateQuestion()
+        private void CreateQuestion(bool isFirstCall = false)
         {
             bool result = rankDataHolder.CorrectAmount.ToQuestionType().GetNewQuestion(out int[] numbers, out int target, out string answer);
             if (!result) return;
@@ -214,6 +214,10 @@ namespace Main.Handler
                     var prefabInstance = ToInstance(element);
                     var instance = Instantiate(prefabInstance, pos.ToVector3(prefabInstance.Z), Quaternion.identity, transform);
                     _formulaInstances[i] = instance;
+
+                    // 有効化する
+                    if (instance.TryGetComponent(out SpriteAnimator animator))
+                        animator.Enable(isFirstQuestion: isFirstCall);
                 }
             }
         }
@@ -383,7 +387,7 @@ namespace Main.Handler
             await countDown.Play(ct);
             await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
-            CreateQuestion();
+            CreateQuestion(isFirstCall: true);
             if (unNumberSpritesAnimators != null)
             {
                 foreach (var animator in unNumberSpritesAnimators)

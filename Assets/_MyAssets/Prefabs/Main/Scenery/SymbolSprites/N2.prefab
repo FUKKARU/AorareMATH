@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8895359145687341574}
   - component: {fileID: -7663902728001935949}
   - component: {fileID: 5929731464170105142}
+  - component: {fileID: 4607501981664614253}
   m_Layer: 0
   m_Name: N2
   m_TagString: Untagged
@@ -166,3 +167,17 @@ MonoBehaviour:
   _z: 19
   followZ: 18
   hoverScaleWhenMobile: 2
+--- !u!114 &4607501981664614253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1649810496817150047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc022bd839fd34b3bbfdf495cc11121e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 5929731464170105142}
+  spriteRenderer: {fileID: 1249274517624401723}
