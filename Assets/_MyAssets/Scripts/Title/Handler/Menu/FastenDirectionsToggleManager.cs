@@ -12,6 +12,7 @@ namespace Title.Handler.Menu
             toggle.isOn = SaveDataHolder.Data.DoFastenDirections;
             toggle.onValueChanged.AddListener(static isOn =>
             {
+                // ゲームに即時反映させている
                 SaveDataHolder.Data.DoFastenDirections = isOn;
                 AudioSourceManager.Instance.Play(SO_Sound.Entity.ClickSE, SoundType.SE, pitch: Pitch.Hover);
             });

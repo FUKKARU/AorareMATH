@@ -27,7 +27,7 @@ namespace Title.Handler
 
         internal async UniTaskVoid Play(Ct ct)
         {
-            if (SaveDataHolder.CacheData.DoFastenDirections)
+            if (SaveDataHolder.Data.DoFastenDirections)
             {
                 radius = 51.5f;
                 UpdateBills();
