@@ -55,6 +55,10 @@ namespace General
                 string json = JsonUtility.ToJson(saveData);
                 using StreamWriter writer = new(Path.Combine(Application.persistentDataPath, SavePath), false);
                 writer.WriteLine(json);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                WebGLFileSync.Sync();
+#endif
             }
             catch (Exception e)
             {
