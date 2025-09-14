@@ -119,7 +119,7 @@ namespace Main.Handler
                 int fromIndex = GameManager.Instance.GetIndexFromSymbolPosition(fromPos);
                 int toIndex = GameManager.Instance.GetIndexFromSymbolPosition(toPos);
 
-                if (GameManager.Instance.Formula.GetData(toIndex) != Symbol.NONE)
+                if (GameManager.Instance.Formula.GetData(toIndex) != FormulaElement.NONE)
                 {
                     // 入れ替え
 
@@ -140,7 +140,7 @@ namespace Main.Handler
                 {
                     // はめ込める
 
-                    GameManager.Instance.Formula.SetData(fromIndex, Symbol.NONE);
+                    GameManager.Instance.Formula.SetData(fromIndex, FormulaElement.NONE);
                     GameManager.Instance.Formula.SetData(toIndex, Type.GetElement());
 
                     GameManager.Instance.FormulaInstances[fromIndex] = null;
@@ -155,7 +155,7 @@ namespace Main.Handler
             {
                 GameManager.Instance.PlaySelectSE(Pitch.DisposeSymbol);
 
-                if (Type.GetElement().GetType() == Data.Formula.Type.Number)
+                if (Type.GetElement().IsNumber())
                 {
                     // 元の位置に戻す
                     transform.position = InitPosition;
@@ -164,7 +164,7 @@ namespace Main.Handler
                 {
                     // 消す
                     int i = GameManager.Instance.GetIndexFromSymbolPosition(InitPosition);
-                    GameManager.Instance.Formula.SetData(i, Symbol.NONE);
+                    GameManager.Instance.Formula.SetData(i, FormulaElement.NONE);
                     GameManager.Instance.FormulaInstances[i] = null;
                     Destroy(gameObject);
                 }

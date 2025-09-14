@@ -209,7 +209,7 @@ namespace Main.Handler
 
                 void InstantiateNumber(int n, int i)
                 {
-                    Element element = new(n);
+                    char element = n.ToFormulaElement();
                     Formula.SetData(i, element);
 
                     Vector2 pos = SymbolPositions[i];
@@ -231,7 +231,7 @@ namespace Main.Handler
 
             IsPreviewNumberSameAsTargetThisFrame = false;
 
-            double r = Formula.Calcurate();
+            double r = Formula.Calculate();
             if (!double.IsNaN(r))
             {
                 SetPreviewText(text: $"= {(int)r}");
@@ -271,7 +271,7 @@ namespace Main.Handler
         // 式を計算し、ピッタリならアタックする
         private void CheckFormula()
         {
-            double r = Formula.Calcurate();
+            double r = Formula.Calculate();
             if (double.IsNaN(r)) return;
 
             if (Math.Abs(target - r) <= SO_Handler.DiffLimit)
@@ -360,7 +360,7 @@ namespace Main.Handler
             }
         }
 
-        private SpriteFollow ToInstance(Element element)
+        private SpriteFollow ToInstance(char element)
         {
             foreach (var e in symbolSprites)
             {
