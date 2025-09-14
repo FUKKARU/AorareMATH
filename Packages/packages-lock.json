@@ -23,6 +23,13 @@
       "dependencies": {},
       "hash": "9057452c86079e4265228480b1439442894d5078"
     },
+    "com.foriver4725.formula-calculator": {
+      "version": "https://github.com/foriver4725/FormulaCalculator.git?path=Assets/foriver4725/FormulaCalculator",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f571dc4e934e22c87d8cb8fdc93c716359c6f3f1"
+    },
     "com.github-glitchenzo.nugetforunity": {
       "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
       "depth": 0,
