@@ -12,24 +12,24 @@ namespace Main.Data
 
     internal static class SymbolTypeEx
     {
-        internal static Element GetElement(this SymbolType type) => type switch
+        internal static char GetElement(this SymbolType type) => type switch
         {
-            SymbolType.N0 => Symbol.N0,
-            SymbolType.N1 => Symbol.N1,
-            SymbolType.N2 => Symbol.N2,
-            SymbolType.N3 => Symbol.N3,
-            SymbolType.N4 => Symbol.N4,
-            SymbolType.N5 => Symbol.N5,
-            SymbolType.N6 => Symbol.N6,
-            SymbolType.N7 => Symbol.N7,
-            SymbolType.N8 => Symbol.N8,
-            SymbolType.N9 => Symbol.N9,
-            SymbolType.OA => Symbol.OA,
-            SymbolType.OS => Symbol.OS,
-            SymbolType.OM => Symbol.OM,
-            SymbolType.OD => Symbol.OD,
-            SymbolType.PL => Symbol.PL,
-            SymbolType.PR => Symbol.PR,
+            SymbolType.N0 => FormulaElement.N0,
+            SymbolType.N1 => FormulaElement.N1,
+            SymbolType.N2 => FormulaElement.N2,
+            SymbolType.N3 => FormulaElement.N3,
+            SymbolType.N4 => FormulaElement.N4,
+            SymbolType.N5 => FormulaElement.N5,
+            SymbolType.N6 => FormulaElement.N6,
+            SymbolType.N7 => FormulaElement.N7,
+            SymbolType.N8 => FormulaElement.N8,
+            SymbolType.N9 => FormulaElement.N9,
+            SymbolType.OA => FormulaElement.OA,
+            SymbolType.OS => FormulaElement.OS,
+            SymbolType.OM => FormulaElement.OM,
+            SymbolType.OD => FormulaElement.OD,
+            SymbolType.PL => FormulaElement.PL,
+            SymbolType.PR => FormulaElement.PR,
             _ => throw new Exception("Invalid symbol type.")
         };
 
